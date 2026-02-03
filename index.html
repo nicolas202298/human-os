@@ -11,4 +11,143 @@ body { margin: 0; background: #000; color: #fff; display: flex; justify-content:
 .app { width: 100%; max-width: 420px; }
 h1 { text-align: center; margin-bottom: 4px; font-size: 32px; letter-spacing: 1px; }
 .subtitle { text-align: center; opacity: 0.6; margin-bottom: 32px; }
-.card { background: linear-gradient(180deg, #0a0a0a, #000); border-radius: 14px; padding: 18px; margin-bottom:
+.card { background: linear-gradient(180deg, #0a0a0a, #000); border-radius: 14px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.06); }
+label { font-size: 13px; opacity: 0.7; display: block; margin-bottom: 6px; }
+select, textarea { width: 100%; background: #000; color: #fff; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px; font-size: 14px; }
+textarea { min-height: 80px; resize: none; }
+button { width: 100%; margin-top: 20px; padding: 16px; font-size: 15px; border-radius: 14px; background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: 0.2s; }
+button:hover { background: #1a1a1a; }
+.output { margin-top: 24px; padding: 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); display: block; opacity: 1; transition: opacity 0.6s ease-in-out, box-shadow 0.4s ease-in-out; }
+.output h3 { margin-top: 0; font-size: 16px; margin-bottom: 10px; }
+.output p { font-size: 14px; line-height: 1.6; white-space: pre-wrap; color: #fff; }
+.blink { animation: blinkAnim 0.8s infinite; }
+@keyframes blinkAnim { 0% { box-shadow: 0 0 8px #fff; } 50% { box-shadow: 0 0 24px #fff; } 100% { box-shadow: 0 0 8px #fff; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <h1>HUMAN OS</h1>
+  <div class="subtitle">Sistema de Execução</div>
+
+  <div class="card">
+    <label>Tempo disponível</label>
+    <select id="tempo">
+      <option value="">Selecione</option>
+      <option>15 minutos</option>
+      <option>30 minutos</option>
+      <option>1 hora</option>
+      <option>2 horas</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <label>Energia mental</label>
+    <select id="energia">
+      <option value="">Selecione</option>
+      <option>Baixa</option>
+      <option>Média</option>
+      <option>Alta</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <label>O que está te travando agora?</label>
+    <textarea id="bloqueio" placeholder="Escreva em uma frase..."></textarea>
+  </div>
+
+  <button onclick="gerarOrdem()">GERAR ORDEM</button>
+
+  <div class="output blink" id="saida">
+    <h3>ORDEM DE EXECUÇÃO</h3>
+    <p id="resultado">Preencha os campos e clique em GERAR ORDEM</p>
+  </div>
+</div>
+
+<script>
+function gerarOrdem() {
+  const tempo = document.getElementById("tempo").value;
+  const energia = document.getElementById("energia").value;
+  const bloqueio = document.getElementById("bloqueio").value;
+
+  if (!tempo || !energia || !bloqueio) {
+    alert("Preencha todas as opções antes de gerar a ordem.");
+    return;
+  }
+
+  const acoes = {
+    "Alta": [
+      "Execute o maior passo agora mesmo, sem pensar!",
+      "Concentre toda sua energia e vá para ação imediata!",
+      "Não espere, comece pelo item mais importante agora!"
+    ],
+    "Média": [
+      "Comece pelo menor passo e avance rápido.",
+      "Divida a tarefa em partes e execute a primeira imediatamente.",
+      "Escolha uma ação simples e execute sem procrastinar."
+    ],
+    "Baixa": [
+      "Escolha o passo mais simples e apenas comece.",
+      "Não tente tudo de uma vez, faça só o primeiro passo.",
+      "Foque em uma ação mínima e comece devagar."
+    ]
+  };
+
+  const acao = acoes[energia][Math.floor(Math.random() * acoes[energia].length)];
+
+  const texto = `
+Você tem ${tempo} e energia ${energia}.
+
+Bloqueio atual: "${bloqueio}".
+
+${acao}
+
+Ignore o perfeccionismo.
+Execute agora, mesmo sem vontade.
+`;
+
+  const saida = document.getElementById("saida");
+  const resultado = document.getElementById("resultado");
+  resultado.innerText = texto;
+
+  let cor = "#222";
+  if (energia === "Alta") cor = "#0f8";
+  else if (energia === "Média") cor = "#fc0";
+  else if (energia === "Baixa") cor = "#f33";
+
+  saida.style.backgroundColor = cor;
+  saida.style.display = "block";
+  saida.style.opacity = 0;
+  saida.classList.remove("blink");
+
+  setTimeout(() => {
+    saida.style.opacity = 1;
+    saida.classList.add("blink");
+  }, 50);
+
+  localStorage.setItem("ultimaOrdem", texto);
+  localStorage.setItem("ultimaCor", cor);
+}
+
+window.onload = () => {
+  const ultima = localStorage.getItem("ultimaOrdem");
+  const cor = localStorage.getItem("ultimaCor");
+  const saida = document.getElementById("saida");
+  const resultado = document.getElementById("resultado");
+
+  if (ultima) {
+    resultado.innerText = ultima;
+    saida.style.backgroundColor = cor || "#222";
+  } else {
+    resultado.innerText = "Preencha os campos e clique em GERAR ORDEM";
+    saida.style.backgroundColor = "#222";
+  }
+
+  saida.style.display = "block";
+  saida.style.opacity = 1;
+  saida.classList.add("blink");
+};
+</script>
+
+</body>
+    </html>
