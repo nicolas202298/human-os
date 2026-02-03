@@ -3,97 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human OS - Secure Mode</title>
+    <title>Human OS - Fix</title>
     <style>
-        body { background-color: #0a0a0b; color: #00ffcc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        #os-container { width: 90%; max-width: 800px; height: 80vh; background: #141419; border: 1px solid #00ffcc; border-radius: 15px; display: flex; flex-direction: column; }
-        #chat-window { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .message { max-width: 80%; padding: 10px; border-radius: 10px; }
-        .user-msg { align-self: flex-end; background: #00ffcc; color: #000; }
-        .ai-msg { align-self: flex-start; background: #222; border-left: 3px solid #00ffcc; }
-        #input-area { padding: 20px; border-top: 1px solid #333; display: flex; gap: 10px; }
-        input { flex: 1; background: #000; border: 1px solid #444; padding: 12px; color: white; border-radius: 5px; }
-        button { background: #00ffcc; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
-        
-        /* Estilo da área de segurança */
-        #config-bar { background: #111; padding: 10px; font-size: 12px; display: flex; justify-content: space-between; border-bottom: 1px solid #333; }
-        .key-input { background: #000; border: 1px solid #00ffcc; color: #00ffcc; padding: 3px; font-size: 10px; width: 150px; }
+        body { background: #0a0a0b; color: #00ffcc; font-family: sans-serif; margin: 0; padding: 20px; }
+        #os-container { max-width: 600px; margin: auto; border: 1px solid #00ffcc; border-radius: 10px; padding: 20px; background: #141419; }
+        #chat-window { height: 300px; overflow-y: auto; border-bottom: 1px solid #333; margin-bottom: 10px; padding-bottom: 10px; }
+        input { width: 100%; background: #000; border: 1px solid #00ffcc; color: white; padding: 10px; box-sizing: border-box; margin-bottom: 10px; }
+        button { width: 100%; background: #00ffcc; color: #000; border: none; padding: 10px; font-weight: bold; cursor: pointer; }
+        .msg { margin-bottom: 10px; padding: 5px; border-radius: 5px; }
+        .user { color: #fff; background: #333; }
+        .ai { color: #00ffcc; }
     </style>
 </head>
 <body>
 
 <div id="os-container">
-    <div id="config-bar">
-        <span>HUMAN OS v1.0 (SECURE)</span>
-        <div>
-            <label>API KEY: </label>
-            <input type="password" id="apiKeyInput" class="key-input" placeholder="Cole sua chave aqui" onchange="saveKey()">
-        </div>
-    </div>
-    
-    <div id="chat-window">
-        <div class="message ai-msg">Modo Seguro ativado. Por favor, insira a sua API Key no campo acima para começarmos.</div>
-    </div>
-
-    <div id="input-area">
-        <input type="text" id="userInput" placeholder="Comando..." onkeypress="if(event.key === 'Enter') sendMessage()">
-        <button onclick="sendMessage()">EXECUTAR</button>
-    </div>
+    <h3>HUMAN OS v1.1</h3>
+    <input type="password" id="key" placeholder="Cole a AIza aqui...">
+    <div id="chat-window"></div>
+    <input type="text" id="input" placeholder="Digite sua mensagem...">
+    <button onclick="enviar()">EXECUTAR</button>
 </div>
 
 <script>
-    // 1. Carrega a chave guardada no navegador (se existir)
-    document.getElementById('apiKeyInput').value = localStorage.getItem('gemini_key') || "";
+async function enviar() {
+    const key = document.getElementById('key').value.trim();
+    const input = document.getElementById('input');
+    const chat = document.getElementById('chat-window');
+    const texto = input.value;
 
-    function saveKey() {
-        const key = document.getElementById('apiKeyInput').value;
-        localStorage.setItem('gemini_key', key);
-        alert("Chave guardada localmente com sucesso!");
-    }
+    if(!key || !texto) return alert("Falta a chave ou o texto!");
 
-    async function sendMessage() {
-        const key = localStorage.getItem('gemini_key');
-        if (!key) {
-            alert("Erro: Insira a sua API KEY no topo da página primeiro!");
-            return;
+    // Mostra na tela
+    chat.innerHTML += `<div class="msg user"><b>Você:</b> ${texto}</div>`;
+    input.value = "";
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: texto }] }]
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            chat.innerHTML += `<div class="msg"><b>Erro:</b> ${data.error.message}</div>`;
+        } else {
+            const botMsg = data.candidates[0].content.parts[0].text;
+            chat.innerHTML += `<div class="msg ai"><b>IA:</b> ${botMsg}</div>`;
         }
-
-        const input = document.getElementById('userInput');
-        const text = input.value.trim();
-        if (!text) return;
-
-        appendMessage('user', text);
-        input.value = "";
-        const loadingMsg = appendMessage('ai', 'A processar...');
-
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ role: "user", parts: [{ text: text }] }]
-                })
-            });
-
-            const data = await response.json();
-            const aiText = data.candidates[0].content.parts[0].text;
-            loadingMsg.remove();
-            appendMessage('ai', aiText);
-
-        } catch (error) {
-            loadingMsg.innerText = "Erro: A chave é inválida ou houve um problema de conexão.";
-        }
+    } catch (e) {
+        chat.innerHTML += `<div class="msg"><b>Erro Fatal:</b> Verifique sua conexão ou a chave.</div>`;
     }
-
-    function appendMessage(role, text) {
-        const chatWindow = document.getElementById('chat-window');
-        const div = document.createElement('div');
-        div.className = `message ${role === 'user' ? 'user-msg' : 'ai-msg'}`;
-        div.innerText = text;
-        chatWindow.appendChild(div);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-        return div;
-    }
+    chat.scrollTop = chat.scrollHeight;
+}
 </script>
 </body>
 </html>
