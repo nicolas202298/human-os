@@ -3,68 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human OS v1.3</title>
+    <title>Human OS v1.3 - FINAL</title>
     <style>
-        body { background: #0a0a0b; color: #00ffcc; font-family: monospace; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        #os-container { width: 100%; max-width: 500px; border: 2px solid #00ffcc; border-radius: 15px; padding: 20px; background: #141419; }
-        #chat-window { height: 350px; overflow-y: auto; margin: 15px 0; padding: 10px; border: 1px solid #333; background: #000; display: flex; flex-direction: column; gap: 10px; }
-        input { width: 100%; background: #000; border: 1px solid #00ffcc; color: white; padding: 12px; box-sizing: border-box; margin-bottom: 10px; }
-        button { width: 100%; background: #00ffcc; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; }
-        .msg { padding: 10px; border-radius: 8px; }
-        .user { align-self: flex-end; background: #00ffcc; color: #000; }
-        .ai { align-self: flex-start; background: #1a1a1a; border-left: 4px solid #00ffcc; color: #00ffcc; }
+        body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+        #box { max-width: 500px; margin: auto; border: 1px solid #0f0; padding: 15px; background: #050505; }
+        #chat { height: 300px; overflow-y: auto; border-bottom: 1px solid #222; margin-bottom: 10px; display: flex; flex-direction: column; }
+        input { width: 100%; background: #111; border: 1px solid #0f0; color: #0f0; padding: 10px; box-sizing: border-box; margin-bottom: 5px; }
+        button { width: 100%; background: #0f0; color: #000; border: none; padding: 10px; font-weight: bold; cursor: pointer; }
+        .msg { margin: 5px 0; padding: 5px; border-radius: 4px; }
+        .u { align-self: flex-end; color: #fff; background: #005500; }
+        .a { align-self: flex-start; color: #0f0; }
     </style>
 </head>
 <body>
-    <div id="os-container">
-        <h3>HUMAN OS v1.3 (Auto-Fix)</h3>
-        <input type="password" id="key" placeholder="Cole sua API KEY aqui">
-        <div id="chat-window"></div>
-        <input type="text" id="input" placeholder="Digite um comando...">
+    <div id="box">
+        <h3>> HUMAN OS v1.3</h3>
+        <input type="password" id="key" placeholder="API KEY (AIza...)">
+        <div id="chat"></div>
+        <input type="text" id="input" placeholder="Comando...">
         <button onclick="enviar()">EXECUTAR</button>
     </div>
 
 <script>
-async function chamarAPI(modelo, key, texto) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${key}`;
-    const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: texto }] }] })
-    });
-    return await response.json();
-}
-
 async function enviar() {
     const key = document.getElementById('key').value.trim();
-    const inputField = document.getElementById('input');
-    const chat = document.getElementById('chat-window');
-    const texto = inputField.value.trim();
+    const input = document.getElementById('input');
+    const chat = document.getElementById('chat');
+    const txt = input.value.trim();
 
-    if(!key || !texto) return;
+    if(!key || !txt) return;
+    chat.innerHTML += `<div class="msg u">Você: ${txt}</div>`;
+    input.value = "";
 
-    chat.innerHTML += `<div class="msg user">${texto}</div>`;
-    inputField.value = "";
-
-    // LISTA DE MODELOS PARA TENTAR (O Google vai ter que aceitar um desses!)
-    const modelos = ["gemini-1.5-flash", "gemini-pro", "gemini-1.5-flash-8b"];
-    let sucesso = false;
+    // Tenta 3 nomes de modelos diferentes para não dar erro
+    const modelos = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-pro"];
+    let ok = false;
 
     for (let m of modelos) {
         try {
-            const data = await chamarAPI(m, key, texto);
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`;
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: [{ parts: [{ text: txt }] }] })
+            });
+            const data = await res.json();
             if (!data.error) {
-                const botMsg = data.candidates[0].content.parts[0].text;
-                chat.innerHTML += `<div class="msg ai">${botMsg}</div>`;
-                sucesso = true;
-                break; 
+                chat.innerHTML += `<div class="msg a">IA: ${data.candidates[0].content.parts[0].text}</div>`;
+                ok = true; break;
             }
-        } catch (e) { console.log("Tentando próximo modelo..."); }
+        } catch (e) {}
     }
-
-    if (!sucesso) {
-        chat.innerHTML += `<div class="msg ai" style="color:red">Erro: Nenhum modelo respondeu. Verifique sua chave.</div>`;
-    }
+    if(!ok) chat.innerHTML += `<div class="msg a" style="color:red">Erro: Falha em todos os modelos.</div>`;
     chat.scrollTop = chat.scrollHeight;
 }
 </script>
