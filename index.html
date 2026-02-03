@@ -15,11 +15,11 @@ h1 { text-align: center; margin-bottom: 4px; font-size: 32px; letter-spacing: 1p
 label { font-size: 13px; opacity: 0.7; display: block; margin-bottom: 6px; }
 select, textarea { width: 100%; background: #000; color: #fff; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px; font-size: 14px; }
 textarea { min-height: 80px; resize: none; }
-button { width: 100%; margin-top: 20px; padding: 16px; font-size: 15px; border-radius: 14px; background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; }
+button { width: 100%; margin-top: 20px; padding: 16px; font-size: 15px; border-radius: 14px; background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: 0.2s; }
 button:hover { background: #1a1a1a; }
-.output { margin-top: 24px; padding: 18px; background: #050505; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); display: none; }
+.output { margin-top: 24px; padding: 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); display: none; opacity: 0; transition: opacity 0.6s ease-in-out; }
 .output h3 { margin-top: 0; font-size: 16px; margin-bottom: 10px; }
-.output p { font-size: 14px; line-height: 1.6; opacity: 0.9; }
+.output p { font-size: 14px; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -73,30 +73,27 @@ function gerarOrdem() {
     return;
   }
 
-  // Lista de ações dinâmicas dependendo da energia
-  const acoesAlta = [
-    "Execute o maior passo agora mesmo, sem pensar!",
-    "Concentre toda sua energia e vá para ação imediata!",
-    "Não espere, comece pelo item mais importante agora!"
-  ];
-  const acoesMedia = [
-    "Comece pelo menor passo e avance rápido.",
-    "Divida a tarefa em partes e execute a primeira imediatamente.",
-    "Escolha uma ação simples e execute sem procrastinar."
-  ];
-  const acoesBaixa = [
-    "Escolha o passo mais simples e apenas comece.",
-    "Não tente tudo de uma vez, faça só o primeiro passo.",
-    "Foque em uma ação mínima e comece devagar."
-  ];
+  // Frases dinâmicas por energia
+  const acoes = {
+    "Alta": [
+      "Execute o maior passo agora mesmo, sem pensar!",
+      "Concentre toda sua energia e vá para ação imediata!",
+      "Não espere, comece pelo item mais importante agora!"
+    ],
+    "Média": [
+      "Comece pelo menor passo e avance rápido.",
+      "Divida a tarefa em partes e execute a primeira imediatamente.",
+      "Escolha uma ação simples e execute sem procrastinar."
+    ],
+    "Baixa": [
+      "Escolha o passo mais simples e apenas comece.",
+      "Não tente tudo de uma vez, faça só o primeiro passo.",
+      "Foque em uma ação mínima e comece devagar."
+    ]
+  };
 
-  let acoesEscolhidas = [];
-  if (energia === "Alta") acoesEscolhidas = acoesAlta;
-  else if (energia === "Média") acoesEscolhidas = acoesMedia;
-  else if (energia === "Baixa") acoesEscolhidas = acoesBaixa;
-
-  // Escolhe aleatoriamente uma ação
-  const acao = acoesEscolhidas[Math.floor(Math.random() * acoesEscolhidas.length)];
+  // Escolhe uma frase aleatória
+  const acao = acoes[energia][Math.floor(Math.random() * acoes[energia].length)];
 
   // Texto final
   const texto = `
@@ -110,8 +107,21 @@ Ignore o perfeccionismo.
 Execute agora, mesmo sem vontade.
 `;
 
-  document.getElementById("resultado").innerText = texto;
-  document.getElementById("saida").style.display = "block";
+  // Cor do fundo de acordo com energia
+  let cor = "#222";
+  if (energia === "Alta") cor = "#0f8";
+  else if (energia === "Média") cor = "#fc0";
+  else if (energia === "Baixa") cor = "#f33";
+
+  const saida = document.getElementById("saida");
+  const resultado = document.getElementById("resultado");
+  resultado.innerText = texto;
+
+  saida.style.backgroundColor = cor;
+  saida.style.display = "block";
+  setTimeout(() => {
+    saida.style.opacity = 1; // fade-in
+  }, 50);
 }
 </script>
 
