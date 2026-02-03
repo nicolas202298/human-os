@@ -6,93 +6,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
-* {
-  box-sizing: border-box;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-}
-body {
-  margin: 0;
-  background: #000;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  padding: 40px 16px;
-}
-.app {
-  width: 100%;
-  max-width: 420px;
-}
-h1 {
-  text-align: center;
-  margin-bottom: 4px;
-  font-size: 32px;
-  letter-spacing: 1px;
-}
-.subtitle {
-  text-align: center;
-  opacity: 0.6;
-  margin-bottom: 32px;
-}
-.card {
-  background: linear-gradient(180deg, #0a0a0a, #000);
-  border-radius: 14px;
-  padding: 18px;
-  margin-bottom: 16px;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-label {
-  font-size: 13px;
-  opacity: 0.7;
-  display: block;
-  margin-bottom: 6px;
-}
-select, textarea {
-  width: 100%;
-  background: #000;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 10px;
-  padding: 12px;
-  font-size: 14px;
-}
-textarea {
-  min-height: 80px;
-  resize: none;
-}
-button {
-  width: 100%;
-  margin-top: 20px;
-  padding: 16px;
-  font-size: 15px;
-  border-radius: 14px;
-  background: #111;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.2);
-  cursor: pointer;
-}
-button:hover {
-  background: #1a1a1a;
-}
-.output {
-  margin-top: 24px;
-  padding: 18px;
-  background: #050505;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.08);
-  display: none;
-}
-.output h3 {
-  margin-top: 0;
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-.output p {
-  font-size: 14px;
-  line-height: 1.6;
-  opacity: 0.9;
-}
+* { box-sizing: border-box; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+body { margin: 0; background: #000; color: #fff; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 16px; }
+.app { width: 100%; max-width: 420px; }
+h1 { text-align: center; margin-bottom: 4px; font-size: 32px; letter-spacing: 1px; }
+.subtitle { text-align: center; opacity: 0.6; margin-bottom: 32px; }
+.card { background: linear-gradient(180deg, #0a0a0a, #000); border-radius: 14px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.06); }
+label { font-size: 13px; opacity: 0.7; display: block; margin-bottom: 6px; }
+select, textarea { width: 100%; background: #000; color: #fff; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px; font-size: 14px; }
+textarea { min-height: 80px; resize: none; }
+button { width: 100%; margin-top: 20px; padding: 16px; font-size: 15px; border-radius: 14px; background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; }
+button:hover { background: #1a1a1a; }
+.output { margin-top: 24px; padding: 18px; background: #050505; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); display: none; }
+.output h3 { margin-top: 0; font-size: 16px; margin-bottom: 10px; }
+.output p { font-size: 14px; line-height: 1.6; opacity: 0.9; }
 </style>
 </head>
 <body>
@@ -146,12 +73,32 @@ function gerarOrdem() {
     return;
   }
 
-  // Gera instruções diferentes dependendo da energia
-  let acao = "";
-  if (energia === "Alta") acao = "Execute o maior passo agora!";
-  else if (energia === "Média") acao = "Comece pelo menor passo e avance rápido.";
-  else if (energia === "Baixa") acao = "Escolha o passo mais simples e apenas comece.";
+  // Lista de ações dinâmicas dependendo da energia
+  const acoesAlta = [
+    "Execute o maior passo agora mesmo, sem pensar!",
+    "Concentre toda sua energia e vá para ação imediata!",
+    "Não espere, comece pelo item mais importante agora!"
+  ];
+  const acoesMedia = [
+    "Comece pelo menor passo e avance rápido.",
+    "Divida a tarefa em partes e execute a primeira imediatamente.",
+    "Escolha uma ação simples e execute sem procrastinar."
+  ];
+  const acoesBaixa = [
+    "Escolha o passo mais simples e apenas comece.",
+    "Não tente tudo de uma vez, faça só o primeiro passo.",
+    "Foque em uma ação mínima e comece devagar."
+  ];
 
+  let acoesEscolhidas = [];
+  if (energia === "Alta") acoesEscolhidas = acoesAlta;
+  else if (energia === "Média") acoesEscolhidas = acoesMedia;
+  else if (energia === "Baixa") acoesEscolhidas = acoesBaixa;
+
+  // Escolhe aleatoriamente uma ação
+  const acao = acoesEscolhidas[Math.floor(Math.random() * acoesEscolhidas.length)];
+
+  // Texto final
   const texto = `
 Você tem ${tempo} e energia ${energia}.
 
