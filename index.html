@@ -3,69 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human OS v1.2</title>
+    <title>Human OS v1.3</title>
     <style>
-        body { background: #0a0a0b; color: #00ffcc; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        #os-container { width: 100%; max-width: 500px; border: 2px solid #00ffcc; border-radius: 15px; padding: 20px; background: #141419; box-shadow: 0 0 20px rgba(0,255,204,0.3); }
-        h2 { text-align: center; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; }
-        #chat-window { height: 300px; overflow-y: auto; margin: 15px 0; padding: 10px; border: 1px solid #333; background: #000; display: flex; flex-direction: column; gap: 10px; border-radius: 5px; }
-        input { width: 100%; background: #000; border: 1px solid #00ffcc; color: white; padding: 12px; box-sizing: border-box; margin-bottom: 10px; border-radius: 5px; outline: none; }
-        button { width: 100%; background: #00ffcc; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 5px; text-transform: uppercase; }
-        button:active { background: #00cca3; }
-        .msg { padding: 10px; border-radius: 8px; font-size: 0.9rem; line-height: 1.4; }
-        .user { align-self: flex-end; background: #00ffcc; color: #000; font-weight: bold; }
+        body { background: #0a0a0b; color: #00ffcc; font-family: monospace; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        #os-container { width: 100%; max-width: 500px; border: 2px solid #00ffcc; border-radius: 15px; padding: 20px; background: #141419; }
+        #chat-window { height: 350px; overflow-y: auto; margin: 15px 0; padding: 10px; border: 1px solid #333; background: #000; display: flex; flex-direction: column; gap: 10px; }
+        input { width: 100%; background: #000; border: 1px solid #00ffcc; color: white; padding: 12px; box-sizing: border-box; margin-bottom: 10px; }
+        button { width: 100%; background: #00ffcc; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; }
+        .msg { padding: 10px; border-radius: 8px; }
+        .user { align-self: flex-end; background: #00ffcc; color: #000; }
         .ai { align-self: flex-start; background: #1a1a1a; border-left: 4px solid #00ffcc; color: #00ffcc; }
     </style>
 </head>
 <body>
-
-<div id="os-container">
-    <h2>> HUMAN OS v1.2</h2>
-    <input type="password" id="key" placeholder="Insira a API KEY (AIza...)">
-    <div id="chat-window"></div>
-    <input type="text" id="input" placeholder="Escreva um comando...">
-    <button onclick="enviar()">Executar</button>
-</div>
+    <div id="os-container">
+        <h3>HUMAN OS v1.3 (Auto-Fix)</h3>
+        <input type="password" id="key" placeholder="Cole sua API KEY aqui">
+        <div id="chat-window"></div>
+        <input type="text" id="input" placeholder="Digite um comando...">
+        <button onclick="enviar()">EXECUTAR</button>
+    </div>
 
 <script>
+async function chamarAPI(modelo, key, texto) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${key}`;
+    const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: texto }] }] })
+    });
+    return await response.json();
+}
+
 async function enviar() {
-    const keyField = document.getElementById('key');
+    const key = document.getElementById('key').value.trim();
     const inputField = document.getElementById('input');
     const chat = document.getElementById('chat-window');
-    
-    const key = keyField.value.trim();
     const texto = inputField.value.trim();
 
-    if(!key) return alert("Erro: Chave ausente!");
-    if(!texto) return;
+    if(!key || !texto) return;
 
-    // Adiciona o teu texto no ecrã
     chat.innerHTML += `<div class="msg user">${texto}</div>`;
     inputField.value = "";
-    chat.scrollTop = chat.scrollHeight;
 
-    try {
-        // A URL correta com v1beta e o modelo correto
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
-        
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: texto }] }]
-            })
-        });
+    // LISTA DE MODELOS PARA TENTAR (O Google vai ter que aceitar um desses!)
+    const modelos = ["gemini-1.5-flash", "gemini-pro", "gemini-1.5-flash-8b"];
+    let sucesso = false;
 
-        const data = await response.json();
-        
-        if (data.error) {
-            chat.innerHTML += `<div class="msg ai" style="border-left-color: red; color: red;"><b>Erro:</b> ${data.error.message}</div>`;
-        } else {
-            const botMsg = data.candidates[0].content.parts[0].text;
-            chat.innerHTML += `<div class="msg ai">${botMsg}</div>`;
-        }
-    } catch (e) {
-        chat.innerHTML += `<div class="msg ai" style="border-left-color: red; color: red;"><b>Erro:</b> Falha na ligação ao servidor.</div>`;
+    for (let m of modelos) {
+        try {
+            const data = await chamarAPI(m, key, texto);
+            if (!data.error) {
+                const botMsg = data.candidates[0].content.parts[0].text;
+                chat.innerHTML += `<div class="msg ai">${botMsg}</div>`;
+                sucesso = true;
+                break; 
+            }
+        } catch (e) { console.log("Tentando próximo modelo..."); }
+    }
+
+    if (!sucesso) {
+        chat.innerHTML += `<div class="msg ai" style="color:red">Erro: Nenhum modelo respondeu. Verifique sua chave.</div>`;
     }
     chat.scrollTop = chat.scrollHeight;
 }
