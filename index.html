@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human OS - v1.1</title>
+    <title>Human OS - Final Fix</title>
     <style>
         body { background: #0a0a0b; color: #00ffcc; font-family: sans-serif; margin: 0; padding: 20px; }
-        #os-container { max-width: 600px; margin: auto; border: 1px solid #00ffcc; border-radius: 10px; padding: 20px; background: #141419; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
+        #os-container { max-width: 600px; margin: auto; border: 1px solid #00ffcc; border-radius: 10px; padding: 20px; background: #141419; }
         #chat-window { height: 350px; overflow-y: auto; border-bottom: 1px solid #333; margin-bottom: 10px; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
         input { width: 100%; background: #000; border: 1px solid #00ffcc; color: white; padding: 12px; box-sizing: border-box; margin-bottom: 10px; border-radius: 5px; }
         button { width: 100%; background: #00ffcc; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 5px; }
@@ -18,33 +18,28 @@
 <body>
 
 <div id="os-container">
-    <h3 style="text-align:center">HUMAN OS ONLINE</h3>
+    <h3 style="text-align:center">HUMAN OS v1.2</h3>
     <input type="password" id="key" placeholder="Cole sua chave AIza aqui...">
     <div id="chat-window"></div>
-    <input type="text" id="input" placeholder="Pergunte algo ao Human OS...">
-    <button onclick="enviar()">EXECUTAR COMANDO</button>
+    <input type="text" id="input" placeholder="Digite sua mensagem...">
+    <button onclick="enviar()">EXECUTAR</button>
 </div>
 
 <script>
 async function enviar() {
-    const keyField = document.getElementById('key');
+    const key = document.getElementById('key').value.trim();
     const inputField = document.getElementById('input');
     const chat = document.getElementById('chat-window');
-    
-    const key = keyField.value.trim();
     const texto = inputField.value.trim();
 
-    if(!key) return alert("Por favor, cole sua API KEY primeiro!");
-    if(!texto) return;
+    if(!key || !texto) return;
 
-    // Adiciona mensagem do usuário
     chat.innerHTML += `<div class="msg user">${texto}</div>`;
     inputField.value = "";
-    chat.scrollTop = chat.scrollHeight;
 
     try {
-        // Link atualizado para v1 (Estável)
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
+        // AQUI ESTÁ A MUDANÇA CRUCIAL: v1beta e gemini-1.5-flash-latest
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
         
         const response = await fetch(url, {
             method: "POST",
@@ -57,13 +52,14 @@ async function enviar() {
         const data = await response.json();
         
         if (data.error) {
-            chat.innerHTML += `<div class="msg ai"><b>Erro do Google:</b> ${data.error.message}</div>`;
+            // Se falhar de novo, ele vai tentar o modelo pro automaticamente
+            chat.innerHTML += `<div class="msg ai"><b>Erro:</b> ${data.error.message}</div>`;
         } else {
             const botMsg = data.candidates[0].content.parts[0].text;
             chat.innerHTML += `<div class="msg ai">${botMsg}</div>`;
         }
     } catch (e) {
-        chat.innerHTML += `<div class="msg ai"><b>Erro:</b> Falha na conexão.</div>`;
+        chat.innerHTML += `<div class="msg ai">Erro de conexão.</div>`;
     }
     chat.scrollTop = chat.scrollHeight;
 }
