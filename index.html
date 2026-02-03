@@ -17,9 +17,17 @@ select, textarea { width: 100%; background: #000; color: #fff; border: 1px solid
 textarea { min-height: 80px; resize: none; }
 button { width: 100%; margin-top: 20px; padding: 16px; font-size: 15px; border-radius: 14px; background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: 0.2s; }
 button:hover { background: #1a1a1a; }
-.output { margin-top: 24px; padding: 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); display: none; opacity: 0; transition: opacity 0.6s ease-in-out; }
+.output { margin-top: 24px; padding: 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); display: none; opacity: 0; transition: opacity 0.6s ease-in-out, box-shadow 0.4s ease-in-out; }
 .output h3 { margin-top: 0; font-size: 16px; margin-bottom: 10px; }
 .output p { font-size: 14px; line-height: 1.6; }
+.blink {
+  animation: blinkAnim 0.8s infinite;
+}
+@keyframes blinkAnim {
+  0% { box-shadow: 0 0 8px #fff; }
+  50% { box-shadow: 0 0 24px #fff; }
+  100% { box-shadow: 0 0 8px #fff; }
+}
 </style>
 </head>
 <body>
@@ -73,7 +81,6 @@ function gerarOrdem() {
     return;
   }
 
-  // Frases dinâmicas por energia
   const acoes = {
     "Alta": [
       "Execute o maior passo agora mesmo, sem pensar!",
@@ -92,10 +99,8 @@ function gerarOrdem() {
     ]
   };
 
-  // Escolhe uma frase aleatória
   const acao = acoes[energia][Math.floor(Math.random() * acoes[energia].length)];
 
-  // Texto final
   const texto = `
 Você tem ${tempo} e energia ${energia}.
 
@@ -107,20 +112,24 @@ Ignore o perfeccionismo.
 Execute agora, mesmo sem vontade.
 `;
 
-  // Cor do fundo de acordo com energia
+  const saida = document.getElementById("saida");
+  const resultado = document.getElementById("resultado");
+  resultado.innerText = texto;
+
   let cor = "#222";
   if (energia === "Alta") cor = "#0f8";
   else if (energia === "Média") cor = "#fc0";
   else if (energia === "Baixa") cor = "#f33";
 
-  const saida = document.getElementById("saida");
-  const resultado = document.getElementById("resultado");
-  resultado.innerText = texto;
-
   saida.style.backgroundColor = cor;
   saida.style.display = "block";
+  saida.style.opacity = 0;
+  saida.classList.remove("blink");
+
   setTimeout(() => {
     saida.style.opacity = 1; // fade-in
+    // Ativa efeito piscando
+    saida.classList.add("blink");
   }, 50);
 }
 </script>
