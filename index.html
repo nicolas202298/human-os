@@ -2,24 +2,24 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUMAN OS v1.5</title>
+    <title>HUMAN OS v1.6 - PRONTO</title>
     <style>
         body { background: #000; color: #0f0; font-family: monospace; padding: 20px; text-align: center; }
-        #box { max-width: 500px; margin: auto; border: 2px solid #0f0; padding: 20px; border-radius: 10px; background: #050505; }
-        #chat { height: 300px; overflow-y: auto; text-align: left; margin: 10px 0; border-bottom: 1px solid #222; font-size: 14px; }
-        input { width: 100%; background: #111; border: 1px solid #0f0; color: #0f0; padding: 12px; box-sizing: border-box; margin-top: 10px; }
-        button { width: 100%; background: #0f0; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .u { color: #fff; margin: 5px 0; }
-        .a { color: #0f0; margin: 5px 0; background: #001100; padding: 5px; }
+        #box { max-width: 500px; margin: auto; border: 2px solid #0f0; padding: 20px; border-radius: 10px; background: #050505; box-shadow: 0 0 15px #0f0; }
+        #chat { height: 350px; overflow-y: auto; text-align: left; margin: 10px 0; border-bottom: 1px solid #222; font-size: 14px; }
+        input { width: 100%; background: #111; border: 1px solid #0f0; color: #0f0; padding: 12px; box-sizing: border-box; margin-top: 10px; border-radius: 5px; }
+        button { width: 100%; background: #0f0; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; border-radius: 5px; }
+        .u { color: #fff; margin: 8px 0; border-right: 2px solid #fff; padding-right: 5px; text-align: right; }
+        .a { color: #0f0; margin: 8px 0; background: #001a00; padding: 10px; border-radius: 5px; line-height: 1.4; }
     </style>
 </head>
 <body>
     <div id="box">
-        <h3>> HUMAN OS v1.5</h3>
-        <input type="text" id="key" placeholder="COLE SUA CHAVE AIza... AQUI">
+        <h3>> HUMAN OS v1.6</h3>
+        <input type="text" id="key" placeholder="COLE SUA CHAVE AQUI">
         <div id="chat"></div>
-        <input type="text" id="input" placeholder="Digite sua mensagem...">
-        <button onclick="enviar()">EXECUTAR</button>
+        <input type="text" id="input" placeholder="Comando para a IA...">
+        <button onclick="enviar()">EXECUTAR COMANDO</button>
     </div>
 
 <script>
@@ -32,10 +32,11 @@ async function enviar() {
     if(!key || !txt) return;
     chat.innerHTML += `<div class="u"><b>Você:</b> ${txt}</div>`;
     input.value = "";
+    chat.scrollTop = chat.scrollHeight;
 
     try {
-        // Usando o modelo mais estável para chaves novas
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+        // USANDO GEMINI-PRO PARA COMPATIBILIDADE TOTAL
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`;
         
         const res = await fetch(url, {
             method: "POST",
@@ -48,13 +49,15 @@ async function enviar() {
         const data = await res.json();
         
         if (data.error) {
-            chat.innerHTML += `<div style="color:red">Erro do Google: ${data.error.message}</div>`;
-        } else {
+            chat.innerHTML += `<div style="color:red; font-size:12px">Erro: ${data.error.message}</div>`;
+        } else if (data.candidates && data.candidates[0].content) {
             const respostaIA = data.candidates[0].content.parts[0].text;
             chat.innerHTML += `<div class="a"><b>IA:</b> ${respostaIA}</div>`;
+        } else {
+            chat.innerHTML += `<div style="color:orange">O Google não retornou uma resposta. Tente outra mensagem.</div>`;
         }
     } catch (e) {
-        chat.innerHTML += `<div style="color:red">Erro de Conexão. Verifique sua internet.</div>`;
+        chat.innerHTML += `<div style="color:red">Falha total de conexão.</div>`;
     }
     chat.scrollTop = chat.scrollHeight;
 }
