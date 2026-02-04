@@ -2,71 +2,63 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUMAN OS v2.2 - MEMORY</title>
+    <title>HUMAN OS v2.3</title>
     <style>
-        body { background: #050505; color: #ff3e3e; font-family: 'Courier New', monospace; padding: 20px; text-align: center; }
-        #box { max-width: 500px; margin: auto; border: 2px solid #ff3e3e; padding: 20px; border-radius: 10px; background: #000; box-shadow: 0 0 20px #ff3e3e; }
-        #chat { height: 350px; overflow-y: auto; text-align: left; margin: 10px 0; border-bottom: 1px solid #330000; font-size: 14px; }
-        input { width: 100%; background: #111; border: 1px solid #ff3e3e; color: #fff; padding: 12px; box-sizing: border-box; margin-top: 10px; outline: none; }
-        button { width: 100%; background: #ff3e3e; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .u { color: #fff; margin: 8px 0; text-align: right; }
-        .a { color: #ff3e3e; margin: 8px 0; background: #1a0000; padding: 10px; border-radius: 5px; border-left: 2px solid #ff3e3e; }
+        body { background: #050505; color: #ff3e3e; font-family: monospace; padding: 20px; text-align: center; }
+        #box { max-width: 500px; margin: auto; border: 2px solid #ff3e3e; padding: 20px; background: #000; }
+        #chat { height: 350px; overflow-y: auto; text-align: left; margin: 10px 0; border-bottom: 1px solid #330000; }
+        input { width: 100%; background: #111; border: 1px solid #ff3e3e; color: #fff; padding: 12px; box-sizing: border-box; margin-top: 10px; }
+        button { width: 100%; background: #ff3e3e; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; margin: 10px 0; }
+        .u { color: #fff; text-align: right; margin: 5px; }
+        .a { color: #ff3e3e; background: #1a0000; padding: 10px; margin: 5px; border-radius: 5px; }
     </style>
 </head>
-<body onload="carregarChave()">
+<body onload="document.getElementById('key').value = localStorage.getItem('gkey') || ''">
     <div id="box">
-        <h3>> HUMAN OS v2.2</h3>
-        <input type="password" id="key" placeholder="COLE SUA CHAVE gsk_... AQUI">
+        <h3>> HUMAN OS v2.3</h3>
+        <input type="password" id="key" placeholder="COLE SUA CHAVE gsk_...">
         <div id="chat"></div>
-        <input type="text" id="input" placeholder="Digite sua ordem...">
-        <button onclick="enviar()">EXECUTAR</button>
+        <input type="text" id="input" placeholder="Sua mensagem...">
+        <button onclick="enviar()">ENVIAR</button>
+        <button onclick="localStorage.clear(); location.reload();" style="background: #333; color: #ccc; font-size: 10px;">LIMPAR MEMÓRIA</button>
     </div>
 
 <script>
-// FUNÇÃO PARA CARREGAR A CHAVE AUTOMATICAMENTE
-function carregarChave() {
-    const salva = localStorage.getItem('groq_key');
-    if(salva) {
-        document.getElementById('key').value = salva;
-    }
-}
-
 async function enviar() {
-    const keyInput = document.getElementById('key');
-    const key = keyInput.value.trim();
+    const key = document.getElementById('key').value.trim();
     const input = document.getElementById('input');
     const chat = document.getElementById('chat');
-    const txt = input.value.trim();
+    const msg = input.value.trim();
     
-    if(!key || !txt) return;
-
-    // SALVA A CHAVE PARA A PRÓXIMA VEZ
-    localStorage.setItem('groq_key', key);
-
-    chat.innerHTML += `<div class="u"><b>Você:</b> ${txt}</div>`;
+    if(!key || !msg) return;
+    localStorage.setItem('gkey', key);
+    chat.innerHTML += `<div class="u"><b>Você:</b> ${msg}</div>`;
     input.value = "";
 
     try {
-        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${key}`
+                "Authorization": "Bearer " + key,
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
                 messages: [
-                    { role: "system", content: "Você é o HUMAN OS. Responda sempre em português do Brasil de forma direta." },
-                    { role: "user", content: txt }
+                    { role: "system", content: "Responda em português." },
+                    { role: "user", content: msg }
                 ]
             })
         });
 
-        const data = await res.json();
-        const resposta = data.choices[0].message.content;
-        chat.innerHTML += `<div class="a"><b>IA:</b> ${resposta}</div>`;
+        const data = await response.json();
+        if(data.choices) {
+            chat.innerHTML += `<div class="a"><b>IA:</b> ${data.choices[0].message.content}</div>`;
+        } else {
+            chat.innerHTML += `<div style="color:yellow">Erro: ${data.error.message}</div>`;
+        }
     } catch (e) {
-        chat.innerHTML += `<div style="color:red">Erro de conexão.</div>`;
+        chat.innerHTML += `<div style="color:red">Erro de conexão. Verifique sua internet ou a chave.</div>`;
     }
     chat.scrollTop = chat.scrollHeight;
 }
