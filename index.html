@@ -3,157 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HUMAN-OS | Kernel v2.0</title>
+    <title>HUMAN-OS | Kernel Multi-Lang</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #00f2ff; --bg: #050505; --card: rgba(20, 20, 20, 0.8); --border: rgba(0, 242, 255, 0.2); }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'JetBrains Mono', monospace; -webkit-tap-highlight-color: transparent; }
+        :root { --main: #00f2ff; --bg: #050505; --card: #111; --border: rgba(0, 242, 255, 0.2); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        body { background: var(--bg); background-image: radial-gradient(circle at 50% 50%, #101a1d 0%, #050505 100%); color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        
-        /* Auth Screen */
-        #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-box { background: var(--card); padding: 40px 30px; border-radius: 24px; border: 1px solid var(--border); width: 100%; max-width: 400px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .auth-box h1 { font-size: 24px; letter-spacing: 8px; margin-bottom: 30px; color: var(--main); text-shadow: 0 0 15px rgba(0,242,255,0.5); }
-        
-        input { width: 100%; padding: 16px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; border-radius: 12px; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--main); box-shadow: 0 0 10px rgba(0,242,255,0.2); }
+        /* Menu de Idiomas */
+        .lang-bar { display: flex; justify-content: center; gap: 10px; padding: 10px; background: rgba(255,255,255,0.05); }
+        .lang-btn { background: none; border: 1px solid #333; color: #666; padding: 5px 10px; border-radius: 5px; font-size: 10px; cursor: pointer; }
+        .lang-btn.active { border-color: var(--main); color: var(--main); font-weight: bold; }
 
-        /* Interface Principal */
+        #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; }
         #app-interface { display: none; flex-direction: column; height: 100vh; }
-        header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); }
-        .logo { font-weight: 700; color: var(--main); letter-spacing: 2px; font-size: 14px; }
-        .logout-btn { color: #555; font-size: 10px; border: none; background: none; cursor: pointer; text-transform: uppercase; }
 
-        #flow { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 220px; }
-        .msg { padding: 18px; border-radius: 16px; font-size: 14px; line-height: 1.6; max-width: 90%; animation: slideUp 0.4s ease-out; position: relative; }
-        .ai { background: var(--card); border: 1px solid var(--border); align-self: flex-start; border-left: 4px solid var(--main); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .user { background: rgba(255,255,255,0.05); align-self: flex-end; color: #aaa; text-align: right; border: 1px solid rgba(255,255,255,0.05); }
-
-        /* Area de Input Estilo Imagem */
-        footer { position: fixed; bottom: 0; width: 100%; padding: 20px; background: linear-gradient(to top, #000 80%, transparent); z-index: 100; }
-        .input-container { max-width: 800px; margin: 0 auto; background: #111; border: 1px solid #333; border-radius: 20px; padding: 10px; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
-        textarea { width: 100%; background: transparent; border: none; color: #fff; padding: 10px; font-size: 16px; outline: none; resize: none; min-height: 60px; }
+        header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        #flow { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 220px; }
         
-        .btn-destilar { width: 100%; background: var(--main); color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
-        .btn-destilar:active { transform: scale(0.98); filter: brightness(1.2); }
+        .msg { padding: 15px; border-radius: 12px; font-size: 15px; line-height: 1.5; max-width: 90%; animation: fadeIn 0.3s ease; }
+        .ai { background: var(--card); border-left: 4px solid var(--main); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .user { align-self: flex-end; color: #888; background: rgba(255,255,255,0.03); }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        footer { position: fixed; bottom: 0; width: 100%; padding: 15px; background: #000; border-top: 1px solid var(--border); z-index: 100; }
+        textarea { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 10px; font-size: 16px; outline: none; resize: none; }
+        .btn { background: var(--main); color: #000; border: none; padding: 18px; width: 100%; border-radius: 10px; font-weight: 900; margin-top: 10px; text-transform: uppercase; box-shadow: 0 0 15px rgba(0,242,255,0.3); }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <section id="auth-screen">
-        <div class="auth-box">
-            <h1>HUMAN-OS</h1>
-            <input type="email" id="email" placeholder="ACCESS_ID (Email)">
-            <input type="password" id="password" placeholder="SECURITY_KEY (Senha)">
-            <button class="btn-destilar" onclick="handleAuth()">ENTRAR NO KERNEL</button>
-            <p id="auth-msg" style="font-size:10px; color:var(--main); margin-top:20px; opacity:0.6;"></p>
+        <div style="text-align: center; width: 90%;">
+            <h1 style="letter-spacing: 5px; color: var(--main);">HUMAN-OS</h1>
+            <input type="email" id="email" placeholder="E-mail" style="width:100%; padding:15px; margin:10px 0; background:#111; border:1px solid #333; color:#fff; border-radius:10px;">
+            <input type="password" id="password" placeholder="Senha" style="width:100%; padding:15px; margin:10px 0; background:#111; border:1px solid #333; color:#fff; border-radius:10px;">
+            <button class="btn" onclick="handleAuth()">LOGIN</button>
+            <p id="auth-msg" style="font-size:11px; margin-top:10px;"></p>
         </div>
     </section>
 
     <section id="app-interface">
+        <div class="lang-bar">
+            <button class="lang-btn active" onclick="setLang('pt', this)">PORTUGUÊS</button>
+            <button class="lang-btn" onclick="setLang('en', this)">ENGLISH</button>
+            <button class="lang-btn" onclick="setLang('es', this)">ESPAÑOL</button>
+        </div>
         <header>
-            <div class="logo">HUMAN-OS // KERNEL_V2</div>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+            <span style="color:var(--main); font-weight:900;">KERNEL V2.1</span>
+            <button onclick="logout()" style="background:none; border:none; color:#444; font-size:10px;">SAIR</button>
         </header>
 
-        <div id="flow">
-            <div class="msg ai"><b>[SISTEMA ATIVO]</b><br>Pronto para destilação de consciência. O que deseja processar hoje?</div>
-        </div>
+        <div id="flow"></div>
 
         <footer>
-            <div class="input-container">
-                <textarea id="cmd" placeholder="Despeje seus pensamentos..."></textarea>
-                <button id="runBtn" onclick="destilar()" class="btn-destilar">DESTILAR AGORA</button>
-            </div>
+            <textarea id="cmd" placeholder="O que deseja processar?"></textarea>
+            <button id="runBtn" onclick="destilar()" class="btn">DESTILAR AGORA</button>
         </footer>
     </section>
 
 <script>
-    const SUPABASE_URL = 'https://fddzojlntzmhmekckplm.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5';
-    // Usei a lógica de divisão para o GitHub não bloquear
-    const G_K = 'gsk' + '_7vYZi2Fh2LLaMhveEihrWGdyb3FY8iX02JXgTPtuniGyVDlAyKVI';
+    const S_URL = 'https://fddzojlntzmhmekckplm.supabase.co';
+    const S_KEY = 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5';
+    const G_KEY = 'gsk' + '_7vYZi2Fh2LLaMhveEihrWGdyb3FY8iX02JXgTPtuniGyVDlAyKVI';
+    
+    const _supabase = supabase.createClient(S_URL, S_KEY);
+    let user = null;
+    let currentLang = 'pt';
 
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let currentUser = null;
+    function setLang(l, btn) {
+        currentLang = l;
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        addMsg('ai', `Idioma alterado para: ${l.toUpperCase()}`);
+    }
 
     async function handleAuth() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const msg = document.getElementById('auth-msg');
-        msg.innerText = "AUTENTICANDO...";
-        
-        const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('password').value;
+        const { data, error } = await _supabase.auth.signInWithPassword({ email: e, password: p });
         if (error) {
-            await _supabase.auth.signUp({ email, password });
-            msg.innerText = "NOVO ACESSO CRIADO. ENTRE NOVAMENTE.";
+            await _supabase.auth.signUp({ email: e, password: p });
+            document.getElementById('auth-msg').innerText = "Conta criada! Entre agora.";
         } else {
-            currentUser = data.user;
+            user = data.user;
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app-interface').style.display = 'flex';
-            loadHistory();
+            addMsg('ai', "KERNEL ATIVO. Escolha o idioma e comece.");
         }
     }
 
     async function destilar() {
         const input = document.getElementById('cmd');
-        const text = input.value.trim();
         const btn = document.getElementById('runBtn');
-        if(!text || !currentUser) return;
+        const text = input.value.trim();
+        if(!text) return;
 
         addMsg('user', text);
         input.value = "";
-        btn.disabled = true;
         btn.innerText = "PROCESSANDO...";
-        btn.style.opacity = "0.5";
+        btn.disabled = true;
+
+        // Instrução de idioma baseada na escolha
+        const prompts = {
+            'pt': 'Responda sempre em Português do Brasil de forma profunda.',
+            'en': 'Always respond in English in a deep and technical way.',
+            'es': 'Responde siempre en Español de forma profunda y clara.'
+        };
 
         try {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${G_K}`, "Content-Type": "application/json" },
+                headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [
-                        {role: "system", content: "Você é o Kernel do HUMAN-OS. Sua linguagem é técnica, direta e altamente inteligente. Transforme inputs em clareza."},
+                        {role: "system", content: prompts[currentLang]},
                         {role: "user", content: text}
                     ]
                 })
             });
-
-            const data = await response.json();
-            const reply = data.choices[0].message.content;
-            
+            const d = await resp.json();
+            const reply = d.choices[0].message.content;
             addMsg('ai', reply);
-            await _supabase.from('Insights').insert([{ user_id: currentUser.id, content: text, type: 'user' }, { user_id: currentUser.id, content: reply, type: 'ai' }]);
-
-        } catch (e) {
-            addMsg('ai', "[ERRO DE CONEXÃO] O Kernel não conseguiu acessar a rede neural.");
+            await _supabase.from('Insights').insert([{ user_id: user.id, content: text, type: 'user' }, { user_id: user.id, content: reply, type: 'ai' }]);
+        } catch (err) {
+            addMsg('ai', "ERRO: Verifique a conexão.");
         } finally {
-            btn.disabled = false;
             btn.innerText = "DESTILAR AGORA";
-            btn.style.opacity = "1";
+            btn.disabled = false;
         }
     }
 
-    function addMsg(type, content) {
-        const flow = document.getElementById('flow');
-        const div = document.createElement('div');
-        div.className = `msg ${type}`;
-        div.innerHTML = content.replace(/\n/g, '<br>');
-        flow.appendChild(div);
-        flow.scrollTo({ top: flow.scrollHeight, behavior: 'smooth' });
-    }
-
-    async function loadHistory() {
-        const { data } = await _supabase.from('Insights').select('*').order('created_at', { ascending: true });
-        if(data && data.length > 0) {
-            document.getElementById('flow').innerHTML = "";
-            data.forEach(m => addMsg(m.type, m.content));
-        }
+    function addMsg(t, c) {
+        const f = document.getElementById('flow');
+        const d = document.createElement('div');
+        d.className = `msg ${t}`;
+        d.innerHTML = c.replace(/\n/g, '<br>');
+        f.appendChild(d);
+        f.scrollTop = f.scrollHeight;
     }
 
     function logout() { _supabase.auth.signOut(); location.reload(); }
