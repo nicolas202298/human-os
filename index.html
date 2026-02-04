@@ -2,46 +2,46 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUMAN OS v3.1 | Data Intelligence</title>
+    <title>HUMAN OS v3.2 | Asset Builder</title>
     <style>
         :root { --gold: #c5a059; --bg: #0a0b0d; --panel: #16181d; --text: #e1e1e1; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        #box { width: 95%; max-width: 900px; background: var(--panel); border: 1px solid #333; border-radius: 8px; display: flex; flex-direction: column; height: 95vh; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        #header { padding: 15px 25px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; background: #0f1115; }
-        #header h3 { margin: 0; color: var(--gold); letter-spacing: 2px; font-weight: 300; }
-        #chat { flex-grow: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
-        .u { align-self: flex-end; background: #2c313a; padding: 12px 20px; border-radius: 18px 18px 0 18px; max-width: 75%; font-size: 0.95rem; border: 1px solid #444; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); }
-        .a { align-self: flex-start; background: transparent; padding: 10px 0; max-width: 100%; font-size: 1rem; border-left: 3px solid var(--gold); padding-left: 20px; line-height: 1.7; color: #d1d1d1; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; display: flex; height: 100vh; }
+        #sidebar { width: 300px; background: #0f1115; border-right: 1px solid #333; display: flex; flex-direction: column; padding: 20px; }
+        #main { flex-grow: 1; display: flex; flex-direction: column; background: var(--panel); }
+        #header { padding: 15px 25px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        #chat { flex-grow: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; }
+        .u { align-self: flex-end; background: #2c313a; padding: 12px 20px; border-radius: 15px 15px 0 15px; max-width: 80%; border: 1px solid #444; }
+        .a { align-self: flex-start; border-left: 3px solid var(--gold); padding-left: 20px; line-height: 1.7; color: #d1d1d1; }
         #controls { padding: 20px; background: #0f1115; border-top: 1px solid #333; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
-        textarea#context { width: 100%; background: #1a1d23; border: 1px solid #222; color: #888; padding: 10px; border-radius: 5px; font-size: 11px; margin-bottom: 10px; resize: none; outline: none; transition: 0.3s; }
-        textarea#context:focus { border-color: var(--gold); color: #ccc; }
-        input { background: #1a1d23; border: 1px solid #333; color: #fff; padding: 14px; border-radius: 5px; outline: none; flex-grow: 1; }
-        #key { width: 140px; flex-grow: 0; font-size: 0.8rem; }
-        button { background: var(--gold); color: #000; border: none; padding: 0 25px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.8rem; }
-        button:hover { background: #d4b475; box-shadow: 0 0 15px rgba(197, 160, 89, 0.4); }
-        .status { font-size: 0.65rem; color: #00ff00; opacity: 0.6; text-transform: uppercase; }
+        textarea#context { width: 100%; background: #1a1d23; border: 1px solid #222; color: #666; padding: 10px; border-radius: 5px; font-size: 11px; margin-bottom: 10px; resize: none; }
+        .input-group { display: flex; gap: 10px; }
+        input { background: #1a1d23; border: 1px solid #333; color: #fff; padding: 14px; border-radius: 5px; outline: none; }
+        #input { flex-grow: 1; }
+        button { background: var(--gold); color: #000; border: none; padding: 0 25px; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        pre { background: #000; padding: 15px; border-radius: 5px; border: 1px solid #333; overflow-x: auto; color: #00ff00; font-family: monospace; font-size: 12px; }
     </style>
 </head>
 <body onload="document.getElementById('key').value = localStorage.getItem('gkey') || ''">
-    <div id="box">
+    <div id="sidebar">
+        <h3 style="color:var(--gold); font-weight:300;">ASSET <span style="font-weight:700;">MANAGER</span></h3>
+        <p style="font-size:10px; color:#555;">FILTRE IDEIAS DE ALTO ROI ABAIXO</p>
+        <div style="margin-top:20px; border: 1px dashed #333; padding: 10px; font-size: 11px; color: var(--gold);">
+            DICA: Peça à IA para gerar códigos de automação ou modelos de contrato.
+        </div>
+    </div>
+    <div id="main">
         <div id="header">
-            <h3>HUMAN OS <span style="font-weight: bold;">DATA INTELLIGENCE</span></h3>
-            <div class="status">● Terminal Secure Connect</div>
+            <span style="letter-spacing:2px; font-size:12px;">HUMAN OS // BUILDER EDITION</span>
+            <input type="password" id="key" placeholder="API KEY" style="width:120px; padding:5px; font-size:10px;">
         </div>
         <div id="chat">
-            <div class="a"><b>ESTRATEGISTA:</b> Sistema de análise de dados pronto. Para decisões bilionárias, cole o contexto abaixo (dados, relatórios ou fatos) e me dê sua ordem.</div>
+            <div class="a"><b>ESTRATEGISTA:</b> Modo Construtor Ativado. Além de estratégias, agora posso gerar scripts e modelos de execução. O que vamos construir para o seu império hoje?</div>
         </div>
         <div id="controls">
-            <textarea id="context" rows="2" placeholder="COLE AQUI DADOS DE CONTEXTO (OPCIONAL): Relatórios, textos longos ou contratos..."></textarea>
+            <textarea id="context" rows="2" placeholder="CONTEXTO: Cole dados aqui para análise..."></textarea>
             <div class="input-group">
-                <input type="password" id="key" placeholder="API KEY">
-                <input type="text" id="input" placeholder="Qual sua ordem estratégica?">
-                <button onclick="enviar()">Executar</button>
-            </div>
-            <div style="display:flex; justify-content: space-between; font-size: 9px; color: #444; margin-top: 5px;">
-                <span>ENCRYPTED END-TO-END</span>
-                <span onclick="localStorage.clear(); location.reload();" style="cursor:pointer; text-decoration: underline;">RESET MEMORY</span>
+                <input type="text" id="input" placeholder="Ex: Crie um plano de negócios para uma SaaS de IA...">
+                <button onclick="enviar()">CONSTRUIR</button>
             </div>
         </div>
     </div>
@@ -60,23 +60,25 @@ async function enviar() {
     input.value = "";
 
     try {
-        const fullPrompt = ctx ? `CONTEXTO: ${ctx}\n\nPERGUNTA: ${msg}` : msg;
+        const fullPrompt = `Você é um Engenheiro e Estrategista Bilionário. Se o usuário pedir um plano, código ou contrato, forneça-o de forma estruturada. Use blocos de código se necessário.\n\nCONTEXTO: ${ctx}\n\nORDEM: ${msg}`;
         
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
-                messages: [
-                    { role: "system", content: "Você é o Analista Estratégico do HUMAN OS. Sua missão é ajudar o usuário a faturar bilhões. Use o contexto fornecido para ser extremamente técnico, direto e focado em lucro, escala e redução de riscos. Responda em Português-BR." },
-                    { role: "user", content: fullPrompt }
-                ]
+                messages: [{ role: "user", content: fullPrompt }]
             })
         });
         const data = await response.json();
-        chat.innerHTML += `<div class="a"><b>ESTRATEGISTA:</b> ${data.choices[0].message.content}</div>`;
+        let resposta = data.choices[0].message.content;
+        
+        // Formatação simples para blocos de código
+        resposta = resposta.replace(/```([\s\S]*?)```/g, '<pre>$1</pre>');
+        
+        chat.innerHTML += `<div class="a"><b>ESTRATEGISTA:</b><br>${resposta}</div>`;
     } catch (e) {
-        chat.innerHTML += `<div style="color:#ff6b6b">Erro na conexão estratégica.</div>`;
+        chat.innerHTML += `<div style="color:#ff6b6b">Erro no Builder.</div>`;
     }
     chat.scrollTop = chat.scrollHeight;
 }
