@@ -5,101 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HUMAN-OS | Kernel Premium</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --neon: #00f2ff; --bg-dark: #0d1117; --sidebar-bg: #010409; --card-bg: #161b22; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        :root { --neon: #00f2ff; --bg-dark: #0d1117; --sidebar-bg: #010409; --hover: #21262d; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         
-        body { background: var(--bg-dark); color: #c9d1d9; height: 100vh; display: flex; overflow: hidden; }
+        body { background: var(--bg-dark); color: #ececec; height: 100vh; display: flex; overflow: hidden; }
 
-        /* SIDEBAR ESTILO CHATGPT */
+        /* SIDEBAR ESTILO FOTO ENVIADA */
         #sidebar {
-            width: 260px; height: 100%; background: var(--sidebar-bg);
+            width: 280px; height: 100%; background: var(--sidebar-bg);
             border-right: 1px solid #30363d; display: flex; flex-direction: column;
-            position: fixed; left: -260px; transition: all 0.3s ease; z-index: 2000;
+            position: fixed; left: -280px; transition: 0.3s ease; z-index: 2000;
         }
         #sidebar.open { left: 0; }
-        
-        .new-chat-btn {
-            margin: 15px; padding: 12px; border: 1px solid #30363d; border-radius: 6px;
-            color: #fff; font-size: 14px; text-align: left; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; gap: 10px;
-        }
-        .new-chat-btn:hover { background: #21262d; }
 
-        #history-list { flex-grow: 1; overflow-y: auto; padding: 0 10px; }
-        .history-item { 
-            padding: 10px; margin-bottom: 5px; border-radius: 6px; 
-            font-size: 13px; cursor: pointer; color: #8b949e;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            transition: 0.2s;
+        .search-container { padding: 15px; }
+        .search-bar { 
+            background: #21262d; border-radius: 8px; padding: 10px; 
+            display: flex; align-items: center; gap: 10px; border: 1px solid #30363d;
         }
-        .history-item:hover { background: #161b22; color: var(--neon); }
-        .history-item.active { background: #21262d; color: #fff; border-left: 3px solid var(--neon); }
+        .search-bar input { background: transparent; border: none; color: #fff; outline: none; width: 100%; font-size: 14px; }
 
-        /* CONTEÚDO PRINCIPAL */
-        #main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; position: relative; width: 100%; transition: margin-left 0.3s; }
+        .nav-item { 
+            padding: 12px 15px; display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer; transition: 0.2s; font-size: 14px; color: #fff;
+        }
+        .nav-item:hover { background: var(--hover); border-radius: 8px; margin: 0 8px; }
+        .nav-item i { width: 20px; color: #8e8e8e; }
+
+        .section-title { padding: 20px 15px 10px; font-size: 12px; font-weight: bold; color: #8e8e8e; text-transform: uppercase; }
+
+        #history-list { flex-grow: 1; overflow-y: auto; padding: 5px 8px; }
+        .chat-item { 
+            padding: 10px; border-radius: 8px; font-size: 14px; display: flex; 
+            justify-content: space-between; align-items: center; cursor: pointer; color: #ececec;
+        }
+        .chat-item:hover { background: var(--hover); }
+        .chat-item.active { background: #343541; }
+        .chat-item i { font-size: 12px; color: #8e8e8e; }
+
+        /* ÁREA PRINCIPAL */
+        #main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; width: 100%; }
         
         header { 
-            padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;
-            background: rgba(13, 17, 23, 0.8); backdrop-filter: blur(10px); 
-            border-bottom: 1px solid #30363d; sticky: top;
+            padding: 15px; display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg-dark); border-bottom: 1px solid #30363d;
         }
+        .menu-toggle { font-size: 20px; cursor: pointer; color: #acacbe; }
 
-        .menu-toggle { font-size: 20px; color: #8b949e; cursor: pointer; }
-        .brand { font-weight: 700; color: #f0f6fc; font-size: 16px; position: absolute; left: 50%; transform: translateX(-50%); }
+        #flow { flex-grow: 1; overflow-y: auto; padding: 20px; max-width: 800px; margin: 0 auto; width: 100%; padding-bottom: 200px; }
+        .msg { padding: 20px; line-height: 1.6; font-size: 16px; margin-bottom: 10px; }
+        .user { background: #2f2f2f; border-radius: 15px; align-self: flex-end; max-width: 80%; margin-left: auto; }
+        .ai { color: #d1d1d1; }
 
-        /* ÁREA DE CONVERSA */
-        #flow { flex-grow: 1; overflow-y: auto; padding: 20px 10px; display: flex; flex-direction: column; gap: 20px; max-width: 800px; margin: 0 auto; width: 100%; padding-bottom: 180px; }
-        
-        .msg-container { display: flex; flex-direction: column; width: 100%; }
-        .msg { padding: 15px; border-radius: 8px; font-size: 15px; line-height: 1.6; max-width: 90%; }
-        
-        .ai { background: transparent; align-self: flex-start; color: #d1d5db; border: 1px solid transparent; }
-        .user { background: #21262d; align-self: flex-end; color: #fff; border: 1px solid #30363d; }
-
-        /* FOOTER / INPUT */
-        footer { position: fixed; bottom: 0; width: 100%; padding: 20px; background: linear-gradient(transparent, var(--bg-dark) 30%); }
-        .input-container { max-width: 768px; margin: 0 auto; position: relative; }
-        
-        .input-wrap { 
-            background: #21262d; border: 1px solid #30363d; border-radius: 12px; 
-            padding: 12px 15px; display: flex; align-items: flex-end; gap: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        /* INPUT FIXO */
+        footer { position: fixed; bottom: 0; width: 100%; padding: 20px; background: linear-gradient(transparent, var(--bg-dark) 40%); }
+        .input-box { 
+            max-width: 768px; margin: 0 auto; background: #2f2f2f; 
+            border-radius: 15px; padding: 12px 15px; display: flex; align-items: center;
+            border: 1px solid #444;
         }
-        
-        textarea { 
-            flex-grow: 1; background: transparent; border: none; color: #fff; 
-            font-size: 16px; outline: none; resize: none; max-height: 200px; min-height: 24px;
-        }
-        
-        .send-icon { color: var(--neon); cursor: pointer; font-size: 22px; transition: 0.2s; padding-bottom: 2px; }
-        .send-icon:hover { transform: scale(1.1); }
-
-        /* BOTÃO DESTILAR (FIXO ABAIXO DO INPUT) */
-        .btn-destilar {
-            width: 100%; background: var(--neon); color: #000; border: none;
-            padding: 14px; border-radius: 8px; font-weight: 800; font-size: 14px;
-            margin-top: 10px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-        }
+        textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; resize: none; font-size: 16px; }
+        .send-btn { color: var(--neon); cursor: pointer; padding: 5px; }
 
         /* LOGIN */
-        #auth-screen { position: fixed; inset: 0; background: var(--bg-dark); z-index: 5000; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: var(--card-bg); padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; border: 1px solid #30363d; }
-        input { width: 100%; padding: 14px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 6px; outline: none; }
-        
+        #auth-screen { position: fixed; inset: 0; background: #000; z-index: 5000; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: #161b22; padding: 40px; border-radius: 15px; width: 350px; text-align: center; border: 1px solid #333; }
+        input[type="email"], input[type="password"] { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #333; color: #fff; border-radius: 5px; }
+        .btn-prime { width: 100%; background: var(--neon); color: #000; padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
         #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1500; }
     </style>
 </head>
 <body>
 
     <div id="sidebar">
-        <div class="new-chat-btn" onclick="startNewChat()">
-            <span>+</span> Nova Conversa
-        </div>
-        <div id="history-list">
+        <div class="search-container">
+            <div class="search-bar">
+                <i class="fas fa-search" style="color: #8e8e8e;"></i>
+                <input type="text" placeholder="Pesquisar chats">
             </div>
+        </div>
+
+        <div class="nav-item" onclick="startNewChat()">
+            <div><i class="far fa-edit"></i> Nova conversa</div>
+            <i class="fas fa-expand-alt" style="font-size: 12px;"></i>
+        </div>
+
+        <div class="nav-item">
+            <div><i class="fas fa-th-large"></i> My stuff</div>
+            <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+        </div>
+
+        <div class="nav-item">
+            <div><i class="fas fa-gem"></i> Gems</div>
+            <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+        </div>
+
+        <div class="section-title">Conversas</div>
+
+        <div id="history-list">
+            <div class="chat-item active">
+                <span>Human OS: Feedback e Sugest...</span>
+                <i class="fas fa-thumbtack"></i>
+            </div>
+        </div>
+
         <div style="padding: 15px; border-top: 1px solid #30363d;">
-            <div onclick="logout()" style="font-size: 12px; color: #8b949e; cursor: pointer;">Sair da Sessão</div>
+            <div onclick="logout()" style="font-size: 13px; color: #8e8e8e; cursor: pointer;">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </div>
         </div>
     </div>
 
@@ -107,33 +123,31 @@
 
     <section id="auth-screen">
         <div class="login-card">
-            <h2 style="color:var(--neon); margin-bottom:10px;">HUMAN-OS</h2>
-            <p style="font-size:12px; color:#8b949e; margin-bottom:30px;">Identifique-se para acessar o Kernel</p>
+            <h2 style="color:var(--neon); margin-bottom:20px;">HUMAN-OS</h2>
             <input type="email" id="email" placeholder="E-mail">
             <input type="password" id="password" placeholder="Senha">
-            <button class="btn-destilar" onclick="handleAuth()">Entrar</button>
-            <p id="auth-msg" style="color:#f85149; font-size:12px; margin-top:10px;"></p>
+            <button class="btn-prime" onclick="handleAuth()">Sincronizar Kernel</button>
+            <p id="auth-msg" style="color:red; font-size:12px; margin-top:10px;"></p>
         </div>
     </section>
 
     <div id="main-content">
         <header>
-            <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-            <div class="brand">KERNEL V3.0</div>
-            <div style="width:20px;"></div>
+            <div class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+            <div style="font-weight: bold;">Kernel V3.0</div>
+            <div style="width: 20px;"></div>
         </header>
 
         <div id="flow">
-            </div>
+            <div class="msg ai"><b>SISTEMA ONLINE.</b><br>O que vamos processar agora?</div>
+        </div>
 
         <footer>
-            <div class="input-container">
-                <div class="input-wrap">
-                    <textarea id="cmd" placeholder="Envie uma mensagem..." rows="1"></textarea>
-                    <div class="send-icon" onclick="destilar()">➤</div>
-                </div>
-                <button id="runBtn" onclick="destilar()" class="btn-destilar">PROCESSAR INSIGHT</button>
+            <div class="input-box">
+                <textarea id="cmd" placeholder="Message Human OS..." rows="1"></textarea>
+                <div class="send-btn" onclick="destilar()"><i class="fas fa-arrow-up"></i></div>
             </div>
+            <button onclick="destilar()" style="width:100%; max-width:768px; margin: 10px auto; display:block; background: var(--neon); border:none; padding:10px; border-radius:10px; font-weight:bold; cursor:pointer;">PROCESSAR INSIGHT</button>
         </footer>
     </div>
 
@@ -144,33 +158,23 @@
 
     const _supabase = supabase.createClient(S_U, S_K);
     let user = null;
-    let currentChat = [];
 
     function toggleMenu() {
-        document.getElementById('sidebar').classList.toggle('open');
-        document.getElementById('overlay').style.display = 
-            document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
+        const side = document.getElementById('sidebar');
+        side.classList.toggle('open');
+        document.getElementById('overlay').style.display = side.classList.contains('open') ? 'block' : 'none';
     }
 
     async function handleAuth() {
         const e = document.getElementById('email').value;
         const p = document.getElementById('password').value;
         const { data, error } = await _supabase.auth.signInWithPassword({ email: e, password: p });
-        if (error) {
-            document.getElementById('auth-msg').innerText = "Credenciais inválidas.";
-        } else {
-            user = data.user;
-            document.getElementById('auth-screen').style.display = 'none';
-            loadHistory();
-            startNewChat();
-        }
+        if (error) { document.getElementById('auth-msg').innerText = "Erro no acesso."; }
+        else { user = data.user; document.getElementById('auth-screen').style.display = 'none'; loadHistory(); }
     }
 
     function startNewChat() {
-        currentChat = [];
-        document.getElementById('flow').innerHTML = `
-            <div class="msg ai"><b>KERNEL PRONTO.</b><br>Como posso potencializar sua mente hoje?</div>
-        `;
+        document.getElementById('flow').innerHTML = '<div class="msg ai">Nova sessão iniciada.</div>';
         if(window.innerWidth < 768) toggleMenu();
     }
 
@@ -178,7 +182,6 @@
         const input = document.getElementById('cmd');
         const text = input.value.trim();
         if(!text) return;
-
         addMsg('user', text);
         input.value = "";
         
@@ -188,68 +191,37 @@
                 headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
-                    messages: [{role: "system", content: "Responda como uma IA soberana e técnica."}, {role: "user", content: text}]
+                    messages: [{role: "user", content: text}]
                 })
             });
             const d = await resp.json();
             const reply = d.choices[0].message.content;
             addMsg('ai', reply);
-            
-            // Salva no banco
-            const { data } = await _supabase.from('Insights').insert([{ 
-                user_id: user.id, 
-                content: text, 
-                type: 'user' 
-            }]);
-            
             updateSidebar(text);
-
-        } catch (e) {
-            addMsg('ai', "Erro de conexão com o Kernel.");
-        }
+            await _supabase.from('Insights').insert([{ user_id: user.id, content: text, type: 'user' }]);
+        } catch (e) { addMsg('ai', "Erro no Kernel."); }
     }
 
     function addMsg(t, c) {
-        const flow = document.getElementById('flow');
-        const div = document.createElement('div');
-        div.className = `msg ${t}`;
-        div.innerHTML = c.replace(/\n/g, '<br>');
-        flow.appendChild(div);
-        flow.scrollTop = flow.scrollHeight;
-    }
-
-    async function loadHistory() {
-        const { data } = await _supabase.from('Insights')
-            .select('*')
-            .eq('user_id', user.id)
-            .eq('type', 'user')
-            .order('created_at', { ascending: false });
-        
-        const list = document.getElementById('history-list');
-        list.innerHTML = "";
-        if(data) {
-            data.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerText = item.content;
-                div.onclick = () => loadSpecificChat(item.content);
-                list.appendChild(div);
-            });
-        }
+        const f = document.getElementById('flow');
+        const d = document.createElement('div');
+        d.className = `msg ${t}`;
+        d.innerHTML = c.replace(/\n/g, '<br>');
+        f.appendChild(d);
+        f.scrollTop = f.scrollHeight;
     }
 
     function updateSidebar(text) {
         const list = document.getElementById('history-list');
-        const div = document.createElement('div');
-        div.className = 'history-item active';
-        div.innerText = text;
-        list.prepend(div);
+        const item = document.createElement('div');
+        item.className = 'chat-item';
+        item.innerHTML = `<span>${text.substring(0, 25)}...</span><i class="fas fa-thumbtack"></i>`;
+        list.prepend(item);
     }
 
-    async function loadSpecificChat(text) {
-        // Simulando carregamento de conversa anterior
-        document.getElementById('flow').innerHTML = `<div class="msg user">${text}</div><div class="msg ai">Carregando contexto histórico do Kernel...</div>`;
-        if(window.innerWidth < 768) toggleMenu();
+    async function loadHistory() {
+        const { data } = await _supabase.from('Insights').select('content').eq('user_id', user.id).limit(5);
+        if(data) data.forEach(i => updateSidebar(i.content));
     }
 
     function logout() { _supabase.auth.signOut(); location.reload(); }
