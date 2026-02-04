@@ -2,180 +2,130 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HUMAN-OS | Kernel Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUMAN-OS | Sovereign Intelligence</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --neon: #00f2ff; --bg-dark: #0d1117; --sidebar-bg: #010409; --hover: #21262d; }
+        :root { --neon: #00f2ff; --bg: #050505; --card: #111; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        
-        body { background: var(--bg-dark); color: #ececec; height: 100vh; display: flex; overflow: hidden; }
+        body { background: var(--bg); color: #fff; overflow-x: hidden; }
 
-        /* SIDEBAR ESTILO FOTO ENVIADA */
-        #sidebar {
-            width: 280px; height: 100%; background: var(--sidebar-bg);
-            border-right: 1px solid #30363d; display: flex; flex-direction: column;
-            position: fixed; left: -280px; transition: 0.3s ease; z-index: 2000;
+        /* --- ESTILO DA LANDING PAGE (OFERTA) --- */
+        #landing-page { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; text-align: center; padding: 40px 20px;
+            background: radial-gradient(circle at top, #0a1f21 0%, #050505 100%);
         }
+        .hero-title { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 20px; line-height: 1; }
+        .hero-title span { color: var(--neon); text-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
+        .hero-subtitle { font-size: 1.2rem; color: #888; max-width: 600px; margin-bottom: 40px; }
+        
+        .cta-button { 
+            background: var(--neon); color: #000; padding: 20px 40px; border-radius: 50px;
+            font-weight: 900; text-decoration: none; font-size: 1.1rem; text-transform: uppercase;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); transition: 0.3s;
+        }
+        .cta-button:hover { transform: scale(1.05); box-shadow: 0 0 50px var(--neon); }
+
+        .login-trigger { margin-top: 30px; color: #444; cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
+
+        /* --- ESTILO DO SISTEMA (KERNEL) --- */
+        #auth-screen, #app-interface { display: none; } /* Escondidos por padrão */
+
+        /* Reaproveitando estilos do Kernel anterior */
+        #sidebar { width: 280px; height: 100%; background: #000; border-right: 1px solid #222; position: fixed; left: -280px; transition: 0.3s; z-index: 2000; }
         #sidebar.open { left: 0; }
-
-        .search-container { padding: 15px; }
-        .search-bar { 
-            background: #21262d; border-radius: 8px; padding: 10px; 
-            display: flex; align-items: center; gap: 10px; border: 1px solid #30363d;
-        }
-        .search-bar input { background: transparent; border: none; color: #fff; outline: none; width: 100%; font-size: 14px; }
-
-        .nav-item { 
-            padding: 12px 15px; display: flex; align-items: center; justify-content: space-between;
-            cursor: pointer; transition: 0.2s; font-size: 14px; color: #fff;
-        }
-        .nav-item:hover { background: var(--hover); border-radius: 8px; margin: 0 8px; }
-        .nav-item i { width: 20px; color: #8e8e8e; }
-
-        .section-title { padding: 20px 15px 10px; font-size: 12px; font-weight: bold; color: #8e8e8e; text-transform: uppercase; }
-
-        #history-list { flex-grow: 1; overflow-y: auto; padding: 5px 8px; }
-        .chat-item { 
-            padding: 10px; border-radius: 8px; font-size: 14px; display: flex; 
-            justify-content: space-between; align-items: center; cursor: pointer; color: #ececec;
-        }
-        .chat-item:hover { background: var(--hover); }
-        .chat-item.active { background: #343541; }
-        .chat-item i { font-size: 12px; color: #8e8e8e; }
-
-        /* ÁREA PRINCIPAL */
-        #main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; width: 100%; }
+        .main-app { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; }
         
-        header { 
-            padding: 15px; display: flex; align-items: center; justify-content: space-between;
-            background: var(--bg-dark); border-bottom: 1px solid #30363d;
-        }
-        .menu-toggle { font-size: 20px; cursor: pointer; color: #acacbe; }
-
-        #flow { flex-grow: 1; overflow-y: auto; padding: 20px; max-width: 800px; margin: 0 auto; width: 100%; padding-bottom: 200px; }
-        .msg { padding: 20px; line-height: 1.6; font-size: 16px; margin-bottom: 10px; }
-        .user { background: #2f2f2f; border-radius: 15px; align-self: flex-end; max-width: 80%; margin-left: auto; }
-        .ai { color: #d1d1d1; }
-
-        /* INPUT FIXO */
-        footer { position: fixed; bottom: 0; width: 100%; padding: 20px; background: linear-gradient(transparent, var(--bg-dark) 40%); }
-        .input-box { 
-            max-width: 768px; margin: 0 auto; background: #2f2f2f; 
-            border-radius: 15px; padding: 12px 15px; display: flex; align-items: center;
-            border: 1px solid #444;
-        }
+        /* ... (Estilos de Chat e Input que já tínhamos) ... */
+        .msg { padding: 20px; max-width: 800px; margin: 0 auto 10px; width: 100%; }
+        .user { background: #1a1a1a; border-radius: 10px; }
+        .ai { color: #ccc; }
+        
+        footer { position: fixed; bottom: 0; width: 100%; padding: 20px; background: linear-gradient(transparent, #050505 40%); }
+        .input-box { max-width: 768px; margin: 0 auto; background: #1a1a1a; border-radius: 15px; padding: 15px; border: 1px solid #333; display: flex; gap: 10px; }
         textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; resize: none; font-size: 16px; }
-        .send-btn { color: var(--neon); cursor: pointer; padding: 5px; }
 
-        /* LOGIN */
-        #auth-screen { position: fixed; inset: 0; background: #000; z-index: 5000; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: #161b22; padding: 40px; border-radius: 15px; width: 350px; text-align: center; border: 1px solid #333; }
-        input[type="email"], input[type="password"] { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #333; color: #fff; border-radius: 5px; }
-        .btn-prime { width: 100%; background: var(--neon); color: #000; padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
-
-        #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1500; }
+        /* Responsividade */
+        @media (max-width: 768px) { .hero-title { font-size: 2.5rem; } }
     </style>
 </head>
 <body>
 
-    <div id="sidebar">
-        <div class="search-container">
-            <div class="search-bar">
-                <i class="fas fa-search" style="color: #8e8e8e;"></i>
-                <input type="text" placeholder="Pesquisar chats">
-            </div>
-        </div>
-
-        <div class="nav-item" onclick="startNewChat()">
-            <div><i class="far fa-edit"></i> Nova conversa</div>
-            <i class="fas fa-expand-alt" style="font-size: 12px;"></i>
-        </div>
-
-        <div class="nav-item">
-            <div><i class="fas fa-th-large"></i> My stuff</div>
-            <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
-        </div>
-
-        <div class="nav-item">
-            <div><i class="fas fa-gem"></i> Gems</div>
-            <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
-        </div>
-
-        <div class="section-title">Conversas</div>
-
-        <div id="history-list">
-            <div class="chat-item active">
-                <span>Human OS: Feedback e Sugest...</span>
-                <i class="fas fa-thumbtack"></i>
-            </div>
-        </div>
-
-        <div style="padding: 15px; border-top: 1px solid #30363d;">
-            <div onclick="logout()" style="font-size: 13px; color: #8e8e8e; cursor: pointer;">
-                <i class="fas fa-sign-out-alt"></i> Sair
-            </div>
-        </div>
-    </div>
-
-    <div id="overlay" onclick="toggleMenu()"></div>
+    <section id="landing-page">
+        <p style="color: var(--neon); letter-spacing: 5px; font-weight: bold; margin-bottom: 10px;">ACCESSIBLE BY INVITATION ONLY</p>
+        <h1 class="hero-title">Instale o <span>HUMAN-OS</span> no seu Cérebro.</h1>
+        <p class="hero-subtitle">Pare de usar IAs amadoras. Acesse o Kernel soberano desenhado para produtividade extrema e clareza de bilionário.</p>
+        
+        <a href="https://pay.kiwify.com.br/SEU_LINK" class="cta-button">Adquirir Acesso ao Kernel</a>
+        
+        <p class="login-trigger" onclick="showLogin()">Já possui uma licença? Sincronizar agora.</p>
+    </section>
 
     <section id="auth-screen">
-        <div class="login-card">
-            <h2 style="color:var(--neon); margin-bottom:20px;">HUMAN-OS</h2>
-            <input type="email" id="email" placeholder="E-mail">
-            <input type="password" id="password" placeholder="Senha">
-            <button class="btn-prime" onclick="handleAuth()">Sincronizar Kernel</button>
-            <p id="auth-msg" style="color:red; font-size:12px; margin-top:10px;"></p>
+        <div style="background: #111; padding: 40px; border-radius: 20px; border: 1px solid var(--neon); text-align: center; width: 350px;">
+            <h2 style="color: var(--neon); margin-bottom: 20px;">KEY AUTHENTICATION</h2>
+            <input type="email" id="email" placeholder="E-mail" style="width: 100%; padding: 15px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px;">
+            <input type="password" id="password" placeholder="Chave" style="width: 100%; padding: 15px; margin-bottom: 20px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px;">
+            <button onclick="handleAuth()" style="width: 100%; background: var(--neon); border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer;">INICIAR KERNEL</button>
+            <p onclick="location.reload()" style="margin-top: 15px; font-size: 12px; color: #555; cursor: pointer;">Voltar para oferta</p>
         </div>
     </section>
 
-    <div id="main-content">
-        <header>
-            <div class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-            <div style="font-weight: bold;">Kernel V3.0</div>
-            <div style="width: 20px;"></div>
-        </header>
-
-        <div id="flow">
-            <div class="msg ai"><b>SISTEMA ONLINE.</b><br>O que vamos processar agora?</div>
+    <div id="app-interface" style="display: none; height: 100vh; width: 100%;">
+        <div id="sidebar">
+            <div style="padding: 20px; font-weight: bold; color: var(--neon); border-bottom: 1px solid #222;">HISTÓRICO</div>
+            <div id="history-list" style="padding: 10px;"></div>
         </div>
+        
+        <div class="main-app">
+            <header style="padding: 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between;">
+                <div onclick="toggleMenu()" style="cursor: pointer;"><i class="fas fa-bars"></i></div>
+                <div style="font-weight: bold; letter-spacing: 2px;">HUMAN-OS KERNEL</div>
+                <div style="width: 20px;"></div>
+            </header>
 
-        <footer>
-            <div class="input-box">
-                <textarea id="cmd" placeholder="Message Human OS..." rows="1"></textarea>
-                <div class="send-btn" onclick="destilar()"><i class="fas fa-arrow-up"></i></div>
+            <div id="flow" style="flex-grow: 1; overflow-y: auto; padding: 20px;">
+                <div class="msg ai">SISTEMA ONLINE. Aguardando comando...</div>
             </div>
-            <button onclick="destilar()" style="width:100%; max-width:768px; margin: 10px auto; display:block; background: var(--neon); border:none; padding:10px; border-radius:10px; font-weight:bold; cursor:pointer;">PROCESSAR INSIGHT</button>
-        </footer>
+
+            <footer>
+                <div class="input-box">
+                    <textarea id="cmd" placeholder="Digite sua instrução..."></textarea>
+                    <button onclick="destilar()" style="background: var(--neon); border: none; width: 40px; height: 40px; border-radius: 10px; cursor: pointer;"><i class="fas fa-arrow-up"></i></button>
+                </div>
+            </footer>
+        </div>
     </div>
 
 <script>
     const S_U = 'https://fddzojlntzmhmekckplm.supabase.co';
     const S_K = 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5';
     const G_KEY = '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';
-
     const _supabase = supabase.createClient(S_U, S_K);
     let user = null;
 
-    function toggleMenu() {
-        const side = document.getElementById('sidebar');
-        side.classList.toggle('open');
-        document.getElementById('overlay').style.display = side.classList.contains('open') ? 'block' : 'none';
+    function showLogin() {
+        document.getElementById('landing-page').style.display = 'none';
+        document.getElementById('auth-screen').style.display = 'flex';
+        document.getElementById('auth-screen').style.alignItems = 'center';
+        document.getElementById('auth-screen').style.justifyContent = 'center';
+        document.getElementById('auth-screen').style.height = '100vh';
     }
+
+    function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
     async function handleAuth() {
         const e = document.getElementById('email').value;
         const p = document.getElementById('password').value;
         const { data, error } = await _supabase.auth.signInWithPassword({ email: e, password: p });
-        if (error) { document.getElementById('auth-msg').innerText = "Erro no acesso."; }
-        else { user = data.user; document.getElementById('auth-screen').style.display = 'none'; loadHistory(); }
-    }
-
-    function startNewChat() {
-        document.getElementById('flow').innerHTML = '<div class="msg ai">Nova sessão iniciada.</div>';
-        if(window.innerWidth < 768) toggleMenu();
+        if (error) { alert("Acesso Negado. Verifique sua licença."); }
+        else {
+            user = data.user;
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app-interface').style.display = 'flex';
+        }
     }
 
     async function destilar() {
@@ -195,11 +145,8 @@
                 })
             });
             const d = await resp.json();
-            const reply = d.choices[0].message.content;
-            addMsg('ai', reply);
-            updateSidebar(text);
-            await _supabase.from('Insights').insert([{ user_id: user.id, content: text, type: 'user' }]);
-        } catch (e) { addMsg('ai', "Erro no Kernel."); }
+            addMsg('ai', d.choices[0].message.content);
+        } catch (e) { addMsg('ai', "Erro no processamento."); }
     }
 
     function addMsg(t, c) {
@@ -210,21 +157,6 @@
         f.appendChild(d);
         f.scrollTop = f.scrollHeight;
     }
-
-    function updateSidebar(text) {
-        const list = document.getElementById('history-list');
-        const item = document.createElement('div');
-        item.className = 'chat-item';
-        item.innerHTML = `<span>${text.substring(0, 25)}...</span><i class="fas fa-thumbtack"></i>`;
-        list.prepend(item);
-    }
-
-    async function loadHistory() {
-        const { data } = await _supabase.from('Insights').select('content').eq('user_id', user.id).limit(5);
-        if(data) data.forEach(i => updateSidebar(i.content));
-    }
-
-    function logout() { _supabase.auth.signOut(); location.reload(); }
 </script>
 </body>
 </html>
