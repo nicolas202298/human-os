@@ -2,20 +2,20 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUMAN OS v2.0 - GROQ EDITION</title>
+    <title>HUMAN OS v2.1 - PT-BR</title>
     <style>
         body { background: #050505; color: #ff3e3e; font-family: 'Courier New', monospace; padding: 20px; text-align: center; }
         #box { max-width: 500px; margin: auto; border: 2px solid #ff3e3e; padding: 20px; border-radius: 10px; background: #000; box-shadow: 0 0 20px #ff3e3e; }
-        #chat { height: 350px; overflow-y: auto; text-align: left; margin: 10px 0; border-bottom: 1px solid #330000; }
+        #chat { height: 350px; overflow-y: auto; text-align: left; margin: 10px 0; border-bottom: 1px solid #330000; font-size: 14px; }
         input { width: 100%; background: #111; border: 1px solid #ff3e3e; color: #fff; padding: 12px; box-sizing: border-box; margin-top: 10px; outline: none; }
         button { width: 100%; background: #ff3e3e; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .u { color: #fff; margin: 8px 0; text-align: right; border-right: 2px solid #fff; padding-right: 5px; }
+        .u { color: #fff; margin: 8px 0; text-align: right; }
         .a { color: #ff3e3e; margin: 8px 0; background: #1a0000; padding: 10px; border-radius: 5px; border-left: 2px solid #ff3e3e; }
     </style>
 </head>
 <body>
     <div id="box">
-        <h3>> HUMAN OS v2.0 (GROQ)</h3>
+        <h3>> HUMAN OS v2.1</h3>
         <input type="password" id="key" placeholder="COLE SUA CHAVE gsk_... AQUI">
         <div id="chat"></div>
         <input type="text" id="input" placeholder="Digite sua ordem...">
@@ -42,20 +42,19 @@ async function enviar() {
             },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
-                messages: [{ role: "user", content: txt }]
+                messages: [
+                    // AQUI ESTÁ A MÁGICA PARA O PORTUGUÊS:
+                    { role: "system", content: "Você é o HUMAN OS, uma IA avançada. Responda sempre em português do Brasil de forma direta e útil." },
+                    { role: "user", content: txt }
+                ]
             })
         });
 
         const data = await res.json();
-        
-        if (data.error) {
-            chat.innerHTML += `<div style="color:yellow">Erro Groq: ${data.error.message}</div>`;
-        } else {
-            const resposta = data.choices[0].message.content;
-            chat.innerHTML += `<div class="a"><b>IA:</b> ${resposta}</div>`;
-        }
+        const resposta = data.choices[0].message.content;
+        chat.innerHTML += `<div class="a"><b>IA:</b> ${resposta}</div>`;
     } catch (e) {
-        chat.innerHTML += `<div style="color:red">Falha total de conexão.</div>`;
+        chat.innerHTML += `<div style="color:red">Erro de conexão.</div>`;
     }
     chat.scrollTop = chat.scrollHeight;
 }
