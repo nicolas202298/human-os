@@ -6,68 +6,80 @@
     <title>HUMAN-OS | Kernel Premium</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --neon: #00f2ff; --bg: #020b0d; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        :root { --neon: #00f2ff; --bg: #01080a; --glass: rgba(0, 35, 40, 0.7); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { 
             background: var(--bg);
+            /* Fundo de circuitos com animação de pulso */
             background-image: url('https://www.transparenttextures.com/patterns/circuit-board.png'), 
-                              radial-gradient(circle at center, #0a2d2f 0%, #020b0d 100%);
+                              radial-gradient(circle at center, #0a2d2f 0%, #01080a 100%);
             background-attachment: fixed;
-            color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
+            color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+            animation: pulseBg 8s infinite alternate;
         }
 
-        /* Tela de Login Estilo Vidro */
-        #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { background: rgba(0, 30, 35, 0.85); padding: 35px; border-radius: 25px; border: 1px solid var(--neon); backdrop-filter: blur(15px); width: 100%; max-width: 360px; text-align: center; box-shadow: 0 0 40px rgba(0, 242, 255, 0.3); }
+        @keyframes pulseBg { 0% { opacity: 0.8; } 100% { opacity: 1; } }
+
+        /* Login Screen */
+        #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
+        .login-card { background: var(--glass); padding: 40px 30px; border-radius: 30px; border: 1px solid var(--neon); backdrop-filter: blur(20px); width: 100%; max-width: 360px; text-align: center; box-shadow: 0 0 50px rgba(0, 242, 255, 0.15); }
         
-        input { width: 100%; padding: 16px; margin: 10px 0; background: rgba(0,0,0,0.7); border: 1px solid #1a4a4d; color: var(--neon); border-radius: 12px; outline: none; font-size: 16px; }
+        input { width: 100%; padding: 18px; margin: 12px 0; background: rgba(0,0,0,0.6); border: 1px solid rgba(0, 242, 255, 0.3); color: var(--neon); border-radius: 15px; outline: none; font-size: 16px; transition: 0.3s; }
+        input:focus { border-color: var(--neon); box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); }
 
-        /* Interface Principal */
-        #app-interface { display: none; flex-direction: column; height: 100vh; position: relative; }
-        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 255, 0.2); }
-        .brand { font-weight: 900; color: var(--neon); letter-spacing: 4px; font-size: 20px; text-shadow: 0 0 10px var(--neon); }
+        /* App Layout */
+        #app-interface { display: none; flex-direction: column; height: 100vh; }
+        header { padding: 18px 25px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 255, 0.1); }
+        .brand { font-weight: 900; color: var(--neon); letter-spacing: 5px; font-size: 22px; text-shadow: 0 0 15px var(--neon); }
         
-        .lang-bar { display: flex; gap: 8px; padding: 12px; justify-content: center; background: rgba(0,0,0,0.3); }
-        .l-btn { background: rgba(255,255,255,0.05); border: 1px solid #333; color: #888; padding: 7px 14px; border-radius: 8px; font-size: 11px; font-weight: bold; }
-        .l-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.15); box-shadow: 0 0 10px rgba(0,242,255,0.2); }
+        .lang-bar { display: flex; gap: 10px; padding: 15px; justify-content: center; }
+        .l-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #666; padding: 8px 16px; border-radius: 10px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .l-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 10px rgba(0,242,255,0.3); }
 
-        #flow { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px; padding-bottom: 240px; }
-        .msg { padding: 18px; border-radius: 18px; font-size: 15px; line-height: 1.6; max-width: 88%; backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .ai { background: rgba(0, 45, 50, 0.75); align-self: flex-start; border-left: 5px solid var(--neon); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
-        .user { background: rgba(255,255,255,0.08); align-self: flex-end; color: #ddd; }
+        /* Chat Area */
+        #flow { flex-grow: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 250px; scroll-behavior: smooth; }
+        .msg { padding: 20px; border-radius: 20px; font-size: 15.5px; line-height: 1.6; max-width: 85%; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); position: relative; }
+        .ai { background: rgba(0, 40, 45, 0.8); align-self: flex-start; border-left: 5px solid var(--neon); box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: #e0faff; }
+        .user { background: rgba(255,255,255,0.07); align-self: flex-end; color: #fff; border-bottom-right-radius: 4px; }
 
-        /* Rodapé Fixo (Evita problemas com teclado) */
-        footer { position: fixed; bottom: 0; width: 100%; padding: 20px; background: linear-gradient(transparent, #000 40%); z-index: 9999; }
-        .input-wrap { background: rgba(20, 25, 25, 0.98); border: 1px solid #2a5a5d; border-radius: 18px; padding: 12px; box-shadow: 0 -10px 30px rgba(0,0,0,0.6); }
-        textarea { width: 100%; background: transparent; border: none; color: #fff; padding: 8px; font-size: 16px; outline: none; resize: none; min-height: 55px; }
+        /* Footer Input */
+        footer { position: fixed; bottom: 0; width: 100%; padding: 25px; background: linear-gradient(to top, #000 60%, transparent); z-index: 1000; }
+        .input-wrap { background: rgba(15, 20, 20, 0.95); border: 1px solid #1a3a3d; border-radius: 20px; padding: 15px; box-shadow: 0 -15px 40px rgba(0,0,0,0.8); }
+        textarea { width: 100%; background: transparent; border: none; color: #fff; padding: 5px; font-size: 17px; outline: none; resize: none; min-height: 60px; line-height: 1.4; }
         
         .btn-send { 
             width: 100%; 
             background: var(--neon); 
             color: #000; 
             border: none; 
-            padding: 18px; 
-            border-radius: 14px; 
+            padding: 20px; 
+            border-radius: 16px; 
             font-weight: 900; 
             font-size: 18px; 
-            margin-top: 10px;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.6);
+            margin-top: 12px;
+            box-shadow: 0 0 35px rgba(0, 242, 255, 0.5);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             cursor: pointer;
+            transition: 0.3s;
         }
+        .btn-send:active { transform: scale(0.98); filter: brightness(1.2); }
+
+        /* Typing effect for AI */
+        .typing::after { content: '|'; animation: blink 0.8s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
     <section id="auth-screen">
         <div class="login-card">
-            <h1 style="color:var(--neon); margin-bottom:5px; letter-spacing:5px;">HUMAN-OS</h1>
-            <p style="font-size:9px; color:#4a8a8d; margin-bottom:30px; letter-spacing:2px;">SISTEMA OPERACIONAL SOBERANO</p>
+            <h1 style="color:var(--neon); margin-bottom:5px; letter-spacing:6px;">HUMAN-OS</h1>
+            <p style="font-size:10px; color:#4a8a8d; margin-bottom:30px; letter-spacing:3px;">SISTEMA OPERACIONAL SOBERANO</p>
             <input type="email" id="email" placeholder="E-mail Autorizado">
             <input type="password" id="password" placeholder="Chave de Acesso">
-            <button class="btn-send" onclick="handleAuth()">SINCRONIZAR KERNEL</button>
+            <button class="btn-send" onclick="handleAuth()">Sincronizar</button>
             <p id="auth-msg" style="font-size:11px; margin-top:15px;"></p>
         </div>
     </section>
@@ -75,7 +87,7 @@
     <section id="app-interface">
         <header>
             <div class="brand">HUMAN-OS</div>
-            <button onclick="logout()" style="background:none; border:none; color:#555; font-size:10px;">SAIR</button>
+            <button onclick="logout()" style="background:none; border:none; color:#555; font-size:11px; font-weight:bold; letter-spacing:1px;">DISCONNECT</button>
         </header>
 
         <div class="lang-bar">
@@ -85,22 +97,20 @@
         </div>
 
         <div id="flow">
-            <div class="msg ai"><b>SISTEMA ONLINE.</b><br>Bem-vindo ao Kernel. Só e-mails autorizados têm acesso a este processamento.</div>
+            <div class="msg ai"><b>SISTEMA ONLINE.</b><br>Bem-vindo ao Kernel. O que deseja processar hoje?</div>
         </div>
 
         <footer>
             <div class="input-wrap">
-                <textarea id="cmd" placeholder="O que deseja processar?"></textarea>
+                <textarea id="cmd" placeholder="Despeje seus pensamentos..."></textarea>
                 <button id="runBtn" onclick="destilar()" class="btn-send">PROCESSAR INSIGHT</button>
             </div>
         </footer>
     </section>
 
 <script>
-    // Configurações de Banco de Dados e IA
     const S_U = 'https://fddzojlntzmhmekckplm.supabase.co';
     const S_K = 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5';
-    // Proteção da chave contra filtros do GitHub
     const G_1 = 'gsk';
     const G_2 = '_7vYZi2Fh2LLaMhveEihrWGdyb3FY8iX02JXgTPtuniGyVDlAyKVI';
     const G_KEY = G_1 + G_2;
@@ -115,18 +125,17 @@
         b.classList.add('active');
     }
 
-    // FUNÇÃO DE LOGIN TRANCADA (SÓ ENTRA QUEM VOCÊ CRIAR NO SUPABASE)
     async function handleAuth() {
         const e = document.getElementById('email').value;
         const p = document.getElementById('password').value;
         const m = document.getElementById('auth-msg');
-        m.innerText = "VERIFICANDO AUTORIZAÇÃO...";
+        m.innerText = "AUTHENTICATING...";
         m.style.color = "var(--neon)";
         
         const { data, error } = await _supabase.auth.signInWithPassword({ email: e, password: p });
         
         if (error) {
-            m.innerText = "ACESSO NEGADO: Usuário não autorizado.";
+            m.innerText = "ACCESS DENIED: Usuário não autorizado.";
             m.style.color = "#ff4444";
         } else {
             user = data.user;
@@ -141,15 +150,17 @@
         const text = input.value.trim();
         if(!text) return;
 
+        if (window.navigator.vibrate) window.navigator.vibrate(10); // Vibração sutil no mobile
+
         addMsg('user', text);
         input.value = "";
         btn.innerText = "PROCESSANDO...";
         btn.disabled = true;
 
         const prompts = {
-            'pt': 'Responda sempre em Português. Seja direto, profundo e disruptivo.',
-            'en': 'Respond in English. Technical and sharp.',
-            'es': 'Responde en Español. Profundo y claro.'
+            'pt': 'Responda como uma inteligência artificial de elite. Use formatação limpa. Seja disruptivo, curto e direto ao ponto.',
+            'en': 'Respond as an elite AI. Use clean formatting. Sharp and direct.',
+            'es': 'Responde como una IA de élite. Directo y profundo.'
         };
 
         try {
@@ -158,18 +169,18 @@
                 headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
-                    messages: [{role: "system", content: prompts[lang]}, {role: "user", content: text}]
+                    messages: [{role: "system", content: prompts[lang]}, {role: "user", content: text}],
+                    temperature: 0.7
                 })
             });
             const d = await resp.json();
             const reply = d.choices[0].message.content;
             addMsg('ai', reply);
             
-            // Salva no seu banco de dados
             await _supabase.from('Insights').insert([{ user_id: user.id, content: text, type: 'user' }, { user_id: user.id, content: reply, type: 'ai' }]);
             
         } catch (err) {
-            addMsg('ai', "<b>ERRO CRÍTICO:</b> O Kernel perdeu a conexão neural.");
+            addMsg('ai', "<b>ERRO DE CONEXÃO:</b> O Kernel falhou ao processar os dados.");
         } finally {
             btn.innerText = "PROCESSAR INSIGHT";
             btn.disabled = false;
@@ -180,7 +191,9 @@
         const f = document.getElementById('flow');
         const d = document.createElement('div');
         d.className = `msg ${t}`;
-        d.innerHTML = c.replace(/\n/g, '<br>');
+        // Formatação simples de Markdown para Bold
+        let formatted = c.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+        d.innerHTML = formatted;
         f.appendChild(d);
         f.scrollTo({ top: f.scrollHeight, behavior: 'smooth' });
     }
