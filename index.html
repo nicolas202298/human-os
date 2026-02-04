@@ -3,122 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HUMAN-OS | Sovereign Intelligence</title>
+    <title>HUMAN-OS | Sovereign Cloud</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --main: #00f2ff; --bg: #000; --card: #0d0d0d; --border: rgba(255,255,255,0.1); --gold: #d4af37; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: #fff; overflow-x: hidden; scroll-behavior: smooth; }
+        body { background: var(--bg); color: #fff; overflow: hidden; height: 100vh; }
 
-        /* --- ESTILO DA LANDING PAGE --- */
-        #landing-page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; background: radial-gradient(circle at center, #111 0%, #000 100%); }
-        .logo-lp { font-weight: 900; letter-spacing: 8px; font-size: 24px; margin-bottom: 20px; }
-        .logo-lp span { color: var(--main); }
-        h1 { font-size: clamp(32px, 8vw, 60px); font-weight: 900; letter-spacing: -2px; margin-bottom: 20px; line-height: 1; }
-        h1 span { color: var(--main); }
-        p.tagline { color: #666; max-width: 500px; margin-bottom: 40px; font-size: 18px; }
-        .cta-button { background: var(--main); color: #000; padding: 20px 40px; border-radius: 50px; font-weight: 900; text-decoration: none; text-transform: uppercase; cursor: pointer; transition: 0.3s; border: none; }
-        .cta-button:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); }
+        /* Login Screen */
+        #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #111 0%, #000 100%); }
+        .auth-box { background: var(--card); padding: 40px; border-radius: 20px; border: 1px solid var(--border); width: 90%; max-width: 380px; text-align: center; }
+        input { width: 100%; padding: 14px; margin: 10px 0; background: #050505; border: 1px solid #222; color: #fff; border-radius: 10px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--main); }
+        .btn { background: var(--main); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 15px; }
 
-        /* --- ESTILO DO SISTEMA (APP) --- */
-        #app-interface { display: none; height: 100vh; flex-direction: column; background: #000; }
-        header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        #telemetry { display: flex; gap: 10px; padding: 10px; background: #050505; border-bottom: 1px solid var(--border); overflow-x: auto; }
-        .stat { background: var(--card); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; min-width: 120px; }
-        .stat label { font-size: 8px; color: #555; text-transform: uppercase; display: block; }
-        .stat div { font-size: 11px; font-weight: bold; color: var(--main); }
+        /* App Interface */
+        #app-interface { display: none; height: 100vh; flex-direction: column; }
+        header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #000; }
+        #flow { flex-grow: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; }
+        .block { padding: 20px; border-radius: 14px; font-size: 14px; line-height: 1.7; animation: fadeInUp 0.4s ease; }
+        .block.ai { background: var(--card); border: 1px solid var(--border); align-self: stretch; color: #ddd; }
+        .block.user { border-left: 3px solid var(--gold); align-self: flex-start; color: #777; font-style: italic; background: rgba(212, 175, 55, 0.05); }
 
-        #flow { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
-        .block { max-width: 90%; line-height: 1.6; font-size: 14px; padding: 15px; border-radius: 12px; }
-        .block.user { align-self: flex-start; border-left: 2px solid var(--gold); color: #888; }
-        .block.ai { align-self: stretch; background: var(--card); border: 1px solid var(--border); }
-
-        footer { padding: 15px; background: #000; border-top: 1px solid var(--border); }
-        .input-group { background: #111; border-radius: 16px; padding: 10px; border: 1px solid #222; }
+        footer { padding: 20px; background: #000; border-top: 1px solid var(--border); }
+        .input-wrap { background: #0a0a0a; border: 1px solid #222; border-radius: 18px; padding: 12px; }
         textarea { background: transparent; border: none; color: #fff; width: 100%; min-height: 50px; outline: none; font-size: 16px; resize: none; }
-        .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-        #exec-btn { background: var(--main); color: #000; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; }
+        .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        
+        #destilar-btn { background: var(--main); color: #000; border: none; padding: 10px 22px; border-radius: 10px; font-weight: 900; cursor: pointer; font-size: 11px; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <section id="landing-page">
-        <div class="logo-lp">HUMAN-<span>OS</span></div>
-        <h1>Sua Mente em<br><span>Alta Performance.</span></h1>
-        <p class="tagline">O kernel cognitivo que destila caos em estratégia. Projetado para quem decide.</p>
-        <button class="cta-button" onclick="startApp()">Acessar Terminal</button>
-        <p style="margin-top: 30px; font-size: 10px; color: #222;">v10.0 SOVEREIGN EDITION</p>
+    <section id="auth-screen">
+        <div class="auth-box">
+            <h1 style="letter-spacing: 5px; font-size: 20px; margin-bottom: 5px;">HUMAN-<span>OS</span></h1>
+            <p style="color: #444; font-size: 10px; margin-bottom: 30px;">SOVEREIGN ACCESS TERMINAL</p>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Senha">
+            <button class="btn" onclick="handleAuth()">Acessar Kernel</button>
+            <p id="auth-msg" style="font-size: 10px; color: var(--main); margin-top: 15px;"></p>
+        </div>
     </section>
 
     <section id="app-interface">
         <header>
-            <div class="logo-lp" style="font-size: 14px; margin:0;">HUMAN-<span>OS</span></div>
-            <button onclick="location.reload()" style="background:none; border:none; color:#333; font-size:10px; cursor:pointer;">SAIR</button>
+            <div style="font-weight: 900; font-size: 14px; letter-spacing: 2px;">HUMAN-<span>OS</span></div>
+            <div style="display:flex; gap: 15px; align-items: center;">
+                <input type="password" id="groq-key" placeholder="GROQ_KEY" style="width: 80px; font-size: 8px; margin:0; padding: 5px; background:transparent;">
+                <button onclick="logout()" style="background:none; border:none; color:#444; font-size:9px; cursor:pointer;">LOGOUT</button>
+            </div>
         </header>
 
-        <div id="telemetry">
-            <div class="stat"><label>Estado</label><div id="st-cog">Aguardando...</div></div>
-            <div class="stat"><label>Kernel</label><div>Llama 3.3 70B</div></div>
-            <div class="stat"><label>Sessão</label><div id="st-focus">Privada</div></div>
-        </div>
-
         <div id="flow">
-            <div class="block ai"><b>KERNEL:</b> Sistema pronto para destilação cognitiva. Insira sua ordem.</div>
+            <div class="block ai"><b>KERNEL:</b> Conexão segura estabelecida. Histórico sincronizado na nuvem. Despeje o seu pensamento.</div>
         </div>
 
         <footer>
-            <div class="input-group">
-                <textarea id="cmd" placeholder="Despeje seus pensamentos aqui..."></textarea>
+            <div class="input-wrap">
+                <textarea id="cmd" placeholder="Qual o próximo nível da sua estratégia?"></textarea>
                 <div class="actions">
-                    <input type="password" id="key" placeholder="API KEY GROQ" style="background:transparent; border:none; color:#222; font-size:9px; outline:none; width:100px;">
-                    <button id="exec-btn" onclick="destilar()">Destilar</button>
+                    <span style="font-size: 8px; color: #333;">ENCRYPTED CLOUD SESSION</span>
+                    <button id="destilar-btn" onclick="destilar()">Destilar</button>
                 </div>
             </div>
         </footer>
     </section>
 
 <script>
-    // Função para trocar da Landing Page para o App
-    function startApp() {
-        document.getElementById('landing-page').style.display = 'none';
-        document.getElementById('app-interface').style.display = 'flex';
-        const savedKey = localStorage.getItem('gkey');
-        if(savedKey) document.getElementById('key').value = savedKey;
+    // CREDENCIAIS SUPABASE (INTEGRADAS)
+    const SUPABASE_URL = 'https://fddzojlntzmhmekckplm.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let user = null;
+
+    async function handleAuth() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const msg = document.getElementById('auth-msg');
+
+        msg.innerText = "Verificando Credenciais...";
+        
+        const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+        
+        if (error) {
+            const { data: upData, error: upError } = await _supabase.auth.signUp({ email, password });
+            if (upError) { msg.innerText = "Erro: " + upError.message; return; }
+            msg.innerText = "Conta criada! Verifique seu e-mail.";
+        } else {
+            user = data.user;
+            showApp();
+        }
     }
 
+    function showApp() {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('app-interface').style.display = 'flex';
+        document.getElementById('groq-key').value = localStorage.getItem('gkey') || '';
+        loadHistory();
+    }
+
+    async function logout() { await _supabase.auth.signOut(); location.reload(); }
+
     async function destilar() {
-        const key = document.getElementById('key').value.trim();
+        const groqKey = document.getElementById('groq-key').value.trim();
         const cmd = document.getElementById('cmd');
-        const flow = document.getElementById('flow');
         const text = cmd.value.trim();
+        
+        if (!text || !groqKey) { alert("Chave API Groq necessária!"); return; }
+        localStorage.setItem('gkey', groqKey);
 
-        if(!text || !key) { alert("Insira a mensagem e a Chave API"); return; }
-        localStorage.setItem('gkey', key);
-
-        flow.innerHTML += `<div class="block user"><i>Brain Dump:</i><br>${text}</div>`;
+        // UI Update
+        addBlock('user', text);
         cmd.value = "";
-        document.getElementById('st-cog').innerText = "Processando...";
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+                headers: { "Authorization": `Bearer ${groqKey}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
-                    messages: [
-                        {role: "system", content: "Você é o Kernel do HUMAN-OS. Destile o input do usuário em CLAREZA, DECISÕES e PRÓXIMO PASSO. Seja ultra-lógico e use Markdown."},
-                        {role: "user", content: text}
-                    ]
+                    messages: [{role: "system", content: "Você é o Kernel do Human-OS. Estruture o caos em CLAREZA e AÇÃO."}, {role: "user", content: text}]
                 })
             });
             const data = await res.json();
-            const reply = data.choices[0].message.content.replace(/\n/g, '<br>');
+            const reply = data.choices[0].message.content;
+
+            addBlock('ai', reply);
             
-            flow.innerHTML += `<div class="block ai"><b>ESTRUTURA:</b><br>${reply}</div>`;
-            document.getElementById('st-cog').innerText = "Clareza Ativa";
-        } catch (e) {
-            flow.innerHTML += `<div class="block ai" style="color:red;">Erro de conexão.</div>`;
-        }
+            // SALVAR NO SUPABASE
+            await _supabase.from('insights').insert([{ user_id: user.id, content: reply, type: 'ai' }]);
+        } catch (e) { console.error(e); }
+    }
+
+    function addBlock(type, content) {
+        const flow = document.getElementById('flow');
+        flow.innerHTML += `<div class="block ${type}">${content.replace(/\n/g, '<br>')}</div>`;
         flow.scrollTop = flow.scrollHeight;
+    }
+
+    async function loadHistory() {
+        const { data } = await _supabase.from('insights').select('*').order('created_at', { ascending: true });
+        if(data) data.forEach(i => addBlock(i.type, i.content));
     }
 </script>
 </body>
