@@ -6,162 +6,176 @@
     <title>HUMAN-OS | Kernel Premium</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --neon: #00f2ff; --bg: #01080a; --glass: rgba(0, 35, 40, 0.7); }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        :root { --neon: #00f2ff; --bg: #01080a; --glass: rgba(0, 35, 40, 0.85); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { 
             background: var(--bg);
-            /* Fundo de circuitos com animação de pulso */
             background-image: url('https://www.transparenttextures.com/patterns/circuit-board.png'), 
                               radial-gradient(circle at center, #0a2d2f 0%, #01080a 100%);
             background-attachment: fixed;
-            color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-            animation: pulseBg 8s infinite alternate;
+            color: #fff; height: 100vh; display: flex; overflow: hidden;
         }
 
-        @keyframes pulseBg { 0% { opacity: 0.8; } 100% { opacity: 1; } }
+        /* BARRA LATERAL (HISTÓRICO) */
+        #sidebar {
+            width: 280px; height: 100%; background: rgba(0, 15, 20, 0.95);
+            border-right: 1px solid rgba(0, 242, 255, 0.2);
+            display: flex; flex-direction: column;
+            position: fixed; left: -280px; transition: 0.4s; z-index: 2000;
+            backdrop-filter: blur(20px);
+        }
+        #sidebar.open { left: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; color: var(--neon); display: flex; justify-content: space-between; }
+        #history-list { flex-grow: 1; overflow-y: auto; padding: 10px; }
+        .history-item { 
+            padding: 12px; margin-bottom: 8px; border-radius: 10px; 
+            background: rgba(255,255,255,0.03); font-size: 13px; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            border: 1px solid transparent; cursor: pointer;
+        }
+        .history-item:hover { border-color: var(--neon); background: rgba(0, 242, 255, 0.05); }
 
-        /* Login Screen */
-        #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
-        .login-card { background: var(--glass); padding: 40px 30px; border-radius: 30px; border: 1px solid var(--neon); backdrop-filter: blur(20px); width: 100%; max-width: 360px; text-align: center; box-shadow: 0 0 50px rgba(0, 242, 255, 0.15); }
+        /* INTERFACE PRINCIPAL */
+        #main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; width: 100%; transition: 0.4s; }
         
-        input { width: 100%; padding: 18px; margin: 12px 0; background: rgba(0,0,0,0.6); border: 1px solid rgba(0, 242, 255, 0.3); color: var(--neon); border-radius: 15px; outline: none; font-size: 16px; transition: 0.3s; }
-        input:focus { border-color: var(--neon); box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); }
+        header { 
+            padding: 15px 20px; display: flex; align-items: center; 
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); 
+            border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+        }
 
-        /* App Layout */
-        #app-interface { display: none; flex-direction: column; height: 100vh; }
-        header { padding: 18px 25px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 255, 0.1); }
-        .brand { font-weight: 900; color: var(--neon); letter-spacing: 5px; font-size: 22px; text-shadow: 0 0 15px var(--neon); }
-        
-        .lang-bar { display: flex; gap: 10px; padding: 15px; justify-content: center; }
-        .l-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #666; padding: 8px 16px; border-radius: 10px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .l-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 10px rgba(0,242,255,0.3); }
+        /* ÍCONE DE TRÊS PONTOS (MENU) */
+        .menu-btn {
+            font-size: 24px; color: var(--neon); cursor: pointer; margin-right: 20px;
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .menu-btn div { width: 25px; height: 2px; background: var(--neon); box-shadow: 0 0 10px var(--neon); }
 
-        /* Chat Area */
-        #flow { flex-grow: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 250px; scroll-behavior: smooth; }
-        .msg { padding: 20px; border-radius: 20px; font-size: 15.5px; line-height: 1.6; max-width: 85%; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); position: relative; }
-        .ai { background: rgba(0, 40, 45, 0.8); align-self: flex-start; border-left: 5px solid var(--neon); box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: #e0faff; }
-        .user { background: rgba(255,255,255,0.07); align-self: flex-end; color: #fff; border-bottom-right-radius: 4px; }
+        .brand { font-weight: 900; color: var(--neon); letter-spacing: 3px; font-size: 18px; flex-grow: 1; }
 
-        /* Footer Input */
-        footer { position: fixed; bottom: 0; width: 100%; padding: 25px; background: linear-gradient(to top, #000 60%, transparent); z-index: 1000; }
-        .input-wrap { background: rgba(15, 20, 20, 0.95); border: 1px solid #1a3a3d; border-radius: 20px; padding: 15px; box-shadow: 0 -15px 40px rgba(0,0,0,0.8); }
-        textarea { width: 100%; background: transparent; border: none; color: #fff; padding: 5px; font-size: 17px; outline: none; resize: none; min-height: 60px; line-height: 1.4; }
+        /* CHAT E INPUT */
+        #flow { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 220px; }
+        .msg { padding: 18px; border-radius: 18px; font-size: 15px; line-height: 1.5; max-width: 85%; backdrop-filter: blur(10px); }
+        .ai { background: var(--glass); align-self: flex-start; border-left: 4px solid var(--neon); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .user { background: rgba(255,255,255,0.08); align-self: flex-end; }
+
+        footer { position: fixed; bottom: 0; width: 100%; padding: 20px; background: linear-gradient(transparent, #000 50%); z-index: 1000; }
+        .input-wrap { background: rgba(15, 20, 20, 0.98); border: 1px solid #1a3a3d; border-radius: 15px; padding: 12px; }
+        textarea { width: 100%; background: transparent; border: none; color: #fff; padding: 5px; font-size: 16px; outline: none; resize: none; min-height: 50px; }
         
         .btn-send { 
-            width: 100%; 
-            background: var(--neon); 
-            color: #000; 
-            border: none; 
-            padding: 20px; 
-            border-radius: 16px; 
-            font-weight: 900; 
-            font-size: 18px; 
-            margin-top: 12px;
-            box-shadow: 0 0 35px rgba(0, 242, 255, 0.5);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            cursor: pointer;
-            transition: 0.3s;
+            width: 100%; background: var(--neon); color: #000; border: none; 
+            padding: 18px; border-radius: 12px; font-weight: 900; font-size: 16px; 
+            margin-top: 10px; box-shadow: 0 0 25px rgba(0, 242, 255, 0.4);
+            text-transform: uppercase; letter-spacing: 2px;
         }
-        .btn-send:active { transform: scale(0.98); filter: brightness(1.2); }
 
-        /* Typing effect for AI */
-        .typing::after { content: '|'; animation: blink 0.8s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
+        /* TELA DE LOGIN */
+        #auth-screen { height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; position: absolute; background: var(--bg); z-index: 3000; }
+        .login-card { background: var(--glass); padding: 30px; border-radius: 25px; border: 1px solid var(--neon); text-align: center; width: 90%; max-width: 350px; }
+        input { width: 100%; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid #1a3a3d; color: var(--neon); border-radius: 10px; outline: none; }
+
+        #overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index: 1500; }
     </style>
 </head>
 <body>
 
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <span>HISTÓRICO</span>
+            <span onclick="toggleMenu()" style="cursor:pointer">✕</span>
+        </div>
+        <div id="history-list">
+            <div class="history-item">Sessão Iniciada...</div>
+        </div>
+        <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <button onclick="logout()" style="background:none; border:none; color:#555; font-size:12px; font-weight:bold;">DISCONNECT</button>
+        </div>
+    </div>
+
+    <div id="overlay" onclick="toggleMenu()"></div>
+
     <section id="auth-screen">
         <div class="login-card">
-            <h1 style="color:var(--neon); margin-bottom:5px; letter-spacing:6px;">HUMAN-OS</h1>
-            <p style="font-size:10px; color:#4a8a8d; margin-bottom:30px; letter-spacing:3px;">SISTEMA OPERACIONAL SOBERANO</p>
-            <input type="email" id="email" placeholder="E-mail Autorizado">
-            <input type="password" id="password" placeholder="Chave de Acesso">
-            <button class="btn-send" onclick="handleAuth()">Sincronizar</button>
-            <p id="auth-msg" style="font-size:11px; margin-top:15px;"></p>
+            <h1 style="color:var(--neon); letter-spacing:5px;">HUMAN-OS</h1>
+            <p style="font-size:10px; color:#4a8a8d; margin-bottom:20px;">KERNEL V2.5</p>
+            <input type="email" id="email" placeholder="E-mail">
+            <input type="password" id="password" placeholder="Chave">
+            <button class="btn-send" onclick="handleAuth()">ENTRAR</button>
+            <p id="auth-msg" style="font-size:11px; margin-top:10px;"></p>
         </div>
     </section>
 
-    <section id="app-interface">
+    <div id="main-content">
         <header>
+            <div class="menu-btn" onclick="toggleMenu()">
+                <div></div><div></div><div></div>
+            </div>
             <div class="brand">HUMAN-OS</div>
-            <button onclick="logout()" style="background:none; border:none; color:#555; font-size:11px; font-weight:bold; letter-spacing:1px;">DISCONNECT</button>
         </header>
 
-        <div class="lang-bar">
-            <button class="l-btn active" onclick="setL('pt', this)">PORTUGUÊS</button>
-            <button class="l-btn" onclick="setL('en', this)">ENGLISH</button>
-            <button class="l-btn" onclick="setL('es', this)">ESPAÑOL</button>
-        </div>
-
         <div id="flow">
-            <div class="msg ai"><b>SISTEMA ONLINE.</b><br>Bem-vindo ao Kernel. O que deseja processar hoje?</div>
+            <div class="msg ai"><b>SISTEMA ATIVO.</b><br>Abra o menu lateral para ver seu histórico de insights.</div>
         </div>
 
         <footer>
             <div class="input-wrap">
-                <textarea id="cmd" placeholder="Despeje seus pensamentos..."></textarea>
+                <textarea id="cmd" placeholder="O que deseja processar?"></textarea>
                 <button id="runBtn" onclick="destilar()" class="btn-send">PROCESSAR INSIGHT</button>
             </div>
         </footer>
-    </section>
+    </div>
 
 <script>
     const S_U = 'https://fddzojlntzmhmekckplm.supabase.co';
     const S_K = 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5';
-    const G_1 = 'gsk';
-    const G_2 = '_7vYZi2Fh2LLaMhveEihrWGdyb3FY8iX02JXgTPtuniGyVDlAyKVI';
-    const G_KEY = G_1 + G_2;
+    const G_KEY = 'gsk' + '_7vYZi2Fh2LLaMhveEihrWGdyb3FY8iX02JXgTPtuniGyVDlAyKVI';
 
     const _supabase = supabase.createClient(S_U, S_K);
     let user = null;
-    let lang = 'pt';
 
-    function setL(l, b) {
-        lang = l;
-        document.querySelectorAll('.l-btn').forEach(btn => btn.classList.remove('active'));
-        b.classList.add('active');
+    function toggleMenu() {
+        const side = document.getElementById('sidebar');
+        const over = document.getElementById('overlay');
+        side.classList.toggle('open');
+        over.style.display = side.classList.contains('open') ? 'block' : 'none';
     }
 
     async function handleAuth() {
         const e = document.getElementById('email').value;
         const p = document.getElementById('password').value;
-        const m = document.getElementById('auth-msg');
-        m.innerText = "AUTHENTICATING...";
-        m.style.color = "var(--neon)";
-        
         const { data, error } = await _supabase.auth.signInWithPassword({ email: e, password: p });
-        
         if (error) {
-            m.innerText = "ACCESS DENIED: Usuário não autorizado.";
-            m.style.color = "#ff4444";
+            document.getElementById('auth-msg').innerText = "Acesso Negado.";
         } else {
             user = data.user;
             document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('app-interface').style.display = 'flex';
+            loadHistory();
         }
+    }
+
+    function addHistoryItem(text) {
+        const list = document.getElementById('history-list');
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerText = text;
+        list.prepend(item); // Adiciona no topo
+    }
+
+    async function loadHistory() {
+        const { data } = await _supabase.from('Insights').select('content').eq('user_id', user.id).eq('type', 'user').limit(10);
+        if(data) data.forEach(i => addHistoryItem(i.content));
     }
 
     async function destilar() {
         const input = document.getElementById('cmd');
-        const btn = document.getElementById('runBtn');
         const text = input.value.trim();
         if(!text) return;
 
-        if (window.navigator.vibrate) window.navigator.vibrate(10); // Vibração sutil no mobile
-
         addMsg('user', text);
+        addHistoryItem(text); // Adiciona ao histórico lateral na hora
         input.value = "";
-        btn.innerText = "PROCESSANDO...";
-        btn.disabled = true;
-
-        const prompts = {
-            'pt': 'Responda como uma inteligência artificial de elite. Use formatação limpa. Seja disruptivo, curto e direto ao ponto.',
-            'en': 'Respond as an elite AI. Use clean formatting. Sharp and direct.',
-            'es': 'Responde como una IA de élite. Directo y profundo.'
-        };
 
         try {
             const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -169,21 +183,15 @@
                 headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
-                    messages: [{role: "system", content: prompts[lang]}, {role: "user", content: text}],
-                    temperature: 0.7
+                    messages: [{role: "system", content: "Seja direto e profundo."}, {role: "user", content: text}]
                 })
             });
             const d = await resp.json();
             const reply = d.choices[0].message.content;
             addMsg('ai', reply);
-            
             await _supabase.from('Insights').insert([{ user_id: user.id, content: text, type: 'user' }, { user_id: user.id, content: reply, type: 'ai' }]);
-            
-        } catch (err) {
-            addMsg('ai', "<b>ERRO DE CONEXÃO:</b> O Kernel falhou ao processar os dados.");
-        } finally {
-            btn.innerText = "PROCESSAR INSIGHT";
-            btn.disabled = false;
+        } catch (e) {
+            addMsg('ai', "Erro na rede neural.");
         }
     }
 
@@ -191,11 +199,9 @@
         const f = document.getElementById('flow');
         const d = document.createElement('div');
         d.className = `msg ${t}`;
-        // Formatação simples de Markdown para Bold
-        let formatted = c.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-        d.innerHTML = formatted;
+        d.innerHTML = c.replace(/\n/g, '<br>');
         f.appendChild(d);
-        f.scrollTo({ top: f.scrollHeight, behavior: 'smooth' });
+        f.scrollTop = f.scrollHeight;
     }
 
     function logout() { _supabase.auth.signOut(); location.reload(); }
