@@ -2,152 +2,160 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUMAN OS v5.0 | INFINITY</title>
+    <title>HUMAN OS | Intelligence Suite</title>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
     <style>
-        :root { --gold: #d4af37; --bg: #050505; --panel: #0d0d0d; --text: #e0e0e0; --accent: #1a1a1a; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        :root { --primary: #00f2ff; --gold: #d4af37; --bg: #020203; --card: #0a0a0c; --border: rgba(255,255,255,0.08); }
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Dashboard Lateral */
-        #side { width: 320px; background: #000; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 25px; box-sizing: border-box; }
-        .metric { background: var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid var(--gold); }
-        .metric label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-        .metric div { font-size: 16px; font-weight: bold; margin-top: 5px; color: var(--gold); }
+        /* Sidebar Estilo ChatGPT Pro */
+        #sidebar { width: 280px; background: #000; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px; }
+        .new-chat { border: 1px solid var(--border); padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; font-size: 14px; margin-bottom: 20px; font-weight: 600; }
+        .new-chat:hover { background: rgba(255,255,255,0.05); border-color: var(--primary); }
+        #history { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .hist-item { padding: 10px; border-radius: 6px; font-size: 13px; color: #888; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .hist-item:hover { background: #111; color: var(--primary); }
 
-        /* Centro de Comando */
-        #main { flex-grow: 1; display: flex; flex-direction: column; position: relative; }
-        #header { padding: 20px 30px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; background: #080808; }
-        #chat { flex-grow: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 25px; scroll-behavior: smooth; }
-        
-        /* Mensagens */
-        .u { align-self: flex-end; background: var(--gold); color: #000; padding: 15px 25px; border-radius: 20px 20px 0 20px; max-width: 70%; font-weight: 700; box-shadow: 0 10px 30px rgba(212,175,55,0.1); }
-        .a { align-self: flex-start; width: 100%; background: #121212; padding: 30px; border-radius: 12px; border: 1px solid #222; line-height: 1.8; position: relative; box-sizing: border-box;}
-        .a::after { content: "STRATEGIC ADVISOR"; position: absolute; top: -10px; right: 20px; background: #222; color: var(--gold); font-size: 8px; padding: 3px 10px; border-radius: 4px; border: 1px solid var(--gold); }
+        /* Painel Principal */
+        #main { flex-grow: 1; display: flex; flex-direction: column; position: relative; background: radial-gradient(circle at 50% 0%, #111 0%, #020203 100%); }
+        header { padding: 20px 40px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); }
+        .model-badge { background: rgba(0,242,255,0.1); color: var(--primary); padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; border: 1px solid rgba(0,242,255,0.2); }
 
-        /* Controles Inferiores */
-        footer { padding: 25px; background: #000; border-top: 1px solid #222; }
-        .input-row { display: flex; gap: 15px; }
-        textarea, input { background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; padding: 15px; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--gold); }
-        #input { flex-grow: 1; font-size: 15px; }
-        button { background: var(--gold); color: #000; border: none; padding: 0 40px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        button:hover { background: #fff; transform: scale(1.02); }
+        /* Area de Chat */
+        #chat-container { flex-grow: 1; overflow-y: auto; padding: 40px 15%; display: flex; flex-direction: column; gap: 30px; }
+        .row { display: flex; width: 100%; gap: 20px; animation: fadeIn 0.4s ease; }
+        .avatar { width: 35px; height: 35px; border-radius: 5px; background: var(--primary); flex-shrink: 0; }
+        .user-avatar { background: #333; }
+        .content { flex-grow: 1; line-height: 1.8; font-size: 15px; color: #ddd; }
+        .content b { color: #fff; }
 
-        pre { background: #000; padding: 20px; border-radius: 8px; border: 1px solid #333; color: #00ffaa; overflow-x: auto; font-family: 'Fira Code', monospace; }
-        .status-dot { height: 8px; width: 8px; background: #00ff00; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 10px #00ff00; }
+        /* Input Area (superior à da OpenAI) */
+        footer { padding: 30px 15%; background: linear-gradient(0deg, #020203 70%, transparent); }
+        .input-wrapper { background: #111; border: 1px solid var(--border); border-radius: 15px; padding: 15px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        textarea { width: 100%; background: transparent; border: none; color: #fff; resize: none; font-size: 16px; outline: none; font-family: inherit; }
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .btn-send { background: var(--primary); color: #000; border: none; padding: 8px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-send:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0,242,255,0.4); }
+
+        /* Elementos de Custo e Token */
+        .token-info { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        pre { background: #000; padding: 20px; border-radius: 10px; border: 1px solid #222; overflow-x: auto; color: #a6e22e; font-family: 'Consolas', monospace; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
     </style>
 </head>
-<body onload="loadSession()">
-    <aside id="side">
-        <h2 style="color:var(--gold); margin:0; letter-spacing:2px;">HUMAN OS <span style="font-weight:200;">v5.0</span></h2>
-        <p style="font-size:10px; color:#444; margin-bottom:40px;">Billionaire Framework Active</p>
-        
-        <div class="metric">
-            <label>Current Net Worth Goal</label>
-            <div>$1,000,000,000.00</div>
-        </div>
-        <div class="metric">
-            <label>Strategy Phase</label>
-            <div id="phase">Market Infiltration</div>
-        </div>
-        <div class="metric">
-            <label>Deep Focus</label>
-            <div id="clock">00:00:00</div>
-        </div>
-
-        <div style="margin-top:auto;">
-            <button onclick="exportData()" style="width:100%; background:transparent; color:#555; border:1px solid #333; font-size:10px; padding:10px; margin-bottom:10px;">EXPORT STRATEGY</button>
-            <button onclick="clearAll()" style="width:100%; background:transparent; color:#f44; border:1px solid #332; font-size:10px; padding:10px;">PURGE SYSTEM</button>
+<body onload="setup()">
+    <aside id="sidebar">
+        <div class="new-chat" onclick="location.reload()">+ Novo Plano de Bilhão</div>
+        <div id="history">
+            </div>
+        <div style="padding-top:20px; border-top: 1px solid var(--border);">
+            <input type="password" id="key" placeholder="GROQ_API_KEY" style="width:100%; background:#111; border:1px solid #333; color:#555; padding:8px; border-radius:5px; font-size:10px;">
         </div>
     </aside>
 
     <main id="main">
-        <header id="header">
-            <div style="font-size:11px;"><span class="status-dot"></span> ENCRYPTED LINK: STABLE</div>
-            <input type="password" id="key" placeholder="API_KEY_GROQ" style="width:200px; padding:8px; font-size:10px;">
+        <header>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <span style="font-weight: 900; letter-spacing: 2px; font-size: 18px;">HUMAN<span style="color:var(--primary)">OS</span></span>
+                <span class="model-badge">LLAMA 3.3 70B - TURBO</span>
+            </div>
+            <div class="token-info">Custo estimado: $0.0003 / req</div>
         </header>
 
-        <div id="chat">
-            <div class="a"><b>SYSTEM:</b> Terminal v5.0 Inicializado. Todas as camadas de inteligência estão ativas. O histórico agora é persistente. Qual sua ordem, CEO?</div>
+        <div id="chat-container">
+            <div class="row">
+                <div class="avatar"></div>
+                <div class="content"><b>Estrategista:</b> Terminal pronto. Como vamos escalar o seu império hoje? Posso gerar códigos, contratos ou analisar dados de mercado.</div>
+            </div>
         </div>
 
         <footer>
-            <textarea id="ctx" rows="1" placeholder="CONTEXTO E DADOS (Relatórios, Contratos, Balanços)..." style="width:100%; margin-bottom:10px; box-sizing:border-box;"></textarea>
-            <div class="input-row">
-                <input type="text" id="input" placeholder="Execute um comando ou estratégia...">
-                <button onclick="enviar()">Executar</button>
+            <div class="input-wrapper">
+                <textarea id="input" rows="2" placeholder="Descreva sua estratégia..."></textarea>
+                <div class="controls">
+                    <span style="font-size:11px; color:#444;">Tokens: ~0.8k p/s</span>
+                    <button class="btn-send" onclick="enviar()">ENVIAR COMANDO</button>
+                </div>
+            </div>
+            <div style="text-align:center; font-size:10px; color:#333; margin-top:15px;">
+                HUMAN OS v6.0 - Superior em custo, velocidade e precisão estratégica.
             </div>
         </footer>
     </main>
 
 <script>
-    // Memória de Longo Prazo
-    function loadSession() {
-        document.getElementById('key').value = localStorage.getItem('gkey') || '';
-        const history = localStorage.getItem('ghistory');
-        if(history) document.getElementById('chat').innerHTML += history;
-        startClock();
-    }
-
-    function startClock() {
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString();
-        }, 1000);
+    function setup() {
+        const savedKey = localStorage.getItem('gkey');
+        if(savedKey) document.getElementById('key').value = savedKey;
+        renderHistory();
     }
 
     async function enviar() {
         const key = document.getElementById('key').value.trim();
         const input = document.getElementById('input');
-        const ctx = document.getElementById('ctx').value.trim();
-        const chat = document.getElementById('chat');
+        const container = document.getElementById('chat-container');
         const msg = input.value.trim();
         
         if(!key || !msg) return;
         localStorage.setItem('gkey', key);
+
+        // UI do Usuário
+        container.innerHTML += `<div class="row">
+            <div class="avatar user-avatar"></div>
+            <div class="content"><b>Você:</b><br>${msg}</div>
+        </div>`;
         
-        const userMsg = `<div class="u">${msg}</div>`;
-        chat.innerHTML += userMsg;
         input.value = "";
-        chat.scrollTop = chat.scrollHeight;
+        container.scrollTop = container.scrollHeight;
 
         try {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [
-                        { role: "system", content: "Você é o Estrategista Supremo da HUMAN OS. Sua única missão é levar o usuário aos bilhões. Use linguagem técnica de alto nível, planilhas em texto, roteiros e códigos de execução." },
-                        { role: "user", content: (ctx ? "CONTEXTO: "+ctx+"\n\n" : "") + msg }
-                    ]
+                        { role: "system", content: "Você é um consultor bilionário especializado em escala exponencial. Use markdown, tabelas e listas." },
+                        { role: "user", content: msg }
+                    ],
+                    temperature: 0.5
                 })
             });
-            const data = await response.json();
+            const data = await res.json();
             let txt = data.choices[0].message.content;
+            
+            // Salvar no Histórico
+            saveToHistory(msg);
+
+            // Renderizar resposta
             txt = txt.replace(/```([\s\S]*?)```/g, '<pre>$1</pre>').replace(/\n/g, '<br>');
-            
-            const aiMsg = `<div class="a"><b>ESTRATEGISTA:</b><br>${txt}</div>`;
-            chat.innerHTML += aiMsg;
-            
-            // Salva histórico (limita a 5000 chars para não estourar o storage)
-            const currentHistory = (localStorage.getItem('ghistory') || "") + userMsg + aiMsg;
-            localStorage.setItem('ghistory', currentHistory.slice(-10000));
-            
-        } catch (e) { chat.innerHTML += `<div style="color:red">Erro Crítico de Conexão.</div>`; }
-        chat.scrollTop = chat.scrollHeight;
+            container.innerHTML += `<div class="row">
+                <div class="avatar"></div>
+                <div class="content"><b>Estrategista:</b><br>${txt}</div>
+            </div>`;
+        } catch (e) {
+            container.innerHTML += `<div style="color:red">ERRO DE ESCALA. Verifique a chave.</div>`;
+        }
+        container.scrollTop = container.scrollHeight;
     }
 
-    function exportData() {
-        const blob = new Blob([document.getElementById('chat').innerText], {type: 'text/plain'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'empire_blueprint.txt';
-        a.click();
+    function saveToHistory(msg) {
+        let history = JSON.parse(localStorage.getItem('h_list') || '[]');
+        if(!history.includes(msg)) {
+            history.unshift(msg.substring(0, 30));
+            localStorage.setItem('h_list', JSON.stringify(history.slice(0, 10)));
+            renderHistory();
+        }
     }
 
-    function clearAll() {
-        localStorage.clear();
-        location.reload();
+    function renderHistory() {
+        const list = JSON.parse(localStorage.getItem('h_list') || '[]');
+        const div = document.getElementById('history');
+        div.innerHTML = list.map(item => `<div class="hist-item" onclick="alert('Carregando: ${item}...')">🕒 ${item}...</div>`).join('');
     }
 </script>
 </body>
