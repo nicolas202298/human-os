@@ -2,20 +2,21 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUMAN OS v1.8</title>
+    <title>HUMAN OS v1.9</title>
     <style>
         body { background: #000; color: #0f0; font-family: monospace; padding: 20px; text-align: center; }
-        #box { max-width: 500px; margin: auto; border: 2px solid #0f0; padding: 20px; border-radius: 10px; background: #050505; }
-        #chat { height: 350px; overflow-y: auto; text-align: left; margin: 10px 0; border-bottom: 1px solid #222; }
+        #box { max-width: 500px; margin: auto; border: 2px solid #0f0; padding: 20px; background: #050505; }
+        #chat { height: 300px; overflow-y: auto; text-align: left; margin: 10px 0; border-bottom: 1px solid #222; }
         input { width: 100%; background: #111; border: 1px solid #0f0; color: #fff; padding: 12px; box-sizing: border-box; margin-top: 10px; }
         button { width: 100%; background: #0f0; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .u { color: #fff; margin: 8px 0; text-align: right; }
-        .a { color: #0f0; margin: 8px 0; background: #001a00; padding: 10px; border-radius: 5px; }
+        .msg { margin: 10px 0; padding: 8px; border-radius: 5px; }
+        .u { color: #fff; text-align: right; }
+        .a { color: #0f0; background: #001a00; }
     </style>
 </head>
 <body>
     <div id="box">
-        <h3>> HUMAN OS v1.8</h3>
+        <h3>> HUMAN OS v1.9 (AUTO-SCAN)</h3>
         <input type="text" id="key" placeholder="COLE SUA CHAVE AQUI">
         <div id="chat"></div>
         <input type="text" id="input" placeholder="Diga algo...">
@@ -29,40 +30,38 @@ async function enviar() {
     const txt = input.value.trim();
     if(!key || !txt) return;
 
-    chat.innerHTML += `<div class="u"><b>Você:</b> ${txt}</div>`;
+    chat.innerHTML += `<div class="msg u">Você: ${txt}</div>`;
     input.value = "";
 
-    try {
-        // MUDADO PARA V1 (VERSÃO ESTÁVEL) E MODELO 1.5-FLASH
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
-        
-        const res = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: txt }] }] })
-        });
-        
-        const data = await res.json();
-        
-        if (data.error) {
-            // Se der erro no Flash, tenta o Pro automaticamente na v1
-            const urlPro = `https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=${key}`;
-            const resPro = await fetch(urlPro, {
+    // TENTA TODOS OS NOMES POSSÍVEIS QUE O GOOGLE USA EM 2026
+    const modelos = [
+        "gemini-1.5-flash-8b", 
+        "gemini-1.5-flash", 
+        "gemini-1.0-pro-001", 
+        "gemini-pro"
+    ];
+
+    let sucesso = false;
+    for (let m of modelos) {
+        if (sucesso) break;
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`;
+            const res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ contents: [{ parts: [{ text: txt }] }] })
             });
-            const dataPro = await resPro.json();
-            
-            if(dataPro.error) {
-                chat.innerHTML += `<div style="color:red">Erro: ${dataPro.error.message}</div>`;
-            } else {
-                chat.innerHTML += `<div class="a"><b>IA:</b> ${dataPro.candidates[0].content.parts[0].text}</div>`;
+            const data = await res.json();
+            if (data.candidates && data.candidates[0].content) {
+                chat.innerHTML += `<div class="msg a">IA (${m}): ${data.candidates[0].content.parts[0].text}</div>`;
+                sucesso = true;
             }
-        } else {
-            chat.innerHTML += `<div class="a"><b>IA:</b> ${data.candidates[0].content.parts[0].text}</div>`;
-        }
-    } catch (e) { chat.innerHTML += `<div style="color:red">Erro de conexão</div>`; }
+        } catch (e) {}
+    }
+
+    if (!sucesso) {
+        chat.innerHTML += `<div style="color:red">O Google ainda não ativou sua chave. Tente gerar uma nova no AI Studio e aguardar 5 minutos.</div>`;
+    }
     chat.scrollTop = chat.scrollHeight;
 }
 </script>
