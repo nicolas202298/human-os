@@ -3,139 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HUMAN-OS v9.2 | Cognitive Apex</title>
+    <title>HUMAN-OS | Sovereign Kernel</title>
     <style>
-        :root { --main: #00f2ff; --bg: #000000; --card: #0a0a0a; --border: rgba(255,255,255,0.08); --gold: #d4af37; }
+        :root { --main: #00f2ff; --bg: #000; --card: #0d0d0d; --border: rgba(255,255,255,0.08); --gold: #d4af37; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         body { background: var(--bg); color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Header fixo para o nome nunca sumir */
-        header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #000; z-index: 100; }
+        header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #000; }
         .logo { font-weight: 900; letter-spacing: 3px; font-size: 14px; text-transform: uppercase; }
         .logo span { color: var(--main); }
-        .kernel-id { font-size: 8px; color: #444; letter-spacing: 1px; }
 
-        /* Dash de Telemetria (Horizontal para não apertar no mobile) */
         #telemetry { display: flex; gap: 10px; padding: 10px 15px; background: #050505; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
         .stat { background: var(--card); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; min-width: 130px; flex-shrink: 0; }
         .stat label { font-size: 8px; color: #555; text-transform: uppercase; display: block; margin-bottom: 3px; }
-        .stat div { font-size: 11px; font-weight: bold; color: var(--main); white-space: nowrap; }
+        .stat div { font-size: 11px; font-weight: bold; color: var(--main); }
 
-        /* Fluxo Cognitivo (Área de Pensamento) */
         #flow { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 25px; background: radial-gradient(circle at top, #0d0d0d 0%, #000 100%); }
-        .block { max-width: 90%; line-height: 1.6; font-size: 14px; animation: slideUp 0.4s ease; }
-        .block.user { align-self: flex-start; border-left: 2px solid var(--gold); padding: 5px 15px; color: #888; font-style: italic; }
-        .block.ai { align-self: stretch; background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 14px; border-bottom-left-radius: 2px; color: #ddd; }
-        
-        /* Console de Comando (Blindado contra erros de sobreposição) */
-        footer { padding: 15px; background: #000; border-top: 1px solid var(--border); }
-        .input-box { background: #111; border-radius: 16px; border: 1px solid #222; display: flex; flex-direction: column; padding: 10px; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
-        textarea { background: transparent; border: none; color: #fff; padding: 10px; font-size: 15px; outline: none; resize: none; min-height: 50px; width: 100%; }
-        
-        .action-row { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding: 5px 10px; border-top: 1px solid rgba(255,255,255,0.03); }
-        #key { background: transparent; border: none; color: #222; font-size: 9px; width: 100px; outline: none; }
-        button { background: var(--main); color: #000; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 900; font-size: 10px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        .block { max-width: 90%; line-height: 1.6; font-size: 14px; animation: fadeInUp 0.4s ease; }
+        .block.user { align-self: flex-start; border-left: 2px solid var(--gold); padding-left: 15px; color: #777; font-style: italic; }
+        .block.ai { align-self: stretch; background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 14px; color: #ccc; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        pre { background: #000; padding: 12px; border-radius: 8px; border: 1px solid #333; color: #00ffaa; font-size: 11px; overflow-x: auto; margin: 10px 0; }
-        b { color: var(--main); }
+        footer { padding: 15px; background: #000; border-top: 1px solid var(--border); }
+        .input-box { background: #111; border-radius: 16px; border: 1px solid #222; padding: 10px; }
+        textarea { background: transparent; border: none; color: #fff; padding: 10px; font-size: 15px; outline: none; resize: none; width: 100%; min-height: 50px; }
+        
+        .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding: 5px; }
+        #key { background: transparent; border: none; color: #222; font-size: 9px; width: 80px; }
+        .btn-group { display: flex; gap: 10px; }
+        button { background: var(--main); color: #000; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 900; font-size: 10px; cursor: pointer; text-transform: uppercase; }
+        .btn-sec { background: #222; color: #eee; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        pre { background: #000; padding: 10px; border-radius: 5px; color: #00ffaa; font-size: 11px; margin: 10px 0; overflow-x: auto; }
     </style>
 </head>
 <body onload="init()">
 
     <header>
         <div class="logo">HUMAN-<span>OS</span></div>
-        <div class="kernel-id">KERNEL: SOVEREIGN-1</div>
+        <div style="font-size: 8px; color: #333;">KERNEL v9.2 // ACTIVE</div>
     </header>
 
     <div id="telemetry">
-        <div class="stat"><label>Estado Cognitivo</label><div id="st-cog">Aguardando Brain Dump...</div></div>
-        <div class="stat"><label>Foco Identificado</label><div id="st-focus">Indefinido</div></div>
-        <div class="stat"><label>Decisão Pendente</label><div id="st-dec">Nenhuma</div></div>
+        <div class="stat"><label>Estado</label><div id="st-cog">Ocioso</div></div>
+        <div class="stat"><label>Foco</label><div id="st-focus">---</div></div>
+        <div class="stat"><label>Memória</label><div>Local Ativa</div></div>
     </div>
 
     <div id="flow">
-        <div class="block ai">
-            <b>KERNEL:</b> Terminal v9.2 Estabilizado. <br><br>
-            Despeje seus pensamentos brutos. Não se preocupe com a ordem ou clareza. Eu farei a <b>destilação</b> para extrair a lógica e os próximos passos.
-        </div>
+        <div class="block ai"><b>KERNEL:</b> Terminal pronto. Despeje o seu caos mental. Eu cuidarei da destilação.</div>
     </div>
 
     <footer>
         <div class="input-box">
-            <textarea id="cmd" placeholder="Brain Dump: O que está na sua mente?"></textarea>
-            <div class="action-row">
-                <input type="password" id="key" placeholder="API_KEY_GROQ">
-                <button onclick="processar()">Destilar</button>
-                <button onclick="exportInsight()" style="background:#555; color:#fff; margin-left:10px;">Exportar Insight</button>
+            <textarea id="cmd" placeholder="O que está processando agora?"></textarea>
+            <div class="actions">
+                <input type="password" id="key" placeholder="API KEY">
+                <div class="btn-group">
+                    <button class="btn-sec" onclick="exportData()">Exportar</button>
+                    <button onclick="process()">Destilar</button>
+                </div>
             </div>
         </div>
     </footer>
 
 <script>
-    let lastAiReply = ""; // Variável para armazenar a última resposta da IA
+    let log = "";
+    function init() { document.getElementById('key').value = localStorage.getItem('gkey') || ''; }
 
-    function init() {
-        document.getElementById('key').value = localStorage.getItem('gkey') || '';
-    }
+    async function process() {
+        const key = document.getElementById('key').value;
+        const input = document.getElementById('cmd');
+        const text = input.value.trim();
+        if(!key || !text) return;
+        localStorage.setItem('gkey', key);
 
-    async function processar() {
-        const keyVal = document.getElementById('key').value.trim();
-        const cmd = document.getElementById('cmd');
-        const flow = document.getElementById('flow');
-        const text = cmd.value.trim();
-        
-        if(!keyVal || !text) return;
-        localStorage.setItem('gkey', keyVal);
-
-        flow.innerHTML += `<div class="block user"><i>Brain Dump:</i><br>${text}</div>`;
-        cmd.value = "";
-        flow.scrollTop = flow.scrollHeight;
-
+        document.getElementById('flow').innerHTML += `<div class="block user">${text}</div>`;
+        input.value = "";
         document.getElementById('st-cog').innerText = "Destilando...";
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${keyVal}`, "Content-Type": "application/json" },
+                headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
-                    messages: [
-                        { role: "system", content: "Você é o Kernel do HUMAN-OS. Sua função é processar o caos mental do usuário. Transforme o input em: 1. CLAREZA (Resumo do que foi dito), 2. PONTOS DE DECISÃO (O que precisa ser decidido), 3. PRÓXIMO PASSO (Ação imediata). Use Markdown e seja ultra-lógico e objetivo. Formate bem para leitura rápida." },
-                        { role: "user", content: text }
-                    ]
+                    messages: [{role: "system", content: "Você é o Kernel do HUMAN-OS. Destile o caos do usuário em: 1. CLAREZA, 2. DECISÕES, 3. PRÓXIMO PASSO. Use Markdown."}, {role: "user", content: text}]
                 })
             });
             const data = await res.json();
-            let reply = data.choices[0].message.content;
-            lastAiReply = reply; // Armazena a resposta para exportação
+            const reply = data.choices[0].message.content;
+            log += `\n\nUSER: ${text}\nKERNEL: ${reply}`;
             
+            document.getElementById('flow').innerHTML += `<div class="block ai"><b>ESTRUTURA:</b><br>${reply.replace(/\n/g, '<br>')}</div>`;
             document.getElementById('st-cog').innerText = "Clareza Ativa";
-            document.getElementById('st-focus').innerText = text.substring(0, 15) + "...";
-
-            reply = reply.replace(/```([\s\S]*?)```/g, '<pre>$1</pre>').replace(/\n/g, '<br>');
-            flow.innerHTML += `<div class="block ai"><b>ESTRUTURA COGNITIVA:</b><br>${reply}</div>`;
-        } catch (e) {
-            flow.innerHTML += `<div style="color:red; font-size:10px; padding:10px;">Erro de processamento.</div>`;
-        }
-        flow.scrollTop = flow.scrollHeight;
+            document.getElementById('st-focus').innerText = text.substring(0, 10) + "...";
+        } catch (e) { alert("Erro na conexão."); }
+        document.getElementById('flow').scrollTop = document.getElementById('flow').scrollHeight;
     }
 
-    function exportInsight() {
-        if (!lastAiReply) {
-            alert("Não há insight para exportar. Processe um pensamento primeiro.");
-            return;
-        }
-
-        const filename = `HUMAN-OS_Insight_${new Date().toISOString().slice(0,10)}.txt`;
-        const element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(lastAiReply));
-        element.setAttribute('download', filename);
-
-        element.style.display = 'none';
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
+    function exportData() {
+        const blob = new Blob([log], {type: "text/plain"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "human-os-insight.txt"; a.click();
     }
 </script>
 </body>
