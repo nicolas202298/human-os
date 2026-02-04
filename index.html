@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUMAN OS v2.1 - PT-BR</title>
+    <title>HUMAN OS v2.2 - MEMORY</title>
     <style>
         body { background: #050505; color: #ff3e3e; font-family: 'Courier New', monospace; padding: 20px; text-align: center; }
         #box { max-width: 500px; margin: auto; border: 2px solid #ff3e3e; padding: 20px; border-radius: 10px; background: #000; box-shadow: 0 0 20px #ff3e3e; }
@@ -13,9 +13,9 @@
         .a { color: #ff3e3e; margin: 8px 0; background: #1a0000; padding: 10px; border-radius: 5px; border-left: 2px solid #ff3e3e; }
     </style>
 </head>
-<body>
+<body onload="carregarChave()">
     <div id="box">
-        <h3>> HUMAN OS v2.1</h3>
+        <h3>> HUMAN OS v2.2</h3>
         <input type="password" id="key" placeholder="COLE SUA CHAVE gsk_... AQUI">
         <div id="chat"></div>
         <input type="text" id="input" placeholder="Digite sua ordem...">
@@ -23,13 +23,26 @@
     </div>
 
 <script>
+// FUNÇÃO PARA CARREGAR A CHAVE AUTOMATICAMENTE
+function carregarChave() {
+    const salva = localStorage.getItem('groq_key');
+    if(salva) {
+        document.getElementById('key').value = salva;
+    }
+}
+
 async function enviar() {
-    const key = document.getElementById('key').value.trim();
+    const keyInput = document.getElementById('key');
+    const key = keyInput.value.trim();
     const input = document.getElementById('input');
     const chat = document.getElementById('chat');
     const txt = input.value.trim();
     
     if(!key || !txt) return;
+
+    // SALVA A CHAVE PARA A PRÓXIMA VEZ
+    localStorage.setItem('groq_key', key);
+
     chat.innerHTML += `<div class="u"><b>Você:</b> ${txt}</div>`;
     input.value = "";
 
@@ -43,8 +56,7 @@ async function enviar() {
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
                 messages: [
-                    // AQUI ESTÁ A MÁGICA PARA O PORTUGUÊS:
-                    { role: "system", content: "Você é o HUMAN OS, uma IA avançada. Responda sempre em português do Brasil de forma direta e útil." },
+                    { role: "system", content: "Você é o HUMAN OS. Responda sempre em português do Brasil de forma direta." },
                     { role: "user", content: txt }
                 ]
             })
