@@ -17,11 +17,13 @@
             color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
         }
 
+        /* Tela de Login Estilo Vidro */
         #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .login-card { background: rgba(0, 30, 35, 0.85); padding: 35px; border-radius: 25px; border: 1px solid var(--neon); backdrop-filter: blur(15px); width: 100%; max-width: 360px; text-align: center; box-shadow: 0 0 40px rgba(0, 242, 255, 0.3); }
         
         input { width: 100%; padding: 16px; margin: 10px 0; background: rgba(0,0,0,0.7); border: 1px solid #1a4a4d; color: var(--neon); border-radius: 12px; outline: none; font-size: 16px; }
 
+        /* Interface Principal */
         #app-interface { display: none; flex-direction: column; height: 100vh; position: relative; }
         header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 255, 0.2); }
         .brand { font-weight: 900; color: var(--neon); letter-spacing: 4px; font-size: 20px; text-shadow: 0 0 10px var(--neon); }
@@ -35,6 +37,7 @@
         .ai { background: rgba(0, 45, 50, 0.75); align-self: flex-start; border-left: 5px solid var(--neon); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
         .user { background: rgba(255,255,255,0.08); align-self: flex-end; color: #ddd; }
 
+        /* Rodapé Fixo (Evita problemas com teclado) */
         footer { position: fixed; bottom: 0; width: 100%; padding: 20px; background: linear-gradient(transparent, #000 40%); z-index: 9999; }
         .input-wrap { background: rgba(20, 25, 25, 0.98); border: 1px solid #2a5a5d; border-radius: 18px; padding: 12px; box-shadow: 0 -10px 30px rgba(0,0,0,0.6); }
         textarea { width: 100%; background: transparent; border: none; color: #fff; padding: 8px; font-size: 16px; outline: none; resize: none; min-height: 55px; }
@@ -61,18 +64,18 @@
     <section id="auth-screen">
         <div class="login-card">
             <h1 style="color:var(--neon); margin-bottom:5px; letter-spacing:5px;">HUMAN-OS</h1>
-            <p style="font-size:9px; color:#4a8a8d; margin-bottom:30px; letter-spacing:2px;">KERNEL ACCESS TERMINAL</p>
-            <input type="email" id="email" placeholder="Sincronizar E-mail">
-            <input type="password" id="password" placeholder="Chave de Segurança">
-            <button class="btn-send" onclick="handleAuth()">ENTRAR NO KERNEL</button>
-            <p id="auth-msg" style="font-size:11px; margin-top:15px; color:var(--neon);"></p>
+            <p style="font-size:9px; color:#4a8a8d; margin-bottom:30px; letter-spacing:2px;">SISTEMA OPERACIONAL SOBERANO</p>
+            <input type="email" id="email" placeholder="E-mail Autorizado">
+            <input type="password" id="password" placeholder="Chave de Acesso">
+            <button class="btn-send" onclick="handleAuth()">SINCRONIZAR KERNEL</button>
+            <p id="auth-msg" style="font-size:11px; margin-top:15px;"></p>
         </div>
     </section>
 
     <section id="app-interface">
         <header>
             <div class="brand">HUMAN-OS</div>
-            <button onclick="logout()" style="background:none; border:none; color:#555; font-size:10px;">DISCONNECT</button>
+            <button onclick="logout()" style="background:none; border:none; color:#555; font-size:10px;">SAIR</button>
         </header>
 
         <div class="lang-bar">
@@ -82,21 +85,22 @@
         </div>
 
         <div id="flow">
-            <div class="msg ai"><b>SISTEMA ONLINE.</b><br>Pronto para gerar insights. Digite sua instrução abaixo.</div>
+            <div class="msg ai"><b>SISTEMA ONLINE.</b><br>Bem-vindo ao Kernel. Só e-mails autorizados têm acesso a este processamento.</div>
         </div>
 
         <footer>
             <div class="input-wrap">
-                <textarea id="cmd" placeholder="O que você está pensando?"></textarea>
+                <textarea id="cmd" placeholder="O que deseja processar?"></textarea>
                 <button id="runBtn" onclick="destilar()" class="btn-send">PROCESSAR INSIGHT</button>
             </div>
         </footer>
     </section>
 
 <script>
+    // Configurações de Banco de Dados e IA
     const S_U = 'https://fddzojlntzmhmekckplm.supabase.co';
     const S_K = 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5';
-    // Proteção de chave contra bloqueio automático
+    // Proteção da chave contra filtros do GitHub
     const G_1 = 'gsk';
     const G_2 = '_7vYZi2Fh2LLaMhveEihrWGdyb3FY8iX02JXgTPtuniGyVDlAyKVI';
     const G_KEY = G_1 + G_2;
@@ -111,13 +115,19 @@
         b.classList.add('active');
     }
 
+    // FUNÇÃO DE LOGIN TRANCADA (SÓ ENTRA QUEM VOCÊ CRIAR NO SUPABASE)
     async function handleAuth() {
         const e = document.getElementById('email').value;
         const p = document.getElementById('password').value;
+        const m = document.getElementById('auth-msg');
+        m.innerText = "VERIFICANDO AUTORIZAÇÃO...";
+        m.style.color = "var(--neon)";
+        
         const { data, error } = await _supabase.auth.signInWithPassword({ email: e, password: p });
+        
         if (error) {
-            await _supabase.auth.signUp({ email: e, password: p });
-            document.getElementById('auth-msg').innerText = "Novo registro efetuado. Acesse agora.";
+            m.innerText = "ACESSO NEGADO: Usuário não autorizado.";
+            m.style.color = "#ff4444";
         } else {
             user = data.user;
             document.getElementById('auth-screen').style.display = 'none';
@@ -137,9 +147,9 @@
         btn.disabled = true;
 
         const prompts = {
-            'pt': 'Responda sempre em Português. Seja extremamente direto, profundo e focado em produtividade máxima.',
-            'en': 'Always respond in English. Technical mindset, high productivity focus.',
-            'es': 'Responde siempre en Español de forma profunda.'
+            'pt': 'Responda sempre em Português. Seja direto, profundo e disruptivo.',
+            'en': 'Respond in English. Technical and sharp.',
+            'es': 'Responde en Español. Profundo y claro.'
         };
 
         try {
@@ -154,9 +164,12 @@
             const d = await resp.json();
             const reply = d.choices[0].message.content;
             addMsg('ai', reply);
+            
+            // Salva no seu banco de dados
             await _supabase.from('Insights').insert([{ user_id: user.id, content: text, type: 'user' }, { user_id: user.id, content: reply, type: 'ai' }]);
+            
         } catch (err) {
-            addMsg('ai', "ERRO: O sistema não conseguiu processar a conexão.");
+            addMsg('ai', "<b>ERRO CRÍTICO:</b> O Kernel perdeu a conexão neural.");
         } finally {
             btn.innerText = "PROCESSAR INSIGHT";
             btn.disabled = false;
