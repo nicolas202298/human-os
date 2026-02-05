@@ -3,88 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human OS - Interface Profissional</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <title>HUMAN-OS | Sovereign Intelligence</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { display: flex; background-color: #212121; color: #ececec; height: 100vh; overflow: hidden; }
+        :root { --neon: #00f2ff; --bg: #050505; --card: #111; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: #fff; overflow-x: hidden; }
 
-        /* SIDEBAR ESTILO CHATGPT */
-        #sidebar { width: 260px; background-color: #000; display: flex; flex-direction: column; padding: 10px; transition: 0.3s; z-index: 10; }
+        /* --- LANDING PAGE --- */
+        #landing-page { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; text-align: center; padding: 40px 20px;
+            background: radial-gradient(circle at top, #0a1f21 0%, #050505 100%);
+        }
+        .hero-title { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 20px; line-height: 1; }
+        .hero-title span { color: var(--neon); text-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
+        .hero-subtitle { font-size: 1.1rem; color: #888; max-width: 600px; margin-bottom: 40px; line-height: 1.6; }
         
-        .btn-new-chat { border: 1px solid #4d4d4d; border-radius: 6px; padding: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 20px; font-size: 0.9rem; transition: 0.2s; }
-        .btn-new-chat:hover { background-color: #202123; }
+        .cta-button { 
+            background: var(--neon); color: #000; padding: 22px 45px; border-radius: 50px;
+            font-weight: 900; text-decoration: none; font-size: 1.1rem; text-transform: uppercase;
+            box-shadow: 0 0 35px rgba(0, 242, 255, 0.5); transition: 0.3s; display: inline-block;
+        }
+        .cta-button:hover { transform: scale(1.05); box-shadow: 0 0 55px var(--neon); }
+        .login-trigger { margin-top: 30px; color: #444; cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
 
-        .nav-items { list-style: none; flex-grow: 1; overflow-y: auto; }
-        .nav-items li { padding: 10px; border-radius: 6px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 0.9rem; margin-bottom: 4px; }
-        .nav-items li:hover { background-color: #202123; }
-
-        .history-label { font-size: 0.7rem; color: #666; font-weight: bold; margin: 20px 0 10px 10px; text-transform: uppercase; }
+        /* --- AUTH & KERNEL --- */
+        #auth-screen, #app-interface { display: none; }
+        #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; }
         
-        /* FOOTER USUÁRIO */
-        .user-section { border-top: 1px solid #343541; padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .user-avatar { width: 32px; height: 32px; background: #7e42a4; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; }
-
-        /* ÁREA DE CHAT */
-        #main-chat { flex-grow: 1; display: flex; flex-direction: column; position: relative; }
-        #messages { flex-grow: 1; overflow-y: auto; padding: 40px 15% 150px 15%; }
+        #sidebar { width: 280px; height: 100%; background: #010409; border-right: 1px solid #30363d; position: fixed; left: -280px; transition: 0.3s; z-index: 2000; }
+        #sidebar.open { left: 0; }
+        .main-app { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; background: #0d1117; }
         
-        /* INPUT IGUAL AO PRINT */
-        .input-wrapper { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, #212121 20%); padding: 20px 15% 40px 15%; }
-        .input-box { position: relative; width: 100%; max-width: 768px; margin: 0 auto; }
-        .input-box input { width: 100%; background: #2f2f2f; border: 1px solid #4d4d4d; border-radius: 12px; padding: 16px 45px 16px 16px; color: #fff; font-size: 1rem; outline: none; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-        .send-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #676767; color: #212121; padding: 5px 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-        .send-icon:hover { background: #fff; }
+        header { padding: 15px; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; background: #0d1117; }
+        #flow { flex-grow: 1; overflow-y: auto; padding: 25px; max-width: 850px; margin: 0 auto; width: 100%; padding-bottom: 180px; }
+        
+        .msg { padding: 20px; border-radius: 12px; font-size: 16px; line-height: 1.6; margin-bottom: 15px; max-width: 90%; }
+        .user { background: #21262d; align-self: flex-end; margin-left: auto; border: 1px solid #30363d; }
+        .ai { color: #d1d5db; align-self: flex-start; }
+
+        footer { position: fixed; bottom: 0; width: 100%; padding: 20px; background: linear-gradient(transparent, #0d1117 40%); }
+        .input-box { max-width: 768px; margin: 0 auto; background: #21262d; border-radius: 15px; padding: 15px; border: 1px solid #30363d; display: flex; gap: 10px; }
+        textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; resize: none; font-size: 16px; height: 24px; }
+        .send-btn { background: var(--neon); border: none; width: 35px; height: 35px; border-radius: 8px; cursor: pointer; color: #000; }
+
+        @media (max-width: 768px) { .hero-title { font-size: 2.8rem; } }
     </style>
 </head>
 <body>
 
-    <aside id="sidebar">
-        <div class="btn-new-chat"><i class="fa-solid fa-plus"></i> Novo chat</div>
+    <section id="landing-page">
+        <p style="color: var(--neon); letter-spacing: 5px; font-weight: bold; margin-bottom: 15px; font-size: 0.8rem;">ACCESSIBLE BY INVITATION ONLY</p>
+        <h1 class="hero-title">Instale o <span>HUMAN-OS</span> no seu Cérebro.</h1>
+        <p class="hero-subtitle">Saia das IAs comuns. Acesse o Kernel soberano para produtividade extrema e clareza de alto nível.</p>
         
-        <ul class="nav-items">
-            <li><i class="fa-regular fa-image"></i> Imagens</li>
-            <li><i class="fa-solid fa-shapes"></i> Aplicativos</li>
-            <li><i class="fa-solid fa-folder"></i> Novo projeto</li>
-            
-            <div class="history-label">Hoje</div>
-            <li class="history-item">Sistema Operacional de Foco 📌</li>
-            <li class="history-item">Dicas para rinite</li>
-            <li class="history-item">Análise do HUMAN OS</li>
-        </ul>
+        <a href="https://pay.kiwify.com.br/OZtAt4I" class="cta-button">Adquirir Acesso ao Kernel</a>
+        
+        <p class="login-trigger" onclick="showLogin()">Já possui uma licença? Sincronizar agora.</p>
+    </section>
 
-        <div class="user-section">
-            <div class="user-avatar">NX</div>
-            <span id="user-name">Nicolas Xavier</span>
+    <section id="auth-screen">
+        <div style="background: #161b22; padding: 40px; border-radius: 15px; border: 1px solid #30363d; text-align: center; width: 90%; max-width: 380px;">
+            <h2 style="color: var(--neon); margin-bottom: 25px; letter-spacing: 3px;">AUTHENTICATION</h2>
+            <input type="email" id="email" placeholder="Seu e-mail de compra" style="width: 100%; padding: 14px; margin-bottom: 12px; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 8px; outline: none;">
+            <input type="password" id="password" placeholder="Sua chave de acesso" style="width: 100%; padding: 14px; margin-bottom: 25px; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 8px; outline: none;">
+            <button onclick="handleAuth()" style="width: 100%; background: var(--neon); border: none; padding: 16px; border-radius: 8px; font-weight: 800; cursor: pointer; color: #000; text-transform: uppercase;">Acessar Kernel</button>
+            <p onclick="location.reload()" style="margin-top: 20px; font-size: 12px; color: #8b949e; cursor: pointer;">Voltar para a oferta</p>
         </div>
-    </aside>
+    </section>
 
-    <main id="main-chat">
-        <div id="messages">
+    <div id="app-interface">
+        <div id="sidebar">
+            <div style="padding: 20px; font-weight: bold; color: var(--neon); border-bottom: 1px solid #30363d; display: flex; justify-content: space-between;">
+                <span>HISTÓRICO</span>
+                <span onclick="toggleMenu()" style="cursor:pointer">✕</span>
+            </div>
+            <div id="history-list" style="padding: 10px;"></div>
+        </div>
+        
+        <div class="main-app">
+            <header>
+                <div onclick="toggleMenu()" style="cursor: pointer; color: #8b949e;"><i class="fas fa-bars"></i></div>
+                <div style="font-weight: 800; letter-spacing: 2px; font-size: 14px;">HUMAN-OS KERNEL</div>
+                <div style="width: 20px;"></div>
+            </header>
+
+            <div id="flow">
+                <div class="msg ai"><b>KERNEL ATIVO.</b><br>Bem-vindo à sua interface soberana. O que deseja processar?</div>
             </div>
 
-        <div class="input-wrapper">
-            <div class="input-box">
-                <input type="text" id="userInput" placeholder="Como posso ajudar hoje?">
-                <div class="send-icon" onclick="sendMessage()"><i class="fa-solid fa-arrow-up"></i></div>
-            </div>
+            <footer>
+                <div class="input-box">
+                    <textarea id="cmd" placeholder="Message Human OS..."></textarea>
+                    <button onclick="destilar()" class="send-btn"><i class="fas fa-arrow-up"></i></button>
+                </div>
+            </footer>
         </div>
-    </main>
+    </div>
 
-    <script>
-        // AQUI VOCÊ PRECISA RECOLOCAR SUAS CHAVES DO SUPABASE QUE ESTAVAM NO CÓDIGO ANTIGO
-        const _supabaseURL = 'SUA_URL_AQUI';
-        const _supabaseKey = 'SUA_CHAVE_AQUI';
-        const supabase = supabase.createClient(_supabaseURL, _supabaseKey);
+<script>
+    const S_U = 'https://fddzojlntzmhmekckplm.supabase.co';
+    const S_K = 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5';
+    const G_KEY = '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';
+    const _supabase = supabase.createClient(S_U, S_K);
+    let user = null;
 
-        async function sendMessage() {
-            const input = document.getElementById('userInput');
-            if (!input.value) return;
-            // Lógica de envio que você já tinha...
-            console.log("Enviando:", input.value);
-            input.value = '';
+    function showLogin() {
+        document.getElementById('landing-page').style.display = 'none';
+        document.getElementById('auth-screen').style.display = 'flex';
+    }
+
+    function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
+
+    async function handleAuth() {
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('password').value;
+        const { data, error } = await _supabase.auth.signInWithPassword({ email: e, password: p });
+        if (error) { alert("Acesso Negado. Verifique seu e-mail de compra."); }
+        else {
+            user = data.user;
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app-interface').style.display = 'flex';
         }
-    </script>
+    }
+
+    async function destilar() {
+        const input = document.getElementById('cmd');
+        const text = input.value.trim();
+        if(!text) return;
+        addMsg('user', text);
+        input.value = "";
+        
+        try {
+            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "llama-3.3-70b-versatile",
+                    messages: [{role: "system", content: "Seja direto e profundo."}, {role: "user", content: text}]
+                })
+            });
+            const d = await resp.json();
+            addMsg('ai', d.choices[0].message.content);
+        } catch (e) { addMsg('ai', "Erro no Kernel."); }
+    }
+
+    function addMsg(t, c) {
+        const f = document.getElementById('flow');
+        const d = document.createElement('div');
+        d.className = `msg ${t}`;
+        d.innerHTML = c.replace(/\n/g, '<br>');
+        f.appendChild(d);
+        f.scrollTop = f.scrollHeight;
+    }
+</script>
 </body>
 </html>
