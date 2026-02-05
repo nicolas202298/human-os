@@ -10,25 +10,33 @@
         :root { --neon: #00f2ff; --bg: #050505; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; }
+        
+        /* Landing Page Estilo Print */
         #landing-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; background: radial-gradient(circle at top, #0a1f21 0%, #050505 100%); padding: 20px; }
-        .hero-title { font-size: 3rem; font-weight: 900; letter-spacing: -2px; }
+        .hero-title { font-size: 3rem; font-weight: 900; letter-spacing: -2px; line-height: 1; }
         .hero-title span { color: var(--neon); text-shadow: 0 0 20px rgba(0,242,255,0.5); }
         .cta-button { background: var(--neon); color: #000; padding: 18px 35px; border-radius: 50px; font-weight: 900; text-decoration: none; display: inline-block; margin-top: 25px; box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); text-transform: uppercase; font-size: 0.9rem; }
+
+        /* Interface Principal */
         #app-interface { display: none; height: 100vh; width: 100vw; }
         #sidebar { width: 280px; height: 100%; background: #000; border-right: 1px solid #1a1a1a; position: fixed; left: -280px; transition: 0.3s; z-index: 2000; display: flex; flex-direction: column; padding: 15px; }
         #sidebar.open { left: 0; }
         .sidebar-item { padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; color: #aaa; font-size: 0.9rem; margin-bottom: 5px; }
         .sidebar-item:hover { background: #111; color: var(--neon); }
+        
         .main-app { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; background: #070707; }
         header { padding: 15px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; background: #000; }
         #flow { flex-grow: 1; overflow-y: auto; padding: 20px; width: 100%; padding-bottom: 150px; }
-        .msg { padding: 15px; border-radius: 12px; margin-bottom: 15px; line-height: 1.5; max-width: 90%; font-size: 0.9rem; }
-        .ai { border-left: 3px solid var(--neon); background: rgba(0, 242, 255, 0.02); color: #ccc; }
-        .user { background: #161616; align-self: flex-end; margin-left: auto; border: 1px solid #222; }
+        
+        .msg { padding: 15px; border-radius: 12px; margin-bottom: 15px; line-height: 1.5; max-width: 90%; font-size: 0.9rem; border: 1px solid transparent; }
+        .ai { border-left: 3px solid var(--neon); background: rgba(0, 242, 255, 0.05); color: #ddd; }
+        .user { background: #161616; align-self: flex-end; margin-left: auto; border-color: #222; }
+
         footer { position: fixed; bottom: 0; width: 100%; padding: 15px; background: linear-gradient(transparent, #070707 50%); }
         .input-box { background: #111; border-radius: 15px; padding: 10px; border: 1px solid #222; display: flex; align-items: center; }
         textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; height: 24px; resize: none; font-size: 1rem; }
         .send-btn { background: var(--neon); border: none; width: 35px; height: 35px; border-radius: 8px; cursor: pointer; color: #000; margin-left: 10px; }
+        
         #auth-screen { display:none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; background: #000; padding: 20px; }
     </style>
 </head>
@@ -36,30 +44,33 @@
 
     <section id="landing-page">
         <h1 class="hero-title">HUMAN-OS<br><span>KERNEL</span></h1>
-        <p style="color: #666; margin-top: 10px;">Inteligência Soberana v3.5</p>
+        <p style="color: #666; margin-top: 10px;">Suporte Cognitivo & Psicológico Soberano</p>
         <a href="https://pay.kiwify.com.br/OZtAt4I" class="cta-button">ADQUIRIR ACESSO</a>
-        <p onclick="showLogin()" style="margin-top: 25px; color: #fff; text-decoration: underline; cursor: pointer;">Já sou membro</p>
+        <p onclick="showLogin()" style="margin-top: 25px; color: #fff; text-decoration: underline; cursor: pointer;">Aceder ao Núcleo</p>
     </section>
 
     <div id="app-interface">
         <div id="sidebar">
             <div class="sidebar-item" style="border: 1px solid #333; margin-bottom: 20px; color: #fff;" onclick="location.reload()"><i class="fas fa-plus"></i> Novo Chat</div>
-            <div class="sidebar-item" onclick="loadHistory()"><i class="fas fa-history"></i> História</div>
-            <div class="sidebar-item" onclick="getFinance()"><i class="fas fa-chart-line"></i> Cotação</div>
-            <div class="sidebar-item" onclick="addMsg('ai', '<b>COMANDOS:</b><br>/imagem<br>/analise')"><i class="fas fa-terminal"></i> Comandos</div>
+            <div class="sidebar-item" onclick="getFinance()"><i class="fas fa-chart-line"></i> Mercado Vivo</div>
+            <div class="sidebar-item" onclick="showHelp('cog')"><i class="fas fa-brain"></i> Ajuda Cognitiva</div>
+            <div class="sidebar-item" onclick="showHelp('psi')"><i class="fas fa-heartbeat"></i> Psicólogo Particular</div>
+            <div class="sidebar-item" onclick="showHelp('cmd')"><i class="fas fa-terminal"></i> Comandos</div>
             <div id="history-list" style="flex-grow: 1; overflow-y: auto; margin-top: 20px; border-top: 1px solid #111; padding-top: 15px;"></div>
             <div id="user-display" style="padding: 10px; font-size: 0.7rem; color: #444;"></div>
         </div>
         <div class="main-app">
             <header>
-                <i class="fas fa-bars" onclick="toggleMenu()" style="color: #888;"></i>
-                <div style="font-weight: 900; letter-spacing: 2px; font-size: 0.7rem; color: #444;">KERNEL CORE</div>
+                <i class="fas fa-bars" onclick="toggleMenu()" style="color: #888; cursor:pointer;"></i>
+                <div style="font-weight: 900; letter-spacing: 2px; font-size: 0.7rem; color: #444;">KERNEL SYSTEM v3.6</div>
                 <div></div>
             </header>
-            <div id="flow"></div>
+            <div id="flow">
+                <div class="msg ai"><b>SISTEMA ONLINE.</b><br>Módulos de suporte cognitivo e psicológico carregados. Como te sentes hoje?</div>
+            </div>
             <footer>
                 <div class="input-box">
-                    <textarea id="cmd" placeholder="Comando..."></textarea>
+                    <textarea id="cmd" placeholder="Digite seu pensamento..."></textarea>
                     <button onclick="destilar()" class="send-btn"><i class="fas fa-arrow-up"></i></button>
                 </div>
             </footer>
@@ -68,7 +79,7 @@
 
     <section id="auth-screen">
         <div style="background: #111; padding: 30px; border-radius: 20px; border: 1px solid #222; width: 100%; max-width: 350px; text-align: center;">
-            <h2 style="color: var(--neon); margin-bottom: 20px; font-size: 0.9rem;">LOGIN</h2>
+            <h2 style="color: var(--neon); margin-bottom: 20px; font-size: 0.9rem;">IDENTIFICAÇÃO</h2>
             <input type="email" id="email_login" placeholder="E-mail" style="width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px;">
             <input type="password" id="password_login" placeholder="Senha" style="width: 100%; padding: 12px; margin-bottom: 20px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px;">
             <button onclick="handleAuth()" style="width: 100%; background: var(--neon); padding: 15px; border-radius: 8px; font-weight: 800; border: none;">ENTRAR</button>
@@ -86,33 +97,45 @@
 
     async function handleAuth() {
         const { data, error } = await _supabase.auth.signInWithPassword({ email: email_login.value, password: password_login.value });
-        if (error) return alert("Erro no Login");
+        if (error) return alert("Acesso negado.");
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app-interface').style.display = 'flex';
         document.getElementById('user-display').innerText = data.user.email;
-        loadHistory();
+    }
+
+    function showHelp(tipo) {
+        let m = "";
+        if(tipo === 'cog') m = "🧠 <b>MODO COGNITIVO:</b> Estou pronto para organizar seus projetos, filtrar informações e acelerar seu aprendizado.";
+        if(tipo === 'psi') m = "🫂 <b>PSICÓLOGO PARTICULAR:</b> Este é um espaço seguro. Pode falar sobre suas pressões, medos ou apenas desabafar. Estou ouvindo.";
+        if(tipo === 'cmd') m = "⌨️ <b>COMANDOS:</b><br>/resumo<br>/plano<br>/conselho";
+        addMsg('ai', m);
+        toggleMenu();
     }
 
     async function getFinance() {
-        addMsg('ai', "<i>Acedendo ao mercado...</i>");
+        addMsg('ai', "<i>Sincronizando mercados...</i>");
         const r = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL,BTC-BRL');
         const d = await r.json();
-        addMsg('ai', `<b>MERCADO:</b><br>Dólar: R$ ${parseFloat(d.USDBRL.bid).toFixed(2)}<br>Bitcoin: R$ ${parseFloat(d.BTCBRL.bid).toLocaleString('pt-BR')}`);
+        addMsg('ai', `<b>MERCADO AGORA:</b><br>Dólar: R$ ${parseFloat(d.USDBRL.bid).toFixed(2)}<br>Bitcoin: R$ ${parseFloat(d.BTCBRL.bid).toLocaleString('pt-BR')}`);
         toggleMenu();
     }
 
     async function destilar() {
         const text = cmd.value.trim(); if(!text) return;
         addMsg('user', text); cmd.value = "";
-        const { data: info } = await _supabase.from('knowledge').select('content');
-        const context = info ? info.map(i => i.content).join('\n') : "";
-        const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role: "system", content: "É o Kernel Human-OS. Use: " + context}, {role: "user", content: text}] })
-        });
-        const d = await resp.json();
-        addMsg('ai', d.choices[0].message.content);
+        
+        try {
+            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    model: "llama-3.3-70b-versatile", 
+                    messages: [{role: "system", content: "Você é o Kernel Human-OS. Você tem dois módulos principais: Ajuda Cognitiva (produtividade e clareza mental) e Psicólogo Particular (empatia, escuta ativa e suporte emocional). Responda sempre de forma soberana mas acolhedora."}, {role: "user", content: text}] 
+                })
+            });
+            const d = await resp.json();
+            addMsg('ai', d.choices[0].message.content);
+        } catch(e) { addMsg('ai', "Erro de conexão com o núcleo."); }
     }
 
     function addMsg(t, c) {
