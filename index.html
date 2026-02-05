@@ -4,9 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HUMAN-OS | Sovereign Intelligence</title>
+    
+    <meta name="theme-color" content="#0d1117">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HumanOS">
+    
+    <link rel="apple-touch-icon" href="https://i.ibb.co/L8484v0/human-os-icon.png"> 
+    <link rel="icon" href="https://i.ibb.co/L8484v0/human-os-icon.png">
+    
     <link rel="manifest" id="pwa-manifest">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         :root { --neon: #00f2ff; --bg: #050505; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -53,6 +64,7 @@
         #sidebar.open { left: 0; }
         .sidebar-item { padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; color: #ececec; font-size: 0.9rem; }
         .sidebar-item:hover { background: #202123; }
+        .sidebar-category { font-size: 0.7rem; color: #444; font-weight: bold; margin: 20px 0 10px 10px;}
 
         .main-app { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; background: #0d1117; }
         header { padding: 15px; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; }
@@ -92,10 +104,16 @@
             <div class="sidebar-item" style="border: 1px solid #333; margin-bottom: 20px;" onclick="location.reload()">
                 <i class="fas fa-plus"></i> Novo chat
             </div>
-            <div class="sidebar-item"><i class="far fa-image"></i> Imagens</div>
-            <div class="sidebar-item"><i class="fas fa-th-large"></i> Aplicativos</div>
-            <div style="font-size: 0.7rem; color: #444; font-weight: bold; margin: 20px 0 10px 10px;">HISTÓRICO</div>
+            <div class="sidebar-category">HISTÓRIA</div>
             <div id="history-list" style="flex-grow: 1; overflow-y: auto;"></div>
+
+            <div class="sidebar-item"><i class="fas fa-star"></i> Melhores</div>
+            <div class="sidebar-item"><i class="fas fa-terminal"></i> Comandos</div>
+            <div class="sidebar-item"><i class="fas fa-tools"></i> Detalhes</div>
+            <div class="sidebar-item"><i class="fas fa-quote-right"></i> Cotação</div>
+            <div class="sidebar-item"><i class="fas fa-th-large"></i> Aplicativos</div>
+            <div class="sidebar-item"><i class="fas fa-cog"></i> Configurações</div>
+
             <div id="user-display" style="padding: 15px; border-top: 1px solid #222; font-size: 0.8rem; color: #888;"></div>
         </div>
         
@@ -124,7 +142,34 @@
     const _supabase = supabase.createClient(S_U, S_K);
     let user = null;
 
-    // MOSTRAR LOGIN AO CLICAR NO TEXTO
+    // Configuração do PWA (MANIFESTO EMBUTIDO)
+    const myManifest = {
+        "short_name": "HumanOS",
+        "name": "HUMAN-OS Sovereign Intelligence",
+        "start_url": ".",
+        "display": "standalone",
+        "theme_color": "#0d1117",
+        "background_color": "#0d1117",
+        "icons": [{ "src": "https://i.ibb.co/L8484v0/human-os-icon.png", "sizes": "512x512", "type": "image/png" }]
+    };
+    const stringManifest = JSON.stringify(myManifest);
+    const blob = new Blob([stringManifest], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(blob);
+    document.querySelector('#pwa-manifest').setAttribute('href', manifestURL);
+
+    // Registro do Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('data:text/javascript;base64,' + btoa('self.addEventListener("fetch", (e) => {});'))
+                .then(function(registration) {
+                    console.log('ServiceWorker registrado com sucesso:', registration.scope);
+                })
+                .catch(function(err) {
+                    console.log('Falha no registro do ServiceWorker:', err);
+                });
+        });
+    }
+
     function showLogin() {
         document.getElementById('landing-page').style.display = 'none';
         document.getElementById('auth-screen').style.display = 'flex';
