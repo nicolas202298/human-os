@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human OS | Dashboard</title>
+    <title>Human OS | Oficial</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { display: flex; background-color: #212121; color: #ececec; height: 100vh; overflow: hidden; }
+        body { display: flex; background-color: #212121; color: #fff; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR PROFISSIONAL */
+        /* SIDEBAR (A que você queria igual ao ChatGPT) */
         #sidebar {
             width: 260px;
             background-color: #000;
@@ -19,6 +20,7 @@
             padding: 10px;
             height: 100%;
             border-right: 1px solid #2d2d2d;
+            z-index: 100;
         }
 
         .btn-new-chat {
@@ -31,28 +33,91 @@
             cursor: pointer;
             margin-bottom: 20px;
             font-size: 0.9rem;
-            transition: 0.3s;
         }
-        .btn-new-chat:hover { background-color: #202123; }
 
-        .menu-items { list-style: none; flex-grow: 1; overflow-y: auto; }
-        .menu-items li {
+        .menu-list { list-style: none; flex-grow: 1; overflow-y: auto; }
+        .menu-list li {
             padding: 10px;
-            border-radius: 8px;
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
+            border-radius: 8px;
             font-size: 0.9rem;
-            margin-bottom: 5px;
         }
-        .menu-items li:hover { background-color: #2d2d2d; }
+        .menu-list li:hover { background-color: #2d2d2d; }
 
-        .section-title {
-            font-size: 0.7rem; color: #666; font-weight: bold; margin: 20px 0 10px 10px; text-transform: uppercase;
+        .history-label { font-size: 0.7rem; color: #666; margin: 20px 0 10px 10px; text-transform: uppercase; }
+
+        /* ÁREA PRINCIPAL (LANDING PAGE + CHAT) */
+        #main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-y: auto;
         }
 
-        /* RODAPÉ COM NOME DO USUÁRIO */
+        /* ESTILO DA SUA LANDING PAGE (COMO ESTAVA ANTES) */
+        .landing-header {
+            padding: 60px 20px;
+            text-align: center;
+            background: linear-gradient(180deg, #171717 0%, #212121 100%);
+        }
+
+        .kiwify-integration {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+            border: 1px solid #7e42a4;
+        }
+
+        /* INPUT DE CHAT FIXO NO RODAPÉ */
+        .chat-input-area {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: calc(100% - 260px);
+            background: linear-gradient(transparent, #212121 50%);
+            padding: 20px 15% 40px 15%;
+        }
+
+        .input-box {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .input-box input {
+            width: 100%;
+            background: #2f2f2f;
+            border: 1px solid #4d4d4d;
+            border-radius: 15px;
+            padding: 18px 55px 18px 20px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .send-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #676767;
+            color: #212121;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* FOOTER USUÁRIO */
         .user-footer {
             border-top: 1px solid #2d2d2d;
             padding: 15px 10px;
@@ -62,56 +127,44 @@
         }
         .avatar {
             width: 32px; height: 32px; background: #7e42a4; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;
+            display: flex; align-items: center; justify-content: center; font-weight: bold;
         }
-
-        /* CHAT */
-        #main-content { flex-grow: 1; display: flex; flex-direction: column; position: relative; }
-        #chat-window { flex-grow: 1; overflow-y: auto; padding: 50px 15% 150px 15%; display: flex; flex-direction: column; gap: 20px; }
-
-        /* INPUT ESTILO CHATGPT */
-        .input-area {
-            position: absolute; bottom: 0; width: 100%;
-            background: linear-gradient(transparent, #212121 30%);
-            padding: 20px 15% 40px 15%;
-        }
-        .input-container { position: relative; max-width: 800px; margin: 0 auto; }
-        .input-container input {
-            width: 100%; background: #2f2f2f; border: 1px solid #4d4d4d; border-radius: 15px;
-            padding: 18px 50px 18px 20px; color: #fff; font-size: 1rem; outline: none;
-        }
-        .send-btn {
-            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-            background: #676767; color: #212121; width: 32px; height: 32px;
-            border-radius: 8px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.2s;
-        }
-        .send-btn:hover { background: #fff; }
     </style>
 </head>
 <body>
 
     <aside id="sidebar">
         <div class="btn-new-chat"><i class="fa-solid fa-plus"></i> Novo chat</div>
-        <ul class="menu-items">
+        <ul class="menu-list">
             <li><i class="fa-regular fa-image"></i> Imagens</li>
             <li><i class="fa-solid fa-shapes"></i> Aplicativos</li>
-            <div class="section-title">Histórico</div>
-            <div id="history-list">
-                </div>
+            <div class="history-label">Hoje</div>
+            <li><i class="fa-regular fa-message"></i> Sistema Operacional de Foco 📌</li>
+            <li><i class="fa-regular fa-message"></i> Análise do HUMAN OS</li>
         </ul>
         <div class="user-footer">
-            <div class="avatar" id="user-initials">NX</div>
-            <span id="user-name">Carregando...</span>
+            <div class="avatar">NX</div>
+            <span>Nicolas Xavier</span>
         </div>
     </aside>
 
     <main id="main-content">
-        <div id="chat-window" id="output"></div>
-        <div class="input-area">
-            <div class="input-container">
-                <input type="text" id="userInput" placeholder="Como posso ajudar hoje?">
-                <div class="send-btn" onclick="sendMessage()">
+        <div class="landing-header">
+            <h1>HUMAN OS</h1>
+            <p>O sistema operacional da mente humana.</p>
+            
+            <div class="kiwify-integration">
+                <h3>Acesso Vitalício</h3>
+                <p>Integração com Kiwify Ativa via Make.com</p>
+                </div>
+        </div>
+
+        <div id="chat-display" style="padding-bottom: 150px;"></div>
+
+        <div class="chat-input-area">
+            <div class="input-box">
+                <input type="text" id="userMsg" placeholder="Como posso ajudar hoje?">
+                <div class="send-btn" onclick="enviarParaSupabase()">
                     <i class="fa-solid fa-arrow-up"></i>
                 </div>
             </div>
@@ -119,41 +172,18 @@
     </main>
 
     <script>
-        // 1. COLOQUE SEUS DADOS AQUI (IMPORTANTE!)
-        const SUPABASE_URL = "SUA_URL_AQUI"; 
-        const SUPABASE_KEY = "SUA_CHAVE_AQUI";
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // CONFIGURAÇÕES DO SUPABASE (COLOQUE SUAS CHAVES AQUI)
+        const URL_S = "SUA_URL_DO_SUPABASE";
+        const KEY_S = "SUA_KEY_DO_SUPABASE";
+        const client = supabase.createClient(URL_S, KEY_S);
 
-        // 2. FUNÇÃO PARA CARREGAR O USUÁRIO LOGADO
-        async function checkUser() {
-            const { data: { user } } = await _supabase.auth.getUser();
-            if (user) {
-                document.getElementById('user-name').innerText = user.email.split('@')[0];
-                document.getElementById('user-initials').innerText = user.email.substring(0,2).toUpperCase();
-            } else {
-                document.getElementById('user-name').innerText = "Visitante";
+        function enviarParaSupabase() {
+            const msg = document.getElementById('userMsg').value;
+            if(msg) {
+                console.log("Mensagem enviada para o banco:", msg);
+                document.getElementById('userMsg').value = "";
             }
         }
-
-        // 3. FUNÇÃO DE ENVIAR MENSAGEM
-        async function sendMessage() {
-            const input = document.getElementById('userInput');
-            const text = input.value;
-            if (!text) return;
-
-            // Adiciona na tela
-            const msgDiv = document.createElement('div');
-            msgDiv.innerText = text;
-            msgDiv.style.padding = "10px; background: #2d2d2d; border-radius: 10px; margin-bottom: 10px;";
-            document.getElementById('chat-window').appendChild(msgDiv);
-            
-            input.value = "";
-            
-            // Aqui você conectaria com sua IA/Webhook do Make se quiser
-        }
-
-        document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
-        checkUser();
     </script>
 </body>
 </html>
