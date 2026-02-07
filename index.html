@@ -70,7 +70,9 @@
         #auth-screen { display:none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; background:#000; }
         .login-card { background:#111; padding:40px; border-radius:25px; width:90%; max-width:380px; text-align:center; border: 1px solid #222; }
         input { width:100%; padding:15px; margin-bottom:12px; background:#000; color:#fff; border:1px solid #333; border-radius:12px; outline: none; }
-        .login-btn { width:100%; background:var(--neon); padding:18px; border-radius:12px; font-weight:800; border:none; cursor: pointer; text-transform: uppercase; }
+        .login-btn { width:100%; background:var(--neon); padding:18px; border-radius:12px; font-weight:800; border:none; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; }
+        .reset-link { color: #555; font-size: 0.8rem; cursor: pointer; text-decoration: none; display: block; margin-top: 15px; transition: 0.3s; }
+        .reset-link:hover { color: var(--neon); }
     </style>
 </head>
 <body>
@@ -98,6 +100,9 @@
             <input type="email" id="email_login" placeholder="E-mail de acesso">
             <input type="password" id="password_login" placeholder="Senha">
             <button onclick="handleAuth()" class="login-btn">ACEDER AO NÚCLEO</button>
+            
+            <span class="reset-link" onclick="handlePasswordReset()">Esqueci minha senha</span>
+            
             <p onclick="location.reload()" style="margin-top: 25px; color: #444; cursor: pointer;">Voltar</p>
         </div>
     </section>
@@ -144,9 +149,22 @@
 
     async function handleAuth() {
         const { data, error } = await _supabase.auth.signInWithPassword({ email: email_login.value, password: password_login.value });
-        if (error) return alert("Erro de Acesso.");
+        if (error) return alert("Erro de Acesso: Verifique seu e-mail e senha.");
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app-interface').style.display = 'flex';
+    }
+
+    // NOVA FUNÇÃO DE RESET DE SENHA
+    async function handlePasswordReset() {
+        const email = email_login.value;
+        if (!email) return alert("Digite seu e-mail no campo acima primeiro!");
+        
+        const { data, error } = await _supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.href,
+        });
+        
+        if (error) return alert("Erro ao enviar reset: " + error.message);
+        alert("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
     }
 
     function setMode(mode) {
