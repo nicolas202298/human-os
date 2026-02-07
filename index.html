@@ -7,23 +7,187 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Mesmos estilos da versão anterior para manter o visual premium */
         :root { --neon: #00f2ff; --bg: #050505; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow-x: hidden; }
-        /* ... (estilos omitidos para brevidade, use os mesmos da v5.0) ... */
+
+        /* LANDING PAGE PROFISSIONAL */
+        #landing-page { 
+            display: flex; flex-direction: column; align-items: center; 
+            min-height: 100vh; text-align: center; 
+            background: radial-gradient(circle at top, #0a1f21 0%, #050505 100%); 
+            padding: 50px 20px; overflow-y: auto;
+        }
+        .hero-title { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; line-height: 1; margin-bottom: 10px; }
+        .hero-title span { color: var(--neon); text-shadow: 0 0 20px rgba(0,242,255,0.5); }
+        .hero-sub { color: #444; font-size: 0.9rem; margin-bottom: 40px; letter-spacing: 3px; }
+
+        .promises-grid { display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 500px; width: 100%; margin-bottom: 40px; }
+        .promise-card { 
+            background: rgba(255,255,255,0.02); padding: 20px; border-radius: 20px; 
+            border: 1px solid rgba(0,242,255,0.1); text-align: left;
+            display: flex; align-items: center; gap: 20px;
+        }
+        .promise-card i { color: var(--neon); font-size: 1.5rem; }
+        .promise-text h3 { font-size: 1rem; color: #fff; }
+        .promise-text p { font-size: 0.75rem; color: #666; }
+
+        .cta-button { 
+            background: var(--neon); color: #000; padding: 20px 60px; border-radius: 50px; 
+            font-weight: 900; text-decoration: none; font-size: 1.1rem;
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.3); text-transform: uppercase;
+        }
+
+        /* INTERFACE DO NÚCLEO */
+        #app-interface { display: none; height: 100vh; width: 100vw; flex-direction: column; }
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2500; }
+        #overlay.active { display: block; }
+        
+        #sidebar { 
+            width: 280px; height: 100%; background: #000; border-right: 1px solid #1a1a1a; 
+            position: fixed; left: -280px; transition: 0.3s; z-index: 3000; 
+            display: flex; flex-direction: column; padding: 20px; 
+        }
+        #sidebar.open { left: 0; }
+        .close-menu { align-self: flex-end; color: var(--neon); font-size: 1.5rem; cursor: pointer; padding: 10px; }
+        .sidebar-item { padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: #888; margin-bottom: 5px; }
+        .sidebar-item:active { background: #111; color: var(--neon); }
+        .sidebar-item i { width: 20px; text-align: center; }
+
+        header { padding: 15px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; background: #000; }
+        #flow { flex-grow: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; display: flex; flex-direction: column; }
+        
+        .msg { padding: 15px; border-radius: 15px; margin-bottom: 15px; max-width: 85%; font-size: 0.95rem; line-height: 1.4; }
+        .ai { border-left: 3px solid var(--neon); background: rgba(0, 242, 255, 0.03); color: #eee; }
+        .user { background: #1a1a1a; align-self: flex-end; color: #fff; border: 1px solid #333; }
+
+        footer { position: fixed; bottom: 0; width: 100%; padding: 15px; background: linear-gradient(transparent, #050505 30%); }
+        .input-box { background: #111; border-radius: 18px; padding: 12px; border: 1px solid #222; display: flex; max-width: 800px; margin: 0 auto; }
+        textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; height: 25px; resize: none; font-size: 1rem; }
+        .send-btn { background: var(--neon); border: none; width: 35px; height: 35px; border-radius: 10px; color: #000; cursor: pointer; margin-left: 10px; }
+
+        /* TELA DE LOGIN */
+        #auth-screen { display:none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; background:#000; }
+        .login-card { background:#111; padding:40px; border-radius:25px; width:90%; max-width:380px; text-align:center; border: 1px solid #222; }
+        input { width:100%; padding:15px; margin-bottom:12px; background:#000; color:#fff; border:1px solid #333; border-radius:12px; outline: none; }
+        .login-btn { width:100%; background:var(--neon); padding:18px; border-radius:12px; font-weight:800; border:none; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
-    <script>
-    // Seus dados técnicos permanecem os mesmos
+
+    <div id="overlay" onclick="toggleMenu()"></div>
+
+    <section id="landing-page">
+        <h1 class="hero-title">HUMAN-OS<br><span>KERNEL</span></h1>
+        <p class="hero-sub">SISTEMA SOBERANO v5.0</p>
+        
+        <div class="promises-grid">
+            <div class="promise-card"><i class="fas fa-brain"></i><div class="promise-text"><h3>Cognição</h3><p>Pensamento lógico e clareza extrema.</p></div></div>
+            <div class="promise-card"><i class="fas fa-gem"></i><div class="promise-text"><h3>Doutor Riqueza</h3><p>Estratégias de capital e mercado.</p></div></div>
+            <div class="promise-card"><i class="fas fa-user-md"></i><div class="promise-text"><h3>Médico IA</h3><p>Saúde, biohacking e longevidade.</p></div></div>
+            <div class="promise-card"><i class="fas fa-heart"></i><div class="promise-text"><h3>Psicólogo</h3><p>Suporte emocional e equilíbrio estóico.</p></div></div>
+        </div>
+
+        <a href="https://pay.kiwify.com.br/OZtAt4I" class="cta-button">ADQUIRIR ACESSO</a>
+        <p onclick="showLogin()" style="margin-top: 40px; color: #333; text-decoration: underline; cursor: pointer; font-size: 0.8rem;">ENTRAR NO TERMINAL</p>
+    </section>
+
+    <section id="auth-screen">
+        <div class="login-card">
+            <h2 style="color: var(--neon); margin-bottom: 25px; letter-spacing: 2px; font-size: 1rem;">IDENTIFICAÇÃO</h2>
+            <input type="email" id="email_login" placeholder="E-mail de acesso">
+            <input type="password" id="password_login" placeholder="Senha">
+            <button onclick="handleAuth()" class="login-btn">ACEDER AO NÚCLEO</button>
+            <p onclick="location.reload()" style="margin-top: 25px; color: #444; cursor: pointer;">Voltar</p>
+        </div>
+    </section>
+
+    <div id="app-interface">
+        <div id="sidebar">
+            <div class="close-menu" onclick="toggleMenu()"><i class="fas fa-times"></i></div>
+            <div class="sidebar-item" onclick="location.reload()"><i class="fas fa-sync-alt"></i> Novo Chat</div>
+            <div class="sidebar-item" onclick="getFinance()"><i class="fas fa-chart-line"></i> Mercado Real</div>
+            <div class="sidebar-item" onclick="setMode('cog')"><i class="fas fa-microchip"></i> Cognição</div>
+            <div class="sidebar-item" onclick="setMode('wealth')"><i class="fas fa-gem"></i> Doutor da Riqueza</div>
+            <div class="sidebar-item" onclick="setMode('med')"><i class="fas fa-user-md"></i> Médico IA</div>
+            <div class="sidebar-item" onclick="setMode('psi')"><i class="fas fa-peace"></i> Psicólogo</div>
+            <div class="sidebar-item" style="margin-top: auto; color: #ff4444;" onclick="location.reload()"><i class="fas fa-power-off"></i> Sair</div>
+        </div>
+
+        <header>
+            <i class="fas fa-bars" onclick="toggleMenu()" style="font-size: 1.5rem; color: #888; cursor: pointer;"></i>
+            <div style="font-weight: 900; font-size: 0.7rem; color: #444; letter-spacing: 2px;">KERNEL CORE v5.0</div>
+            <div style="width: 20px;"></div>
+        </header>
+
+        <div id="flow">
+            <div class="msg ai"><b>TERMINAL ONLINE.</b><br>O Kernel está sincronizado. Escolha um módulo ou envie um comando.</div>
+        </div>
+
+        <footer>
+            <div class="input-box">
+                <textarea id="cmd" placeholder="Comando..."></textarea>
+                <button onclick="destilar()" class="send-btn"><i class="fas fa-arrow-up"></i></button>
+            </div>
+        </footer>
+    </div>
+
+<script>
     const S_U = 'https://fddzojlntzmhmekckplm.supabase.co';
     const S_K = 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5';
     const G_KEY = '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';
     const _supabase = supabase.createClient(S_U, S_K);
-    
-    // O sistema de histórico e modos continua ativo
-    // ...
+    let chatHistory = [];
+
+    function showLogin() { document.getElementById('landing-page').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
+    function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
+
+    async function handleAuth() {
+        const { data, error } = await _supabase.auth.signInWithPassword({ email: email_login.value, password: password_login.value });
+        if (error) return alert("Erro de Acesso.");
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('app-interface').style.display = 'flex';
+    }
+
+    function setMode(mode) {
+        const m = { cog: 'Módulo Cognitivo', wealth: 'Doutor da Riqueza', med: 'Médico IA', psi: 'Psicólogo' };
+        addMsg('ai', `<b>${m[mode]} ativado.</b>`);
+        toggleMenu();
+    }
+
+    async function getFinance() {
+        const r = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL,BTC-BRL');
+        const d = await r.json();
+        addMsg('ai', `<b>MERCADO:</b><br>Dólar: R$ ${parseFloat(d.USDBRL.bid).toFixed(2)}<br>BTC: R$ ${parseFloat(d.BTCBRL.bid).toLocaleString('pt-BR')}`);
+        toggleMenu();
+    }
+
+    async function destilar() {
+        const text = cmd.value.trim(); if(!text) return;
+        addMsg('user', text); cmd.value = "";
+        chatHistory.push({role: "user", content: text});
+        
+        try {
+            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    model: "llama-3.3-70b-versatile", 
+                    messages: [{role: "system", content: "És o Kernel Human-OS. Atuas como Médico, Consultor de Riqueza ou Psicólogo."}, ...chatHistory] 
+                })
+            });
+            const d = await resp.json();
+            const aiMsg = d.choices[0].message.content;
+            addMsg('ai', aiMsg);
+            chatHistory.push({role: "assistant", content: aiMsg});
+        } catch(e) { addMsg('ai', "Erro de conexão com o núcleo."); }
+    }
+
+    function addMsg(t, c) {
+        const d = document.createElement('div'); d.className = `msg ${t}`; d.innerHTML = c.replace(/\n/g, '<br>');
+        document.getElementById('flow').appendChild(d);
+        document.getElementById('flow').scrollTop = flow.scrollHeight;
+    }
 </script>
 </body>
 </html>
