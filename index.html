@@ -11,7 +11,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow-x: hidden; }
 
-        /* LANDING PAGE PROFISSIONAL */
+        /* LANDING PAGE */
         #landing-page { 
             display: flex; flex-direction: column; align-items: center; 
             min-height: 100vh; text-align: center; 
@@ -38,7 +38,7 @@
             box-shadow: 0 0 40px rgba(0, 242, 255, 0.3); text-transform: uppercase;
         }
 
-        /* INTERFACE DO NÚCLEO */
+        /* INTERFACE DO APP */
         #app-interface { display: none; height: 100vh; width: 100vw; flex-direction: column; }
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2500; }
         #overlay.active { display: block; }
@@ -71,8 +71,7 @@
         .login-card { background:#111; padding:40px; border-radius:25px; width:90%; max-width:380px; text-align:center; border: 1px solid #222; }
         input { width:100%; padding:15px; margin-bottom:12px; background:#000; color:#fff; border:1px solid #333; border-radius:12px; outline: none; }
         .login-btn { width:100%; background:var(--neon); padding:18px; border-radius:12px; font-weight:800; border:none; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; }
-        .reset-link { color: #555; font-size: 0.8rem; cursor: pointer; text-decoration: none; display: block; margin-top: 15px; transition: 0.3s; }
-        .reset-link:hover { color: var(--neon); }
+        .reset-link { color: #444; font-size: 0.8rem; cursor: pointer; text-decoration: underline; display: block; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -100,9 +99,7 @@
             <input type="email" id="email_login" placeholder="E-mail de acesso">
             <input type="password" id="password_login" placeholder="Senha">
             <button onclick="handleAuth()" class="login-btn">ACEDER AO NÚCLEO</button>
-            
             <span class="reset-link" onclick="handlePasswordReset()">Esqueci minha senha</span>
-            
             <p onclick="location.reload()" style="margin-top: 25px; color: #444; cursor: pointer;">Voltar</p>
         </div>
     </section>
@@ -147,25 +144,38 @@
     function showLogin() { document.getElementById('landing-page').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
 
+    // LOGIN
     async function handleAuth() {
         const { data, error } = await _supabase.auth.signInWithPassword({ email: email_login.value, password: password_login.value });
-        if (error) return alert("Erro de Acesso: Verifique seu e-mail e senha.");
+        if (error) return alert("Erro de Acesso: Verifique e-mail e senha.");
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app-interface').style.display = 'flex';
     }
 
-    // NOVA FUNÇÃO DE RESET DE SENHA
+    // MANDAR E-MAIL DE RECUPERAÇÃO
     async function handlePasswordReset() {
         const email = email_login.value;
         if (!email) return alert("Digite seu e-mail no campo acima primeiro!");
-        
-        const { data, error } = await _supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.href,
-        });
-        
-        if (error) return alert("Erro ao enviar reset: " + error.message);
-        alert("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
+        const { error } = await _supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+        if (error) return alert("Erro: " + error.message);
+        alert("E-mail de recuperação enviado!");
     }
+
+    // ESCUTAR O LINK DO E-MAIL PARA TROCAR A SENHA
+    _supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event == "PASSWORD_RECOVERY") {
+            const newPassword = prompt("DIGITE SUA NOVA SENHA:");
+            if (newPassword) {
+                const { error } = await _supabase.auth.updateUser({ password: newPassword });
+                if (!error) {
+                    alert("SENHA ALTERADA! FAÇA LOGIN.");
+                    window.location.href = "/";
+                } else {
+                    alert("ERRO: " + error.message);
+                }
+            }
+        }
+    });
 
     function setMode(mode) {
         const m = { cog: 'Módulo Cognitivo', wealth: 'Doutor da Riqueza', med: 'Médico IA', psi: 'Psicólogo' };
@@ -184,21 +194,20 @@
         const text = cmd.value.trim(); if(!text) return;
         addMsg('user', text); cmd.value = "";
         chatHistory.push({role: "user", content: text});
-        
         try {
             const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     model: "llama-3.3-70b-versatile", 
-                    messages: [{role: "system", content: "És o Kernel Human-OS. Atuas como Médico, Consultor de Riqueza ou Psicólogo."}, ...chatHistory] 
+                    messages: [{role: "system", content: "És o Kernel Human-OS."}, ...chatHistory] 
                 })
             });
             const d = await resp.json();
             const aiMsg = d.choices[0].message.content;
             addMsg('ai', aiMsg);
             chatHistory.push({role: "assistant", content: aiMsg});
-        } catch(e) { addMsg('ai', "Erro de conexão com o núcleo."); }
+        } catch(e) { addMsg('ai', "Erro de conexão."); }
     }
 
     function addMsg(t, c) {
