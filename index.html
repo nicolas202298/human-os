@@ -10,6 +10,8 @@
         :root { --neon: #00f2ff; --bg: #050505; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow-x: hidden; }
+        
+        /* LANDING PAGE */
         #landing-page { display: flex; flex-direction: column; align-items: center; min-height: 100vh; text-align: center; background: radial-gradient(circle at top, #0a1f21 0%, #050505 100%); padding: 50px 20px; overflow-y: auto; }
         .hero-title { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; line-height: 1; margin-bottom: 10px; }
         .hero-title span { color: var(--neon); text-shadow: 0 0 20px rgba(0,242,255,0.5); }
@@ -17,25 +19,35 @@
         .promises-grid { display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 500px; width: 100%; margin-bottom: 40px; }
         .promise-card { background: rgba(255,255,255,0.02); padding: 20px; border-radius: 20px; border: 1px solid rgba(0,242,255,0.1); text-align: left; display: flex; align-items: center; gap: 20px; }
         .promise-card i { color: var(--neon); font-size: 1.5rem; }
-        .promise-text h3 { font-size: 1rem; color: #fff; }
-        .promise-text p { font-size: 0.75rem; color: #666; }
-        .cta-button { background: var(--neon); color: #000; padding: 20px 60px; border-radius: 50px; font-weight: 900; text-decoration: none; font-size: 1.1rem; box-shadow: 0 0 40px rgba(0, 242, 255, 0.3); text-transform: uppercase; }
+        
+        .cta-button { background: var(--neon); color: #000; padding: 20px 60px; border-radius: 50px; font-weight: 900; text-decoration: none; font-size: 1.1rem; box-shadow: 0 0 40px rgba(0, 242, 255, 0.3); text-transform: uppercase; cursor:pointer; }
+
+        /* APP INTERFACE */
         #app-interface { display: none; height: 100vh; width: 100vw; flex-direction: column; }
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2500; }
         #overlay.active { display: block; }
+        
         #sidebar { width: 280px; height: 100%; background: #000; border-right: 1px solid #1a1a1a; position: fixed; left: -280px; transition: 0.3s; z-index: 3000; display: flex; flex-direction: column; padding: 20px; }
         #sidebar.open { left: 0; }
         .close-menu { align-self: flex-end; color: var(--neon); font-size: 1.5rem; cursor: pointer; padding: 10px; }
-        .sidebar-item { padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: #888; margin-bottom: 5px; }
+        
+        .sidebar-item { padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: #888; margin-bottom: 5px; transition: 0.2s; }
+        .sidebar-item:hover { background: #111; color: var(--neon); }
+        .sidebar-item i { width: 20px; text-align: center; }
+
         header { padding: 15px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; background: #000; }
         #flow { flex-grow: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; display: flex; flex-direction: column; }
+        
         .msg { padding: 15px; border-radius: 15px; margin-bottom: 15px; max-width: 85%; font-size: 0.95rem; line-height: 1.4; }
         .ai { border-left: 3px solid var(--neon); background: rgba(0, 242, 255, 0.03); color: #eee; }
         .user { background: #1a1a1a; align-self: flex-end; color: #fff; border: 1px solid #333; }
+
         footer { position: fixed; bottom: 0; width: 100%; padding: 15px; background: linear-gradient(transparent, #050505 30%); }
         .input-box { background: #111; border-radius: 18px; padding: 12px; border: 1px solid #222; display: flex; max-width: 800px; margin: 0 auto; }
         textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; height: 25px; resize: none; font-size: 1rem; }
         .send-btn { background: var(--neon); border: none; width: 35px; height: 35px; border-radius: 10px; color: #000; cursor: pointer; margin-left: 10px; }
+
+        /* LOGIN */
         #auth-screen { display:none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; background:#000; }
         .login-card { background:#111; padding:40px; border-radius:25px; width:90%; max-width:380px; text-align:center; border: 1px solid #222; }
         input { width:100%; padding:15px; margin-bottom:12px; background:#000; color:#fff; border:1px solid #333; border-radius:12px; outline: none; }
@@ -43,18 +55,21 @@
     </style>
 </head>
 <body>
+
     <div id="overlay" onclick="toggleMenu()"></div>
 
     <section id="landing-page">
         <h1 class="hero-title">HUMAN-OS<br><span>KERNEL</span></h1>
         <p class="hero-sub">SISTEMA SOBERANO v5.0</p>
+        
         <div class="promises-grid">
             <div class="promise-card"><i class="fas fa-brain"></i><div class="promise-text"><h3>Cognição</h3><p>Pensamento lógico e clareza extrema.</p></div></div>
             <div class="promise-card"><i class="fas fa-gem"></i><div class="promise-text"><h3>Doutor Riqueza</h3><p>Estratégias de capital e mercado.</p></div></div>
             <div class="promise-card"><i class="fas fa-user-md"></i><div class="promise-text"><h3>Médico IA</h3><p>Saúde, biohacking e longevidade.</p></div></div>
             <div class="promise-card"><i class="fas fa-heart"></i><div class="promise-text"><h3>Psicólogo</h3><p>Suporte emocional e equilíbrio estóico.</p></div></div>
         </div>
-        <a href="https://pay.kiwify.com.br/OZtAt4I" class="cta-button">ADQUIRIR ACESSO</a>
+
+        <div class="cta-button" onclick="window.location.href='https://pay.kiwify.com.br/OZtAt4I'">ADQUIRIR ACESSO</div>
         <p onclick="showLogin()" style="margin-top: 40px; color: #333; text-decoration: underline; cursor: pointer;">ENTRAR NO TERMINAL</p>
     </section>
 
@@ -64,28 +79,36 @@
             <input type="email" id="email_login" placeholder="E-mail">
             <input type="password" id="password_login" placeholder="Senha">
             <button onclick="handleAuth()" class="login-btn">ACEDER</button>
-            <p onclick="location.reload()" style="margin-top: 25px; color: #444; cursor: pointer;">Voltar</p>
+            <p onclick="location.reload()" style="margin-top: 20px; color: #444; cursor: pointer;">Voltar</p>
         </div>
     </section>
 
     <div id="app-interface">
         <div id="sidebar">
             <div class="close-menu" onclick="toggleMenu()"><i class="fas fa-times"></i></div>
-            <div class="sidebar-item" onclick="newChat()"><i class="fas fa-sync-alt"></i> Novo Chat</div>
+            <div class="sidebar-item" onclick="newChat()"><i class="fas fa-plus"></i> Novo Chat</div>
+            
+            <div class="sidebar-item" onclick="showHistory()"><i class="fas fa-history"></i> Histórico de Sessão</div>
+            
+            <hr style="border: 0; border-top: 1px solid #1a1a1a; margin: 15px 0;">
             <div class="sidebar-item" onclick="setMode('cog')"><i class="fas fa-microchip"></i> Cognição</div>
             <div class="sidebar-item" onclick="setMode('wealth')"><i class="fas fa-gem"></i> Doutor da Riqueza</div>
             <div class="sidebar-item" onclick="setMode('med')"><i class="fas fa-user-md"></i> Médico IA</div>
             <div class="sidebar-item" onclick="setMode('psi')"><i class="fas fa-peace"></i> Psicólogo</div>
+            
             <div class="sidebar-item" style="margin-top: auto; color: #ff4444;" onclick="location.reload()"><i class="fas fa-power-off"></i> Sair</div>
         </div>
+
         <header>
             <i class="fas fa-bars" onclick="toggleMenu()" style="font-size: 1.5rem; color: #888; cursor: pointer;"></i>
-            <div id="status-bar" style="font-weight: 900; font-size: 0.7rem; color: #444; letter-spacing: 2px;">KERNEL CORE v5.0</div>
+            <div id="status-bar" style="font-weight: 900; font-size: 0.7rem; color: #444;">KERNEL CORE v5.0</div>
             <div style="width: 20px;"></div>
         </header>
+
         <div id="flow">
-            <div class="msg ai"><b>TERMINAL ONLINE.</b><br>O Histórico de conversa está ativo. Como posso te ajudar hoje?</div>
+            <div class="msg ai"><b>SISTEMA ONLINE.</b><br>Bem-vindo ao Kernel. O histórico de sessão está sendo gravado.</div>
         </div>
+
         <footer>
             <div class="input-box">
                 <textarea id="cmd" placeholder="Comando..."></textarea>
@@ -98,15 +121,22 @@
     const S_U = 'https://fddzojlntzmhmekckplm.supabase.co';
     const S_K = 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5';
     const G_KEY = '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';
-    const _supabase = supabase.createClient(S_U, S_K);
     
+    const _supabase = supabase.createClient(S_U, S_K);
     let chatHistory = [];
-    let currentSystemPrompt = "Você é o Kernel Human-OS, um assistente cibernético de elite. Mantenha o histórico da conversa e seja direto.";
+    let currentSystemPrompt = "Você é o Kernel Human-OS. Mantenha o histórico e seja técnico.";
 
     function showLogin() { document.getElementById('landing-page').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
     
-    function newChat() { chatHistory = []; flow.innerHTML = '<div class="msg ai"><b>MEMÓRIA RESETADA.</b><br>Novo fluxo iniciado.</div>'; toggleMenu(); }
+    function newChat() { chatHistory = []; flow.innerHTML = '<div class="msg ai"><b>MEMÓRIA RESETADA.</b><br>Iniciando novo fluxo.</div>'; toggleMenu(); }
+
+    // FUNÇÃO PARA MOSTRAR O HISTÓRICO
+    function showHistory() {
+        const count = chatHistory.length / 2;
+        addMsg('ai', `<b>LOG DE HISTÓRICO:</b><br>Nesta sessão foram trocadas ${Math.floor(count)} interações com o Kernel.`);
+        toggleMenu();
+    }
 
     async function handleAuth() {
         const { data, error } = await _supabase.auth.signInWithPassword({ email: email_login.value, password: password_login.value });
@@ -117,22 +147,20 @@
 
     function setMode(mode) {
         const m = { 
-            cog: { t: 'COGNICÃO', p: 'Você é o Módulo de Cognição. Analise tudo com lógica fria e clareza.' },
-            wealth: { t: 'RIQUEZA', p: 'Você é o Doutor da Riqueza. Foco total em acumulação de capital e mercado.' },
-            med: { t: 'MÉDICO IA', p: 'Você é o Médico IA. Especialista em Biohacking e longevidade.' },
-            psi: { t: 'PSICÓLOGO', p: 'Você é o Psicólogo Estóico. Foco em controle emocional e resiliência.' }
+            cog: { t: 'COGNICÃO', p: 'Você é o Kernel focado em Cognição.' },
+            wealth: { t: 'RIQUEZA', p: 'Você é o Kernel focado em Riqueza.' },
+            med: { t: 'MÉDICO IA', p: 'Você é o Kernel focado em Biohacking.' },
+            psi: { t: 'PSICÓLOGO', p: 'Você é o Kernel focado em Psicologia.' }
         };
         currentSystemPrompt = m[mode].p;
         document.getElementById('status-bar').innerText = `KERNEL | ${m[mode].t}`;
-        addMsg('ai', `<b>Módulo ${m[mode].t} sincronizado.</b>`);
+        addMsg('ai', `<b>Módulo ${m[mode].t} ativado.</b>`);
         toggleMenu();
     }
 
     async function destilar() {
         const text = cmd.value.trim(); if(!text) return;
         addMsg('user', text); cmd.value = "";
-        
-        // Adiciona a pergunta do usuário ao histórico
         chatHistory.push({role: "user", content: text});
         
         try {
@@ -146,11 +174,9 @@
             });
             const d = await resp.json();
             const aiMsg = d.choices[0].message.content;
-            
-            // Adiciona a resposta da IA ao histórico para ela lembrar depois
             chatHistory.push({role: "assistant", content: aiMsg});
             addMsg('ai', aiMsg);
-        } catch(e) { addMsg('ai', "Erro no motor. Verifique créditos na OpenAI."); }
+        } catch(e) { addMsg('ai', "Erro no motor."); }
     }
 
     function addMsg(t, c) {
