@@ -9,39 +9,24 @@
     <style>
         :root { --neon: #00f2ff; --bg: #050505; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: #fff; height: 100vh; overflow-x: hidden; }
+        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; }
         section { display: none; min-height: 100vh; width: 100%; }
         
         /* LANDING PAGE */
-        #landing-page { display: flex; flex-direction: column; align-items: center; text-align: center; background: radial-gradient(circle at top, #0a1f21 0%, #050505 100%); padding: 50px 20px; }
+        #landing-page { display: flex; flex-direction: column; align-items: center; text-align: center; background: radial-gradient(circle at top, #0a1f21 0%, #050505 100%); padding: 50px 20px; overflow-y: auto; }
         .hero-title { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; line-height: 1; margin-bottom: 10px; }
         .hero-title span { color: var(--neon); text-shadow: 0 0 20px rgba(0,242,255,0.5); }
-        .promises-grid { display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 600px; width: 100%; margin: 40px 0; }
-        .promise-card { background: rgba(255,255,255,0.02); padding: 20px; border-radius: 15px; border: 1px solid rgba(0,242,255,0.1); text-align: left; display: flex; align-items: center; gap: 15px; }
-        .promise-card i { color: var(--neon); font-size: 1.5rem; }
         .cta-button { background: var(--neon); color: #000; padding: 25px 60px; border-radius: 50px; font-weight: 900; font-size: 1.2rem; cursor:pointer; border: none; text-transform: uppercase; text-decoration: none; display: inline-block; transition: 0.3s; box-shadow: 0 0 20px rgba(0,242,255,0.3); }
 
-        /* MODAL DE PERFIL */
-        #profile-modal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#111; padding:30px; border-radius:20px; border:1px solid var(--neon); z-index:7000; width:90%; max-width:400px; }
-        .profile-input { width:100%; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px; margin-bottom:15px; }
-
-        /* LOGIN & RECOVERY */
-        #auth-screen { flex-direction: column; align-items: center; justify-content: center; background:#000; }
-        .login-card { background:#111; padding:35px; border-radius:25px; width:90%; max-width:380px; text-align:center; border: 1px solid #222; }
-        .login-input { width:100%; padding:15px; margin-bottom:12px; background:#000; color:#fff; border:1px solid #333; border-radius:12px; outline: none; }
-        .login-btn { width:100%; background:var(--neon); padding:18px; border-radius:12px; font-weight:800; border:none; cursor: pointer; }
-        .link-text { margin-top: 15px; color: #555; font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
-
-        /* INTERFACE DO APP */
-        #app-interface { height: 100vh; flex-direction: column; overflow: hidden; }
-        #sidebar { width: 280px; height: 100%; background: #000; border-right: 1px solid #1a1a1a; position: fixed; left: -280px; transition: 0.3s; z-index: 6000; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; }
+        /* APP */
+        #app-interface { height: 100vh; flex-direction: column; display: none; }
+        #sidebar { width: 280px; height: 100%; background: #000; border-right: 1px solid #1a1a1a; position: fixed; left: -280px; transition: 0.3s; z-index: 6000; display: flex; flex-direction: column; padding: 20px; }
         #sidebar.open { left: 0; }
         .sidebar-item { padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; color: #888; font-size: 0.85rem; margin-bottom: 5px; }
         .sidebar-item:hover { background: #111; color: var(--neon); }
-        .sidebar-label { font-size: 0.65rem; color: #444; font-weight: 900; margin: 15px 0 5px 12px; text-transform: uppercase; }
         header { padding: 15px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; background: #000; }
         #flow { flex-grow: 1; overflow-y: auto; padding: 20px; padding-bottom: 110px; display: flex; flex-direction: column; }
-        .msg { padding: 15px; border-radius: 15px; margin-bottom: 15px; max-width: 85%; font-size: 0.95rem; }
+        .msg { padding: 15px; border-radius: 15px; margin-bottom: 15px; max-width: 85%; font-size: 0.95rem; line-height: 1.4; }
         .ai { border-left: 3px solid var(--neon); background: rgba(0, 242, 255, 0.03); }
         .user { background: #1a1a1a; align-self: flex-end; border: 1px solid #333; }
         footer { position: fixed; bottom: 0; width: 100%; padding: 15px; background: #050505; }
@@ -49,35 +34,22 @@
         textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; height: 25px; resize: none; }
         .send-btn { background: var(--neon); border: none; width: 35px; height: 35px; border-radius: 10px; cursor: pointer; }
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 5900; }
+        
+        /* LOGIN */
+        #auth-screen { flex-direction: column; align-items: center; justify-content: center; background:#000; }
+        .login-card { background:#111; padding:35px; border-radius:25px; width:90%; max-width:380px; text-align:center; border: 1px solid #222; }
+        .login-input { width:100%; padding:15px; margin-bottom:12px; background:#000; color:#fff; border:1px solid #333; border-radius:12px; outline: none; }
     </style>
 </head>
 <body>
 
     <div id="overlay" onclick="toggleMenu()"></div>
 
-    <div id="profile-modal">
-        <h3 style="color:var(--neon); margin-bottom:15px;">PERFIL DO OPERADOR</h3>
-        <label style="font-size:0.7rem; color:#888;">NOME COMPLETO</label>
-        <input type="text" id="p_name" class="profile-input">
-        <label style="font-size:0.7rem; color:#888;">OBJETIVOS DE SAÚDE</label>
-        <textarea id="p_health" class="profile-input" style="height:60px;"></textarea>
-        <label style="font-size:0.7rem; color:#888;">PERFIL FINANCEIRO</label>
-        <textarea id="p_fin" class="profile-input" style="height:60px;"></textarea>
-        <button onclick="saveProfile()" class="login-btn">SALVAR DADOS</button>
-        <p onclick="document.getElementById('profile-modal').style.display='none'" style="margin-top:10px; cursor:pointer; font-size:0.8rem; color:#444;">Fechar</p>
-    </div>
-
     <section id="landing-page" style="display: flex;">
         <h1 class="hero-title">HUMAN-OS<br><span>KERNEL</span></h1>
-        <p style="color:#444; letter-spacing:3px; font-weight:800;">SISTEMA SOBERANO v5.1</p>
-        <div class="promises-grid">
-            <div class="promise-card"><i class="fas fa-brain"></i><div><h3>Cognição</h3><p>Análise lógica de alto nível.</p></div></div>
-            <div class="promise-card"><i class="fas fa-gem"></i><div><h3>Riqueza</h3><p>Consultoria e mercado real.</p></div></div>
-            <div class="promise-card"><i class="fas fa-user-md"></i><div><h3>Biohacking</h3><p>Saúde baseada em dados.</p></div></div>
-            <div class="promise-card"><i class="fas fa-peace"></i><div><h3>Resiliência</h3><p>Psicologia estóica.</p></div></div>
-        </div>
+        <p style="color:#444; margin: 20px 0; font-weight:800;">SISTEMA SOBERANO v5.2</p>
         <a href="https://pay.kiwify.com.br/OZtAt4I" class="cta-button">ADQUIRIR ACESSO</a>
-        <p onclick="showScreen('auth-screen')" style="margin-top: 30px; color: #333; text-decoration: underline; cursor: pointer; font-weight:bold;">JÁ TENHO ACESSO (ENTRAR)</p>
+        <p onclick="showScreen('auth-screen')" style="margin-top: 30px; color: #333; text-decoration: underline; cursor: pointer;">JÁ TENHO ACESSO</p>
     </section>
 
     <section id="auth-screen">
@@ -85,35 +57,33 @@
             <h2 style="color: var(--neon); margin-bottom: 25px;">IDENTIFICAÇÃO</h2>
             <input type="email" id="email_login" class="login-input" placeholder="E-mail">
             <input type="password" id="password_login" class="login-input" placeholder="Senha">
-            <button onclick="handleAuth()" class="login-btn">ACESSAR</button>
-            
-            <p class="link-text" onclick="resetPassword()">Esqueci minha senha</p>
-            <p class="link-text" onclick="showScreen('landing-page')" style="color:var(--neon)">Voltar para início</p>
+            <button onclick="handleAuth()" class="login-btn" style="width:100%; background:var(--neon); padding:15px; border-radius:10px; border:none; font-weight:bold; cursor:pointer;">ACESSAR</button>
+            <p onclick="resetPassword()" style="color:#555; font-size:0.8rem; margin-top:15px; cursor:pointer; text-decoration:underline;">Esqueci minha senha</p>
         </div>
     </section>
 
     <section id="app-interface">
         <div id="sidebar">
-            <div class="sidebar-label">Soberania</div>
-            <div class="sidebar-item" onclick="document.getElementById('profile-modal').style.display='block'; toggleMenu();"><i class="fas fa-user-shield"></i> Perfil do Operador</div>
             <div class="sidebar-item" onclick="newChat()"><i class="fas fa-plus"></i> Novo Chat</div>
-            <div class="sidebar-label">Mercado</div>
-            <div class="sidebar-item" onclick="getForex()"><i class="fas fa-coins"></i> Câmbio & Metais</div>
+            <div class="sidebar-item" onclick="getForex()"><i class="fas fa-coins"></i> Ouro & Câmbio</div>
             <div class="sidebar-item" onclick="getCrypto()"><i class="fas fa-bitcoin"></i> Criptomoedas</div>
-            <div class="sidebar-label">Especialistas</div>
-            <div class="sidebar-item" onclick="setMode('wealth')"><i class="fas fa-gem"></i> Doutor da Riqueza</div>
             <div class="sidebar-item" onclick="setMode('med')"><i class="fas fa-user-md"></i> Médico IA</div>
-            <div class="sidebar-item" onclick="setMode('psi')"><i class="fas fa-peace"></i> Psicólogo Estóico</div>
-            <div class="sidebar-item" style="margin-top: auto; color: #ff4444;" onclick="location.reload()"><i class="fas fa-power-off"></i> Sair</div>
+            <div class="sidebar-item" onclick="setMode('wealth')"><i class="fas fa-gem"></i> Doutor da Riqueza</div>
+            <div class="sidebar-item" style="margin-top: auto; color: red;" onclick="location.reload()">Sair</div>
         </div>
         <header>
-            <i class="fas fa-bars" onclick="toggleMenu()" style="font-size: 1.5rem; color: #888; cursor: pointer;"></i>
-            <div id="status-bar" style="font-weight: 900; font-size: 0.7rem; color: #444;">KERNEL V5.1</div>
+            <i class="fas fa-bars" onclick="toggleMenu()" style="font-size: 1.5rem; cursor: pointer;"></i>
+            <div id="status-bar" style="font-size: 0.7rem; color: #444; font-weight:bold;">KERNEL ONLINE</div>
             <div></div>
         </header>
-        <div id="flow"><div class="msg ai"><b>KERNEL ATIVO.</b><br>Monitor de mercado e IA operacional prontos.</div></div>
+        <div id="flow">
+            <div class="ai msg"><b>SISTEMA KERNEL INICIALIZADO.</b><br>Diga o que você precisa ou use os módulos laterais.</div>
+        </div>
         <footer>
-            <div class="input-box"><textarea id="cmd" placeholder="Comando..."></textarea><button onclick="destilar()" class="send-btn"><i class="fas fa-arrow-up"></i></button></div>
+            <div class="input-box">
+                <textarea id="cmd" placeholder="Comando..."></textarea>
+                <button onclick="destilar()" class="send-btn"><i class="fas fa-arrow-up"></i></button>
+            </div>
         </footer>
     </section>
 
@@ -122,79 +92,91 @@
     const S_K = 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5';
     const G_KEY = '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';
     const _supabase = supabase.createClient(S_U, S_K);
+    
     let chatHistory = [];
     let currentMode = "Geral";
-    let userProfile = {};
+    let lastMarketData = ""; // Cache para a IA saber os preços
 
-    // FUNÇÃO CRIPTO CORRIGIDA COM AS PRINCIPAIS MOEDAS
-    async function getCrypto() {
-        addMsg('ai', "<i>Consultando terminais de cripto (Binance)...</i>");
-        try {
-            // Busca BTC, ETH e SOL
-            const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'];
-            let output = "<b>MERCADO CRIPTO:</b><br>";
-            
-            for (let s of symbols) {
-                const r = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${s}`);
-                const d = await r.json();
-                const price = parseFloat(d.price).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
-                const name = s.replace('USDT', '');
-                output += `• ${name}: ${price}<br>`;
-            }
-            
-            addMsg('ai', output);
-        } catch (e) {
-            addMsg('ai', "Erro ao acessar terminais de cripto.");
-        }
-        toggleMenu();
-    }
-
-    async function handleAuth() { 
+    async function handleAuth() {
         const { data, error } = await _supabase.auth.signInWithPassword({ email: email_login.value, password: password_login.value });
         if (error) return alert("Erro: " + error.message);
-        await loadProfile(data.user.id);
         showScreen('app-interface');
     }
 
-    async function resetPassword() {
-        const email = email_login.value;
-        if(!email) return alert("Coloque seu e-mail no campo acima!");
-        const { error } = await _supabase.auth.resetPasswordForEmail(email);
-        alert(error ? error.message : "Link de recuperação enviado ao seu e-mail!");
+    function showScreen(id) {
+        document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+        document.getElementById(id).style.display = (id === 'app-interface') ? 'flex' : 'flex';
     }
 
-    async function loadProfile(uid) {
-        const { data } = await _supabase.from('user_profiles').select('*').eq('id', uid).single();
-        if(data) { userProfile = data; document.getElementById('p_name').value = data.full_name || ''; }
+    function toggleMenu() {
+        const s = document.getElementById('sidebar');
+        s.classList.toggle('open');
+        document.getElementById('overlay').style.display = s.classList.contains('open') ? 'block' : 'none';
     }
 
-    async function saveProfile() {
-        const user = (await _supabase.auth.getUser()).data.user;
-        const updates = { id: user.id, full_name: document.getElementById('p_name').value, health_goals: document.getElementById('p_health').value, financial_status: document.getElementById('p_fin').value };
-        await _supabase.from('user_profiles').upsert(updates);
-        alert("Perfil Sincronizado!"); document.getElementById('profile-modal').style.display='none';
+    // BUSCA DE DADOS PARA A IA NÃO SER BURRA
+    async function updateMarketContext() {
+        try {
+            const r = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL,XAU-BRL,BTC-BRL');
+            const d = await r.json();
+            lastMarketData = `[DADOS ATUAIS: Dólar R$${d.USDBRL.bid}, Ouro R$${d.XAUBRL.bid}, Bitcoin R$${d.BTCBRL.bid}]`;
+        } catch(e) { lastMarketData = ""; }
     }
 
-    function showScreen(id) { document.querySelectorAll('section').forEach(s => s.style.display = 'none'); document.getElementById(id).style.display = 'flex'; }
-    function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').style.display = document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none'; }
-    
     async function destilar() {
         const text = cmd.value.trim(); if(!text) return;
         addMsg('user', text); cmd.value = "";
-        const context = `Usuário: ${userProfile.full_name || 'Operador'}. Metas: ${userProfile.health_goals || 'N/A'}.`;
+        
+        await updateMarketContext(); // Atualiza os preços antes de perguntar à IA
+
+        const systemPrompt = `Você é o KERNEL HUMAN-OS. Um sistema soberano, direto e técnico. 
+        Não peça desculpas. Não diga que não sabe. Se o usuário perguntar de mercado, use isso: ${lastMarketData}.
+        Se for saúde, seja um Biohacker de elite. Modo atual: ${currentMode}.`;
+
         chatHistory.push({role: "user", content: text});
-        const resp = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ model: "gpt-4o-mini", messages: [{role: "system", content: context + " Você é o Kernel Modo " + currentMode}, ...chatHistory] })
-        });
-        const d = await resp.json();
-        addMsg('ai', d.choices[0].message.content);
+        
+        try {
+            const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    model: "gpt-4o-mini", 
+                    messages: [{role: "system", content: systemPrompt}, ...chatHistory],
+                    temperature: 0.7 
+                })
+            });
+            const d = await resp.json();
+            const aiMsg = d.choices[0].message.content;
+            chatHistory.push({role: "assistant", content: aiMsg});
+            addMsg('ai', aiMsg);
+        } catch(e) {
+            addMsg('ai', "Erro de conexão com o Kernel central.");
+        }
     }
 
-    function addMsg(t, c) { const d = document.createElement('div'); d.className = `msg ${t}`; d.innerHTML = c; document.getElementById('flow').appendChild(d); document.getElementById('flow').scrollTop = flow.scrollHeight; }
-    function setMode(m) { currentMode = m; addMsg('ai', `<b>Módulo ${m} ativo.</b>`); toggleMenu(); }
-    async function getForex() { const r = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL,XAU-BRL'); const d = await r.json(); addMsg('ai', `Dólar: R$ ${d.USDBRL.bid} | Ouro: R$ ${d.XAUBRL.bid}`); toggleMenu(); }
+    function addMsg(t, c) {
+        const d = document.createElement('div');
+        d.className = `msg ${t}`;
+        d.innerHTML = c.replace(/\n/g, '<br>');
+        document.getElementById('flow').appendChild(d);
+        document.getElementById('flow').scrollTop = flow.scrollHeight;
+    }
+
+    async function getForex() {
+        await updateMarketContext();
+        addMsg('ai', `<b>TERMINAL FOREX:</b><br>${lastMarketData}`);
+        toggleMenu();
+    }
+
+    async function getCrypto() {
+        addMsg('ai', "<i>Consultando Binance...</i>");
+        const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+        const d = await r.json();
+        addMsg('ai', `<b>BITCOIN:</b> $${parseFloat(d.price).toLocaleString()}`);
+        toggleMenu();
+    }
+
+    function setMode(m) { currentMode = m; addMsg('ai', `Módulo ${m} ativo.`); toggleMenu(); }
     function newChat() { chatHistory = []; document.getElementById('flow').innerHTML = ''; toggleMenu(); }
 </script>
 </body>
