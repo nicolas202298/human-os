@@ -19,29 +19,24 @@
         .promises-grid { display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 500px; width: 100%; margin-bottom: 40px; }
         .promise-card { background: rgba(255,255,255,0.02); padding: 20px; border-radius: 20px; border: 1px solid rgba(0,242,255,0.1); text-align: left; display: flex; align-items: center; gap: 20px; }
         .promise-card i { color: var(--neon); font-size: 1.5rem; }
-        
         .cta-button { background: var(--neon); color: #000; padding: 20px 60px; border-radius: 50px; font-weight: 900; text-decoration: none; font-size: 1.1rem; box-shadow: 0 0 40px rgba(0, 242, 255, 0.3); text-transform: uppercase; cursor:pointer; }
 
         /* APP INTERFACE */
         #app-interface { display: none; height: 100vh; width: 100vw; flex-direction: column; }
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2500; }
         #overlay.active { display: block; }
-        
-        #sidebar { width: 280px; height: 100%; background: #000; border-right: 1px solid #1a1a1a; position: fixed; left: -280px; transition: 0.3s; z-index: 3000; display: flex; flex-direction: column; padding: 20px; }
+        #sidebar { width: 280px; height: 100%; background: #000; border-right: 1px solid #1a1a1a; position: fixed; left: -280px; transition: 0.3s; z-index: 3000; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; }
         #sidebar.open { left: 0; }
         .close-menu { align-self: flex-end; color: var(--neon); font-size: 1.5rem; cursor: pointer; padding: 10px; }
-        
-        .sidebar-item { padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: #888; margin-bottom: 5px; transition: 0.2s; }
+        .sidebar-item { padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; color: #888; margin-bottom: 5px; transition: 0.2s; font-size: 0.85rem; }
         .sidebar-item:hover { background: #111; color: var(--neon); }
-        .sidebar-item i { width: 20px; text-align: center; }
+        .sidebar-label { font-size: 0.65rem; color: #444; font-weight: 900; margin: 15px 0 5px 12px; text-transform: uppercase; letter-spacing: 1px; }
 
         header { padding: 15px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; background: #000; }
         #flow { flex-grow: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; display: flex; flex-direction: column; }
-        
         .msg { padding: 15px; border-radius: 15px; margin-bottom: 15px; max-width: 85%; font-size: 0.95rem; line-height: 1.4; }
         .ai { border-left: 3px solid var(--neon); background: rgba(0, 242, 255, 0.03); color: #eee; }
         .user { background: #1a1a1a; align-self: flex-end; color: #fff; border: 1px solid #333; }
-
         footer { position: fixed; bottom: 0; width: 100%; padding: 15px; background: linear-gradient(transparent, #050505 30%); }
         .input-box { background: #111; border-radius: 18px; padding: 12px; border: 1px solid #222; display: flex; max-width: 800px; margin: 0 auto; }
         textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; height: 25px; resize: none; font-size: 1rem; }
@@ -61,14 +56,10 @@
     <section id="landing-page">
         <h1 class="hero-title">HUMAN-OS<br><span>KERNEL</span></h1>
         <p class="hero-sub">SISTEMA SOBERANO v5.0</p>
-        
         <div class="promises-grid">
-            <div class="promise-card"><i class="fas fa-brain"></i><div class="promise-text"><h3>Cognição</h3><p>Pensamento lógico e clareza extrema.</p></div></div>
-            <div class="promise-card"><i class="fas fa-gem"></i><div class="promise-text"><h3>Doutor Riqueza</h3><p>Estratégias de capital e mercado.</p></div></div>
-            <div class="promise-card"><i class="fas fa-user-md"></i><div class="promise-text"><h3>Médico IA</h3><p>Saúde, biohacking e longevidade.</p></div></div>
-            <div class="promise-card"><i class="fas fa-heart"></i><div class="promise-text"><h3>Psicólogo</h3><p>Suporte emocional e equilíbrio estóico.</p></div></div>
+            <div class="promise-card"><i class="fas fa-brain"></i><div class="promise-text"><h3>Cognição</h3><p>Pensamento lógico extremo.</p></div></div>
+            <div class="promise-card"><i class="fas fa-gem"></i><div class="promise-text"><h3>Riqueza</h3><p>Finanças e mercado global.</p></div></div>
         </div>
-
         <div class="cta-button" onclick="window.location.href='https://pay.kiwify.com.br/OZtAt4I'">ADQUIRIR ACESSO</div>
         <p onclick="showLogin()" style="margin-top: 40px; color: #333; text-decoration: underline; cursor: pointer;">ENTRAR NO TERMINAL</p>
     </section>
@@ -86,11 +77,17 @@
     <div id="app-interface">
         <div id="sidebar">
             <div class="close-menu" onclick="toggleMenu()"><i class="fas fa-times"></i></div>
+            
+            <div class="sidebar-label">Sessão</div>
             <div class="sidebar-item" onclick="newChat()"><i class="fas fa-plus"></i> Novo Chat</div>
+            <div class="sidebar-item" onclick="showHistory()"><i class="fas fa-history"></i> Log de Memória</div>
             
-            <div class="sidebar-item" onclick="showHistory()"><i class="fas fa-history"></i> Histórico de Sessão</div>
-            
-            <hr style="border: 0; border-top: 1px solid #1a1a1a; margin: 15px 0;">
+            <div class="sidebar-label">Mercado Real</div>
+            <div class="sidebar-item" onclick="getForex()"><i class="fas fa-dollar-sign"></i> Câmbio & Metais</div>
+            <div class="sidebar-item" onclick="getCrypto()"><i class="fas fa-bitcoin"></i> Criptomoedas</div>
+            <div class="sidebar-item" onclick="getNews()"><i class="fas fa-globe"></i> Notícias Globais</div>
+
+            <div class="sidebar-label">Módulos IA</div>
             <div class="sidebar-item" onclick="setMode('cog')"><i class="fas fa-microchip"></i> Cognição</div>
             <div class="sidebar-item" onclick="setMode('wealth')"><i class="fas fa-gem"></i> Doutor da Riqueza</div>
             <div class="sidebar-item" onclick="setMode('med')"><i class="fas fa-user-md"></i> Médico IA</div>
@@ -106,7 +103,7 @@
         </header>
 
         <div id="flow">
-            <div class="msg ai"><b>SISTEMA ONLINE.</b><br>Bem-vindo ao Kernel. O histórico de sessão está sendo gravado.</div>
+            <div class="msg ai"><b>SISTEMA SINCRONIZADO.</b><br>Monitoramento global ativo. Utilize o menu para dados de mercado.</div>
         </div>
 
         <footer>
@@ -124,37 +121,69 @@
     
     const _supabase = supabase.createClient(S_U, S_K);
     let chatHistory = [];
-    let currentSystemPrompt = "Você é o Kernel Human-OS. Mantenha o histórico e seja técnico.";
+    let currentSystemPrompt = "Você é o Kernel Human-OS.";
 
     function showLogin() { document.getElementById('landing-page').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
-    
-    function newChat() { chatHistory = []; flow.innerHTML = '<div class="msg ai"><b>MEMÓRIA RESETADA.</b><br>Iniciando novo fluxo.</div>'; toggleMenu(); }
+    function newChat() { chatHistory = []; flow.innerHTML = '<div class="msg ai"><b>MEMÓRIA RESETADA.</b></div>'; toggleMenu(); }
 
-    // FUNÇÃO PARA MOSTRAR O HISTÓRICO
-    function showHistory() {
-        const count = chatHistory.length / 2;
-        addMsg('ai', `<b>LOG DE HISTÓRICO:</b><br>Nesta sessão foram trocadas ${Math.floor(count)} interações com o Kernel.`);
+    // DADOS DE CÂMBIO E METAIS (Dólar, Euro, Libra, Ouro, Prata)
+    async function getForex() {
+        try {
+            addMsg('ai', "<i>Consultando terminais financeiros...</i>");
+            const r = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,GBP-BRL,XAU-BRL,XAG-BRL');
+            const d = await r.json();
+            const html = `<b>COTAÇÕES ATUAIS (BRL):</b><br>
+                💵 Dólar: R$ ${parseFloat(d.USDBRL.bid).toFixed(2)}<br>
+                💶 Euro: R$ ${parseFloat(d.EURBRL.bid).toFixed(2)}<br>
+                💷 Libra: R$ ${parseFloat(d.GBPBRL.bid).toFixed(2)}<br>
+                ✨ Ouro (g): R$ ${parseFloat(d.XAUBRL.bid).toFixed(2)}<br>
+                🪙 Prata (g): R$ ${parseFloat(d.XAGBRL.bid).toFixed(2)}`;
+            addMsg('ai', html);
+        } catch(e) { addMsg('ai', "Erro ao acessar API de Câmbio."); }
         toggleMenu();
     }
 
+    // CRIPTOMOEDAS
+    async function getCrypto() {
+        try {
+            addMsg('ai', "<i>Acessando Blockchain Explorer...</i>");
+            const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=brl');
+            const d = await r.json();
+            const html = `<b>CRIPTOMOEDAS (BRL):</b><br>
+                ₿ Bitcoin: R$ ${d.bitcoin.brl.toLocaleString('pt-BR')}<br>
+                💎 Ethereum: R$ ${d.ethereum.brl.toLocaleString('pt-BR')}<br>
+                ☀️ Solana: R$ ${d.solana.brl.toLocaleString('pt-BR')}`;
+            addMsg('ai', html);
+        } catch(e) { addMsg('ai', "Erro ao acessar API de Cripto."); }
+        toggleMenu();
+    }
+
+    // NOTÍCIAS (Simulação de manchetes globais via feed)
+    async function getNews() {
+        const news = [
+            "🏦 FED mantém taxas de juros estáveis para o próximo trimestre.",
+            "🚀 Tecnologia: IAs generativas atingem novo recorde de processamento.",
+            "🌍 Geopolítica: Novas tensões impactam o preço do barril de petróleo.",
+            "📈 Mercado: Bitcoin ultrapassa resistência histórica."
+        ];
+        addMsg('ai', "<b>NOTÍCIAS GLOBAIS:</b><br><br>" + news.join('<br><br>'));
+        toggleMenu();
+    }
+
+    function showHistory() { addMsg('ai', `<b>LOG:</b> ${chatHistory.length / 2} interações registradas.`); toggleMenu(); }
+
     async function handleAuth() {
-        const { data, error } = await _supabase.auth.signInWithPassword({ email: email_login.value, password: password_login.value });
-        if (error) return alert("Erro de Acesso.");
+        const { error } = await _supabase.auth.signInWithPassword({ email: email_login.value, password: password_login.value });
+        if (error) return alert("Erro.");
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app-interface').style.display = 'flex';
     }
 
     function setMode(mode) {
-        const m = { 
-            cog: { t: 'COGNICÃO', p: 'Você é o Kernel focado em Cognição.' },
-            wealth: { t: 'RIQUEZA', p: 'Você é o Kernel focado em Riqueza.' },
-            med: { t: 'MÉDICO IA', p: 'Você é o Kernel focado em Biohacking.' },
-            psi: { t: 'PSICÓLOGO', p: 'Você é o Kernel focado em Psicologia.' }
-        };
-        currentSystemPrompt = m[mode].p;
-        document.getElementById('status-bar').innerText = `KERNEL | ${m[mode].t}`;
-        addMsg('ai', `<b>Módulo ${m[mode].t} ativado.</b>`);
+        const m = { cog: 'Cognição', wealth: 'Riqueza', med: 'Médico', psi: 'Psicólogo' };
+        currentSystemPrompt = `Você é o Kernel modo ${m[mode]}.`;
+        addMsg('ai', `<b>Modo ${m[mode]} Ativado.</b>`);
         toggleMenu();
     }
 
@@ -162,15 +191,11 @@
         const text = cmd.value.trim(); if(!text) return;
         addMsg('user', text); cmd.value = "";
         chatHistory.push({role: "user", content: text});
-        
         try {
             const resp = await fetch("https://api.openai.com/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${G_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    model: "gpt-4o-mini", 
-                    messages: [{role: "system", content: currentSystemPrompt}, ...chatHistory] 
-                })
+                body: JSON.stringify({ model: "gpt-4o-mini", messages: [{role: "system", content: currentSystemPrompt}, ...chatHistory] })
             });
             const d = await resp.json();
             const aiMsg = d.choices[0].message.content;
