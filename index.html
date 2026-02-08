@@ -11,113 +11,100 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; }
         section { display: none; min-height: 100vh; width: 100%; overflow-y: auto; }
-        
-        /* LANDING PAGE TURBINADA */
-        #landing-page { display: flex; flex-direction: column; align-items: center; text-align: center; background: radial-gradient(circle at top, #0a1f21 0%, #050505 100%); padding: 40px 20px; }
-        .hero-title { font-size: 3.2rem; font-weight: 900; line-height: 1; margin-bottom: 10px; }
-        .hero-title span { color: var(--neon); text-shadow: 0 0 20px rgba(0,242,255,0.5); }
-        .hero-sub { color:#444; letter-spacing:3px; font-weight:800; margin-bottom: 30px; text-transform: uppercase; font-size: 0.8rem; }
-        
-        .promises { display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 500px; width: 100%; margin-bottom: 35px; }
-        .promise-card { background: rgba(255,255,255,0.03); border: 1px solid #1a1a1a; padding: 15px; border-radius: 12px; text-align: left; display: flex; align-items: center; gap: 15px; }
-        .promise-card i { color: var(--neon); font-size: 1.2rem; }
-        .promise-card h4 { font-size: 0.9rem; margin-bottom: 2px; }
-        .promise-card p { font-size: 0.75rem; color: #666; }
 
-        .cta-button { background: var(--neon); color: #000; padding: 22px 50px; border-radius: 50px; font-weight: 900; font-size: 1.1rem; text-decoration: none; box-shadow: 0 0 30px rgba(0,242,255,0.4); }
-
-        /* SIDEBAR E HISTÓRICO */
+        /* SIDEBAR COM X E MÓDULOS */
         #sidebar { width: 300px; height: 100%; background: #000; border-right: 1px solid #1a1a1a; position: fixed; left: -300px; transition: 0.3s; z-index: 6000; display: flex; flex-direction: column; padding: 20px; }
         #sidebar.open { left: 0; }
-        .sidebar-title { color: var(--neon); font-size: 0.7rem; letter-spacing: 2px; margin: 20px 0 10px; text-transform: uppercase; }
-        .hist-item { padding: 12px; font-size: 0.8rem; color: #555; cursor: pointer; border-bottom: 1px solid #111; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .hist-item:hover { color: var(--neon); background: #0a0a0a; }
+        .close-menu { align-self: flex-end; font-size: 1.5rem; cursor: pointer; color: var(--neon); margin-bottom: 20px; }
+        .sidebar-title { color: var(--neon); font-size: 0.7rem; letter-spacing: 2px; margin: 15px 0 10px; text-transform: uppercase; }
+        .sidebar-item { padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; color: #888; }
+        .sidebar-item:hover { background: #111; color: var(--neon); }
+        .hist-list { flex-grow: 1; overflow-y: auto; margin-top: 10px; }
+        .hist-item { padding: 8px; font-size: 0.75rem; color: #444; border-bottom: 1px solid #111; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* INTERFACE APP */
         #app-interface { height: 100vh; flex-direction: column; display: none; }
-        header { padding: 15px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
-        #flow { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; padding-bottom: 110px; }
-        .msg { padding: 15px; border-radius: 15px; margin-bottom: 15px; max-width: 85%; font-size: 0.9rem; line-height: 1.4; }
+        header { padding: 15px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; background: #000; }
+        #flow { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; padding-bottom: 100px; }
+        .msg { padding: 15px; border-radius: 15px; margin-bottom: 15px; max-width: 85%; font-size: 0.9rem; line-height: 1.5; }
         .ai { border-left: 3px solid var(--neon); background: rgba(0, 242, 255, 0.05); }
         .user { background: #1a1a1a; align-self: flex-end; border: 1px solid #333; }
         footer { position: fixed; bottom: 0; width: 100%; padding: 15px; background: #050505; }
         .input-box { background: #111; border-radius: 18px; padding: 10px; border: 1px solid #222; display: flex; max-width: 800px; margin: 0 auto; }
         textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; height: 25px; resize: none; padding-left: 10px; }
         .send-btn { background: var(--neon); border: none; width: 35px; height: 35px; border-radius: 10px; cursor: pointer; }
+
+        /* LANDING PAGE */
+        #landing-page { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 20px; }
+        .hero-title { font-size: 3rem; font-weight: 900; }
+        .hero-title span { color: var(--neon); }
+        .promises { margin: 30px 0; width: 100%; max-width: 450px; }
+        .p-card { background: #0a0a0a; padding: 15px; border-radius: 10px; margin-bottom: 10px; text-align: left; border: 1px solid #111; }
     </style>
 </head>
 <body>
+
     <div id="sidebar">
-        <h3 class="sidebar-title">MÓDULOS ATIVOS</h3>
-        <div onclick="setMode('Médico IA')" style="cursor:pointer; margin-bottom:10px;"><i class="fas fa-user-md"></i> Médico IA</div>
-        <div onclick="setMode('Riqueza')" style="cursor:pointer;"><i class="fas fa-gem"></i> Doutor da Riqueza</div>
+        <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
+        <h3 class="sidebar-title">MÓDULOS DO SISTEMA</h3>
+        <div class="sidebar-item" onclick="setMode('Cognição Cerebral')"><i class="fas fa-brain"></i> Cognição Cerebral</div>
+        <div class="sidebar-item" onclick="setMode('Psicológico IA')"><i class="fas fa-heartbeat"></i> Psicológico IA</div>
+        <div class="sidebar-item" onclick="setMode('Médico IA')"><i class="fas fa-user-md"></i> Médico IA</div>
+        <div class="sidebar-item" onclick="setMode('Doutor da Riqueza')"><i class="fas fa-gem"></i> Doutor da Riqueza</div>
         
-        <h3 class="sidebar-title">HISTÓRICO DE COMANDOS</h3>
-        <div id="chat-history-list"></div>
+        <h3 class="sidebar-title">HISTÓRICO</h3>
+        <div id="chat-history-list" class="hist-list"></div>
         
-        <div style="margin-top:auto; color:red; cursor:pointer;" onclick="location.reload()">Sair do Sistema</div>
+        <div class="sidebar-item" style="color:red; margin-top:auto;" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> Sair</div>
     </div>
 
     <section id="landing-page" style="display: flex;">
         <h1 class="hero-title">HUMAN-OS<br><span>KERNEL</span></h1>
-        <p class="hero-sub">CENTRAL DE INTELIGÊNCIA SOBERANA</p>
-
         <div class="promises">
-            <div class="promise-card">
-                <i class="fas fa-dna"></i>
-                <div>
-                    <h4>Médico IA & Biohacking</h4>
-                    <p>Otimização hormonal, treinos e dietas baseadas em dados.</p>
-                </div>
-            </div>
-            <div class="promise-card">
-                <i class="fas fa-coins"></i>
-                <div>
-                    <h4>Doutor da Riqueza</h4>
-                    <p>Análise de ativos, gestão de capital e consultoria financeira.</p>
-                </div>
-            </div>
-            <div class="promise-card">
-                <i class="fas fa-chart-line"></i>
-                <div>
-                    <h4>Monitor Global</h4>
-                    <p>Cotações em tempo real de Cripto, Dólar e Ações B3.</p>
-                </div>
-            </div>
+            <div class="p-card"><b>🧠 Cognição:</b> Upgrade mental e foco total.</div>
+            <div class="p-card"><b>💰 Riqueza:</b> Gestão soberana de capital.</div>
+            <div class="p-card"><b>🩺 Saúde:</b> Biohacking e protocolos hormonais.</div>
         </div>
-
-        <a href="https://pay.kiwify.com.br/OZtAt4I" class="cta-button">ADQUIRIR ACESSO</a>
-        <p onclick="showScreen('auth-screen')" style="margin-top: 25px; cursor: pointer; text-decoration: underline; color: #444; font-size: 0.9rem;">JÁ SOU OPERADOR (LOGIN)</p>
+        <a href="https://pay.kiwify.com.br/OZtAt4I" style="background:var(--neon); color:#000; padding:20px 40px; border-radius:50px; font-weight:900; text-decoration:none;">ADQUIRIR ACESSO</a>
+        <p onclick="showScreen('auth-screen')" style="margin-top:20px; cursor:pointer; text-decoration:underline; color:#444;">JÁ SOU OPERADOR</p>
     </section>
 
     <section id="auth-screen" style="display:none; flex-direction:column; align-items:center; justify-content:center;">
-        <div style="background:#111; padding:30px; border-radius:20px; width:90%; max-width:350px; text-align:center;">
-            <h3 style="color:var(--neon); margin-bottom:20px;">IDENTIFICAÇÃO</h3>
-            <input type="email" id="email_login" class="login-input" placeholder="E-mail" style="width:100%; padding:15px; background:#000; color:#fff; border:1px solid #333; margin-bottom:10px; border-radius:10px;">
-            <input type="password" id="password_login" class="login-input" placeholder="Senha" style="width:100%; padding:15px; background:#000; color:#fff; border:1px solid #333; margin-bottom:15px; border-radius:10px;">
-            <button onclick="handleAuth()" style="width:100%; background:var(--neon); padding:15px; border:none; font-weight:900; border-radius:10px; cursor:pointer;">ACESSAR KERNEL</button>
-            <p onclick="resetPassword()" style="font-size: 0.8rem; color: #444; margin-top: 15px; cursor: pointer; text-decoration: underline;">Esqueci minha senha</p>
+        <div style="background:#111; padding:30px; border-radius:20px; width:90%; max-width:350px;">
+            <input type="email" id="email_login" placeholder="E-mail" style="width:100%; padding:15px; background:#000; color:#fff; border:1px solid #333; margin-bottom:10px; border-radius:10px;">
+            <input type="password" id="password_login" placeholder="Senha" style="width:100%; padding:15px; background:#000; color:#fff; border:1px solid #333; margin-bottom:15px; border-radius:10px;">
+            <button onclick="handleAuth()" style="width:100%; background:var(--neon); padding:15px; border:none; font-weight:900; border-radius:10px;">ACESSAR KERNEL</button>
+            <p onclick="resetPassword()" style="color:#444; font-size:0.8rem; margin-top:15px; cursor:pointer; text-align:center;">Esqueci minha senha</p>
         </div>
     </section>
 
     <section id="app-interface">
         <header>
-            <i class="fas fa-bars" onclick="document.getElementById('sidebar').classList.toggle('open')" style="font-size: 1.5rem; color: var(--neon); cursor:pointer;"></i>
-            <div id="active-mode" style="font-size: 0.7rem; color: #444;">KERNEL V5.6</div>
+            <i class="fas fa-bars" onclick="toggleMenu()" style="font-size: 1.5rem; color: var(--neon); cursor:pointer;"></i>
+            <div id="active-mode" style="font-size: 0.7rem; color: #444; font-weight:900;">MODO: GERAL</div>
             <div></div>
         </header>
-        <div id="flow"><div class="ai msg">Kernel Online. Como posso auxiliar sua evolução hoje?</div></div>
+        <div id="flow"><div class="ai msg"><b>KERNEL OPERACIONAL.</b></div></div>
         <footer>
-            <div class="input-box"><textarea id="cmd" placeholder="Digite seu comando..."></textarea><button onclick="destilar()" class="send-btn"><i class="fas fa-arrow-up"></i></button></div>
+            <div class="input-box"><textarea id="cmd" placeholder="Comando..."></textarea><button onclick="destilar()" class="send-btn"><i class="fas fa-arrow-up"></i></button></div>
         </footer>
     </section>
 
     <script>
         const _supabase = supabase.createClient('https://fddzojlntzmhmekckplm.supabase.co', 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5');
         let chatHistory = [];
+        let currentMode = "Geral";
 
         function showScreen(id) { document.querySelectorAll('section').forEach(s => s.style.display = 'none'); document.getElementById(id).style.display = 'flex'; }
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
         
+        function setMode(m) { 
+            currentMode = m; 
+            document.getElementById('active-mode').innerText = "MODO: " + m.toUpperCase(); 
+            addMsg('ai', `<b>Módulo ${m} ativado.</b> Como posso ajudar?`);
+            toggleMenu();
+        }
+
         async function handleAuth() {
             const { error } = await _supabase.auth.signInWithPassword({ email: email_login.value, password: password_login.value });
             if (error) return alert("Erro: " + error.message);
@@ -126,11 +113,9 @@
         }
 
         async function resetPassword() {
-            const email = prompt("E-mail para recuperação:");
-            if (email) {
-                const { error } = await _supabase.auth.resetPasswordForEmail(email);
-                alert(error ? "Erro: " + error.message : "Verifique seu e-mail!");
-            }
+            const email = prompt("Digite seu e-mail:");
+            if (email) await _supabase.auth.resetPasswordForEmail(email);
+            alert("Verifique seu e-mail.");
         }
 
         async function destilar() {
@@ -140,17 +125,20 @@
             saveToSidebar(text);
 
             try {
+                // ROTA CORRIGIDA PARA /api/chat
                 const response = await fetch("/api/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ messages: chatHistory })
+                    body: JSON.stringify({ messages: [{role: "system", content: "Você é o Kernel. Modo: " + currentMode}, ...chatHistory] })
                 });
                 const data = await response.json();
                 const aiMsg = data.choices[0].message.content;
                 chatHistory.push({role: "assistant", content: aiMsg});
                 addMsg('ai', aiMsg);
-                localStorage.setItem('kernel_chats', JSON.stringify(chatHistory));
-            } catch (e) { addMsg('ai', "Erro de conexão com a API."); }
+                localStorage.setItem('kernel_v5_history', JSON.stringify(chatHistory));
+            } catch (e) { 
+                addMsg('ai', "ERRO DE CONEXÃO: Verifique se a pasta 'api' e o arquivo 'chat.js' estão corretos no GitHub."); 
+            }
         }
 
         function addMsg(t, c) { const d = document.createElement('div'); d.className = `msg ${t}`; d.innerHTML = c; document.getElementById('flow').appendChild(d); flow.scrollTop = flow.scrollHeight; }
@@ -163,7 +151,7 @@
         }
 
         function loadHistory() {
-            const saved = localStorage.getItem('kernel_chats');
+            const saved = localStorage.getItem('kernel_v5_history');
             if (saved) {
                 chatHistory = JSON.parse(saved);
                 chatHistory.forEach(m => {
