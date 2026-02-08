@@ -25,11 +25,14 @@
         #profile-modal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#111; padding:30px; border-radius:20px; border:1px solid var(--neon); z-index:7000; width:90%; max-width:400px; }
         .profile-input { width:100%; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px; margin-bottom:15px; }
 
-        /* INTERFACE DO APP */
+        /* LOGIN & RECOVERY */
         #auth-screen { flex-direction: column; align-items: center; justify-content: center; background:#000; }
         .login-card { background:#111; padding:35px; border-radius:25px; width:90%; max-width:380px; text-align:center; border: 1px solid #222; }
         .login-input { width:100%; padding:15px; margin-bottom:12px; background:#000; color:#fff; border:1px solid #333; border-radius:12px; outline: none; }
         .login-btn { width:100%; background:var(--neon); padding:18px; border-radius:12px; font-weight:800; border:none; cursor: pointer; }
+        .link-text { margin-top: 15px; color: #555; font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
+
+        /* INTERFACE DO APP */
         #app-interface { height: 100vh; flex-direction: column; overflow: hidden; }
         #sidebar { width: 280px; height: 100%; background: #000; border-right: 1px solid #1a1a1a; position: fixed; left: -280px; transition: 0.3s; z-index: 6000; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; }
         #sidebar.open { left: 0; }
@@ -74,7 +77,7 @@
             <div class="promise-card"><i class="fas fa-peace"></i><div><h3>Resiliência</h3><p>Psicologia estóica.</p></div></div>
         </div>
         <a href="https://pay.kiwify.com.br/OZtAt4I" class="cta-button">ADQUIRIR ACESSO</a>
-        <p onclick="showScreen('auth-screen')" style="margin-top: 30px; color: #333; text-decoration: underline; cursor: pointer; font-weight:bold;">JÁ TENHO ACESSO</p>
+        <p onclick="showScreen('auth-screen')" style="margin-top: 30px; color: #333; text-decoration: underline; cursor: pointer; font-weight:bold;">JÁ TENHO ACESSO (ENTRAR)</p>
     </section>
 
     <section id="auth-screen">
@@ -83,6 +86,8 @@
             <input type="email" id="email_login" class="login-input" placeholder="E-mail">
             <input type="password" id="password_login" class="login-input" placeholder="Senha">
             <button onclick="handleAuth()" class="login-btn">ACESSAR</button>
+            
+            <p class="link-text" onclick="resetPassword()">Esqueci minha senha</p>
             <p class="link-text" onclick="showScreen('landing-page')" style="color:var(--neon)">Voltar para início</p>
         </div>
     </section>
@@ -121,16 +126,25 @@
     let currentMode = "Geral";
     let userProfile = {};
 
-    // FUNÇÃO CRIPTO CORRIGIDA
+    // FUNÇÃO CRIPTO CORRIGIDA COM AS PRINCIPAIS MOEDAS
     async function getCrypto() {
-        addMsg('ai', "<i>Consultando terminais de cripto...</i>");
+        addMsg('ai', "<i>Consultando terminais de cripto (Binance)...</i>");
         try {
-            const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
-            const d = await r.json();
-            const price = parseFloat(d.price).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
-            addMsg('ai', `<b>MERCADO CRIPTO (Binance):</b><br>Bitcoin: ${price}`);
+            // Busca BTC, ETH e SOL
+            const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'];
+            let output = "<b>MERCADO CRIPTO:</b><br>";
+            
+            for (let s of symbols) {
+                const r = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${s}`);
+                const d = await r.json();
+                const price = parseFloat(d.price).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+                const name = s.replace('USDT', '');
+                output += `• ${name}: ${price}<br>`;
+            }
+            
+            addMsg('ai', output);
         } catch (e) {
-            addMsg('ai', "Erro ao acessar terminais de cripto. Tente novamente em instantes.");
+            addMsg('ai', "Erro ao acessar terminais de cripto.");
         }
         toggleMenu();
     }
@@ -140,6 +154,13 @@
         if (error) return alert("Erro: " + error.message);
         await loadProfile(data.user.id);
         showScreen('app-interface');
+    }
+
+    async function resetPassword() {
+        const email = email_login.value;
+        if(!email) return alert("Coloque seu e-mail no campo acima!");
+        const { error } = await _supabase.auth.resetPasswordForEmail(email);
+        alert(error ? error.message : "Link de recuperação enviado ao seu e-mail!");
     }
 
     async function loadProfile(uid) {
@@ -174,6 +195,7 @@
     function addMsg(t, c) { const d = document.createElement('div'); d.className = `msg ${t}`; d.innerHTML = c; document.getElementById('flow').appendChild(d); document.getElementById('flow').scrollTop = flow.scrollHeight; }
     function setMode(m) { currentMode = m; addMsg('ai', `<b>Módulo ${m} ativo.</b>`); toggleMenu(); }
     async function getForex() { const r = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL,XAU-BRL'); const d = await r.json(); addMsg('ai', `Dólar: R$ ${d.USDBRL.bid} | Ouro: R$ ${d.XAUBRL.bid}`); toggleMenu(); }
+    function newChat() { chatHistory = []; document.getElementById('flow').innerHTML = ''; toggleMenu(); }
 </script>
 </body>
 </html>
