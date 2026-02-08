@@ -16,81 +16,79 @@
         #sidebar { width: 300px; height: 100%; background: #000; border-right: 1px solid #1a1a1a; position: fixed; left: -300px; transition: 0.3s; z-index: 6000; display: flex; flex-direction: column; padding: 20px; }
         #sidebar.open { left: 0; }
         .close-menu { align-self: flex-end; font-size: 1.5rem; cursor: pointer; color: var(--neon); margin-bottom: 20px; }
-        .sidebar-item { padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #888; }
+        .sidebar-item { padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #888; font-weight: bold; }
         .sidebar-item:hover { color: var(--neon); background: #111; }
 
-        /* LANDING PAGE (SÓ ACRESCENTEI AS PROMESSAS) */
+        /* LANDING PAGE ORIGINAL + PROMESSAS */
         #landing-page { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 60px 20px; background: radial-gradient(circle at top, #0a1f21 0%, #050505 100%); }
         .hero-title { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; }
         .hero-title span { color: var(--neon); text-shadow: 0 0 20px var(--neon); }
-        
-        /* O QUE O APP OFERECE (O QUE VOCÊ PEDIU) */
         .feature-list { margin: 40px 0; width: 100%; max-width: 500px; }
         .feature-item { background: rgba(255,255,255,0.03); border: 1px solid #1a1a1a; padding: 15px; border-radius: 15px; margin-bottom: 10px; text-align: left; display: flex; align-items: center; gap: 15px; }
         .feature-item i { color: var(--neon); font-size: 1.2rem; }
-        
         .cta-button { background: var(--neon); color: #000; padding: 25px 60px; border-radius: 50px; font-weight: 900; text-decoration: none; box-shadow: 0 0 20px var(--neon); }
 
         /* INTERFACE APP */
         #app-interface { height: 100vh; flex-direction: column; display: none; }
-        header { padding: 15px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
+        header { padding: 15px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; background: #000; }
         #flow { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; padding-bottom: 110px; }
-        .msg { padding: 15px; border-radius: 15px; margin-bottom: 15px; max-width: 85%; }
+        .msg { padding: 15px; border-radius: 15px; margin-bottom: 15px; max-width: 85%; font-size: 0.9rem; line-height: 1.4; }
         .ai { border-left: 3px solid var(--neon); background: rgba(0, 242, 255, 0.05); }
         .user { background: #1a1a1a; align-self: flex-end; border: 1px solid #333; }
         footer { position: fixed; bottom: 0; width: 100%; padding: 15px; background: #050505; }
-        .input-box { background: #111; border-radius: 18px; padding: 10px; border: 1px solid #222; display: flex; }
-        textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; height: 25px; resize: none; }
+        .input-box { background: #111; border-radius: 18px; padding: 10px; border: 1px solid #222; display: flex; max-width: 800px; margin: 0 auto; }
+        textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; height: 25px; resize: none; padding-left: 10px; }
     </style>
 </head>
 <body>
 
     <div id="sidebar">
         <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
-        <h3 style="color:var(--neon); font-size:0.7rem; margin-bottom:15px;">MÓDULOS</h3>
+        <h3 style="color:var(--neon); font-size:0.7rem; margin-bottom:15px; letter-spacing: 2px;">MÓDULOS</h3>
         <div class="sidebar-item" onclick="setMode('Cognição Cerebral')"><i class="fas fa-brain"></i> Cognição Cerebral</div>
         <div class="sidebar-item" onclick="setMode('Psicológico IA')"><i class="fas fa-comment-medical"></i> Psicológico IA</div>
         <div class="sidebar-item" onclick="setMode('Médico IA')"><i class="fas fa-user-md"></i> Médico IA</div>
         <div class="sidebar-item" onclick="setMode('Doutor da Riqueza')"><i class="fas fa-gem"></i> Doutor da Riqueza</div>
         
-        <h3 style="color:var(--neon); font-size:0.7rem; margin:20px 0 10px;">HISTÓRICO</h3>
+        <h3 style="color:var(--neon); font-size:0.7rem; margin:20px 0 10px; letter-spacing: 2px;">HISTÓRICO</h3>
         <div id="chat-history-list" style="overflow-y:auto; flex-grow:1;"></div>
-        
-        <div class="sidebar-item" style="color:red; margin-top:auto;" onclick="location.reload()">Sair</div>
+        <div class="sidebar-item" style="color:red; margin-top:auto;" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> Sair</div>
     </div>
 
     <section id="landing-page" style="display: flex;">
         <h1 class="hero-title">HUMAN-OS<br><span>KERNEL</span></h1>
-        
         <div class="feature-list">
-            <div class="feature-item"><i class="fas fa-brain"></i> <div><b>Cognição Cerebral:</b> Upgrade mental e foco.</div></div>
-            <div class="feature-item"><i class="fas fa-heart-pulse"></i> <div><b>Psicológico IA:</b> Suporte mental avançado.</div></div>
-            <div class="feature-item"><i class="fas fa-dna"></i> <div><b>Biohacking:</b> Médico IA para performance.</div></div>
+            <div class="feature-item"><i class="fas fa-brain"></i> <div><b>Cognição:</b> Upgrade mental e foco.</div></div>
+            <div class="feature-item"><i class="fas fa-heart-pulse"></i> <div><b>Psicológico:</b> Suporte mental avançado.</div></div>
+            <div class="feature-item"><i class="fas fa-dna"></i> <div><b>Biohacking:</b> Médico IA integrado.</div></div>
             <div class="feature-item"><i class="fas fa-chart-line"></i> <div><b>Riqueza:</b> Gestão de ativos e cripto.</div></div>
         </div>
-
         <a href="https://pay.kiwify.com.br/OZtAt4I" class="cta-button">ADQUIRIR ACESSO</a>
         <p onclick="showScreen('auth-screen')" style="margin-top:30px; cursor:pointer; text-decoration:underline; color:#444;">ACESSAR SISTEMA</p>
     </section>
 
     <section id="auth-screen" style="display:none; flex-direction:column; align-items:center; justify-content:center;">
-        <div style="background:#111; padding:35px; border-radius:25px; width:90%; max-width:380px;">
+        <div style="background:#111; padding:35px; border-radius:25px; width:90%; max-width:380px; text-align:center;">
+            <h3 style="color:var(--neon); margin-bottom:20px;">LOGIN KERNEL</h3>
             <input type="email" id="email_login" placeholder="E-mail" style="width:100%; padding:15px; margin-bottom:12px; background:#000; color:#fff; border:1px solid #333; border-radius:12px;">
             <input type="password" id="password_login" placeholder="Senha" style="width:100%; padding:15px; margin-bottom:12px; background:#000; color:#fff; border:1px solid #333; border-radius:12px;">
-            <button onclick="handleAuth()" style="width:100%; background:var(--neon); padding:18px; border-radius:12px; border:none; font-weight:800;">ENTRAR</button>
-            <p onclick="resetPassword()" style="color:#444; font-size:0.8rem; margin-top:15px; text-align:center; cursor:pointer;">Esqueceu a senha?</p>
+            <button onclick="handleAuth()" style="width:100%; background:var(--neon); padding:18px; border-radius:12px; border:none; font-weight:900; width:100%; cursor:pointer;">ENTRAR</button>
+            <p onclick="resetPassword()" style="color:#444; font-size:0.8rem; margin-top:15px; cursor:pointer; text-decoration:underline;">Esqueceu a senha?</p>
         </div>
     </section>
 
     <section id="app-interface">
         <header>
             <i class="fas fa-bars" onclick="toggleMenu()" style="font-size: 1.5rem; color: var(--neon); cursor:pointer;"></i>
-            <div id="active-mode" style="font-size: 0.7rem; font-weight:900;">MODO: GERAL</div>
+            <div id="active-mode" style="font-size: 0.7rem; font-weight:900; color: #444;">MODO: GERAL</div>
             <div></div>
         </header>
-        <div id="flow"></div>
+        <div id="flow"><div class="ai msg"><b>KERNEL OPERACIONAL V6.</b><br>Selecione um módulo ou digite seu comando.</div></div>
         <footer>
-            <div class="input-box"><textarea id="cmd" placeholder="Digite seu comando..."></textarea><button onclick="destilar()" style="background:var(--neon); border:none; padding:10px; border-radius:10px;"><i class="fas fa-arrow-up"></i></button></div>
+            <div class="input-box">
+                <textarea id="cmd" placeholder="Comando..."></textarea>
+                <button onclick="destilar()" style="background:var(--neon); border:none; width:35px; height:35px; border-radius:10px; cursor:pointer;"><i class="fas fa-arrow-up"></i></button>
+            </div>
         </footer>
     </section>
 
@@ -101,7 +99,12 @@
 
         function showScreen(id) { document.querySelectorAll('section').forEach(s => s.style.display = 'none'); document.getElementById(id).style.display = 'flex'; }
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
-        function setMode(m) { currentMode = m; document.getElementById('active-mode').innerText = "MODO: " + m.toUpperCase(); toggleMenu(); addMsg('ai', `Módulo ${m} ativo.`); }
+        function setMode(m) { 
+            currentMode = m; 
+            document.getElementById('active-mode').innerText = "MODO: " + m.toUpperCase(); 
+            addMsg('ai', `<b>Módulo ${m} ativado.</b> Como posso ajudar?`);
+            toggleMenu(); 
+        }
 
         async function handleAuth() {
             const { error } = await _supabase.auth.signInWithPassword({ email: email_login.value, password: password_login.value });
@@ -112,7 +115,7 @@
 
         async function resetPassword() {
             const email = prompt("E-mail para recuperação:");
-            if (email) { await _supabase.auth.resetPasswordForEmail(email); alert("Link enviado!"); }
+            if (email) { await _supabase.auth.resetPasswordForEmail(email); alert("Link enviado para o seu e-mail!"); }
         }
 
         async function destilar() {
@@ -122,27 +125,48 @@
             saveToSidebar(text);
 
             try {
-                // ROTA ABSOLUTA PARA EVITAR ERRO DE CONEXÃO
-                const response = await fetch(window.location.origin + "/api/chat", {
+                let response = await fetch("/api/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ messages: [{role: "system", content: "Modo: " + currentMode}, ...chatHistory] })
                 });
+
+                if (!response.ok) {
+                    response = await fetch("/API/chat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ messages: chatHistory })
+                    });
+                }
+
                 const data = await response.json();
                 const aiMsg = data.choices[0].message.content;
                 chatHistory.push({role: "assistant", content: aiMsg});
                 addMsg('ai', aiMsg);
-                localStorage.setItem('kernel_v6', JSON.stringify(chatHistory));
-            } catch (e) { addMsg('ai', "ERRO DE CONEXÃO. Verifique a pasta 'api' no GitHub."); }
+                localStorage.setItem('kernel_v6_final', JSON.stringify(chatHistory));
+            } catch (e) { 
+                addMsg('ai', "ERRO DE CONEXÃO. Verifique se o arquivo chat.js está no GitHub."); 
+            }
         }
 
         function addMsg(t, c) { const d = document.createElement('div'); d.className = `msg ${t}`; d.innerHTML = c; document.getElementById('flow').appendChild(d); flow.scrollTop = flow.scrollHeight; }
-        function saveToSidebar(text) { const item = document.createElement('div'); item.className = 'hist-item'; item.innerText = text; document.getElementById('chat-history-list').prepend(item); }
+        function saveToSidebar(text) {
+            const item = document.createElement('div');
+            item.className = 'sidebar-item';
+            item.style.fontSize = '0.7rem';
+            item.style.color = '#444';
+            item.innerText = text;
+            document.getElementById('chat-history-list').prepend(item);
+        }
+
         function loadHistory() {
-            const saved = localStorage.getItem('kernel_v6');
+            const saved = localStorage.getItem('kernel_v6_final');
             if (saved) {
                 chatHistory = JSON.parse(saved);
-                chatHistory.forEach(m => { addMsg(m.role === 'user' ? 'user' : 'ai', m.content); if(m.role === 'user') saveToSidebar(m.content); });
+                chatHistory.forEach(m => {
+                    addMsg(m.role === 'user' ? 'user' : 'ai', m.content);
+                    if(m.role === 'user') saveToSidebar(m.content);
+                });
             }
         }
     </script>
