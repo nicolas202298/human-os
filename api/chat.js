@@ -5,9 +5,9 @@ export default async function handler(req, res) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+                "Authorization": "Bearer " + process.env.OPENAI_API_KEY
             },
-            body: JSON.stringify({ model: "gpt-3.5-turbo", messages })
+            body: JSON.stringify({ model: "gpt-3.5-turbo", messages: messages })
         });
         const data = await response.json();
         res.status(200).json(data);
