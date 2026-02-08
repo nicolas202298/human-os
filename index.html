@@ -3,171 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUMAN-OS | Kernel</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Human OS - Kernel</title>
     <style>
-        :root { --neon: #00f2ff; --bg: #050505; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; }
-        section { display: none; min-height: 100vh; width: 100%; overflow-y: auto; }
-
-        /* SIDEBAR COMPLETA COM X */
-        #sidebar { width: 300px; height: 100%; background: #000; border-right: 1px solid #1a1a1a; position: fixed; left: -300px; transition: 0.3s; z-index: 6000; display: flex; flex-direction: column; padding: 20px; }
-        #sidebar.open { left: 0; }
-        .close-menu { align-self: flex-end; font-size: 1.5rem; cursor: pointer; color: var(--neon); margin-bottom: 20px; }
-        .sidebar-item { padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #888; font-weight: bold; }
-        .sidebar-item:hover { color: var(--neon); background: #111; }
-
-        /* LANDING PAGE ORIGINAL + PROMESSAS */
-        #landing-page { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 60px 20px; background: radial-gradient(circle at top, #0a1f21 0%, #050505 100%); }
-        .hero-title { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; }
-        .hero-title span { color: var(--neon); text-shadow: 0 0 20px var(--neon); }
-        .feature-list { margin: 40px 0; width: 100%; max-width: 500px; }
-        .feature-item { background: rgba(255,255,255,0.03); border: 1px solid #1a1a1a; padding: 15px; border-radius: 15px; margin-bottom: 10px; text-align: left; display: flex; align-items: center; gap: 15px; }
-        .feature-item i { color: var(--neon); font-size: 1.2rem; }
-        .cta-button { background: var(--neon); color: #000; padding: 25px 60px; border-radius: 50px; font-weight: 900; text-decoration: none; box-shadow: 0 0 20px var(--neon); }
-
-        /* INTERFACE APP */
-        #app-interface { height: 100vh; flex-direction: column; display: none; }
-        header { padding: 15px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; background: #000; }
-        #flow { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; padding-bottom: 110px; }
-        .msg { padding: 15px; border-radius: 15px; margin-bottom: 15px; max-width: 85%; font-size: 0.9rem; line-height: 1.4; }
-        .ai { border-left: 3px solid var(--neon); background: rgba(0, 242, 255, 0.05); }
-        .user { background: #1a1a1a; align-self: flex-end; border: 1px solid #333; }
-        footer { position: fixed; bottom: 0; width: 100%; padding: 15px; background: #050505; }
-        .input-box { background: #111; border-radius: 18px; padding: 10px; border: 1px solid #222; display: flex; max-width: 800px; margin: 0 auto; }
-        textarea { flex-grow: 1; background: transparent; border: none; color: #fff; outline: none; height: 25px; resize: none; padding-left: 10px; }
+        body { font-family: sans-serif; background: #111; color: #fff; display: flex; flex-direction: column; height: 100vh; margin: 0; }
+        #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
+        .msg { margin-bottom: 15px; padding: 10px; border-radius: 5px; max-width: 80%; }
+        .user { background: #007bff; align-self: flex-end; }
+        .bot { background: #333; align-self: flex-start; }
+        .input-area { padding: 20px; background: #222; display: flex; }
+        input { flex: 1; padding: 10px; border: none; border-radius: 5px; outline: none; }
+        button { padding: 10px 20px; margin-left: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div id="sidebar">
-        <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
-        <h3 style="color:var(--neon); font-size:0.7rem; margin-bottom:15px; letter-spacing: 2px;">MÓDULOS</h3>
-        <div class="sidebar-item" onclick="setMode('Cognição Cerebral')"><i class="fas fa-brain"></i> Cognição Cerebral</div>
-        <div class="sidebar-item" onclick="setMode('Psicológico IA')"><i class="fas fa-comment-medical"></i> Psicológico IA</div>
-        <div class="sidebar-item" onclick="setMode('Médico IA')"><i class="fas fa-user-md"></i> Médico IA</div>
-        <div class="sidebar-item" onclick="setMode('Doutor da Riqueza')"><i class="fas fa-gem"></i> Doutor da Riqueza</div>
-        
-        <h3 style="color:var(--neon); font-size:0.7rem; margin:20px 0 10px; letter-spacing: 2px;">HISTÓRICO</h3>
-        <div id="chat-history-list" style="overflow-y:auto; flex-grow:1;"></div>
-        <div class="sidebar-item" style="color:red; margin-top:auto;" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> Sair</div>
+    <div id="chat"></div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Digite sua mensagem...">
+        <button onclick="sendMessage()">Enviar</button>
     </div>
 
-    <section id="landing-page" style="display: flex;">
-        <h1 class="hero-title">HUMAN-OS<br><span>KERNEL</span></h1>
-        <div class="feature-list">
-            <div class="feature-item"><i class="fas fa-brain"></i> <div><b>Cognição:</b> Upgrade mental e foco.</div></div>
-            <div class="feature-item"><i class="fas fa-heart-pulse"></i> <div><b>Psicológico:</b> Suporte mental avançado.</div></div>
-            <div class="feature-item"><i class="fas fa-dna"></i> <div><b>Biohacking:</b> Médico IA integrado.</div></div>
-            <div class="feature-item"><i class="fas fa-chart-line"></i> <div><b>Riqueza:</b> Gestão de ativos e cripto.</div></div>
-        </div>
-        <a href="https://pay.kiwify.com.br/OZtAt4I" class="cta-button">ADQUIRIR ACESSO</a>
-        <p onclick="showScreen('auth-screen')" style="margin-top:30px; cursor:pointer; text-decoration:underline; color:#444;">ACESSAR SISTEMA</p>
-    </section>
-
-    <section id="auth-screen" style="display:none; flex-direction:column; align-items:center; justify-content:center;">
-        <div style="background:#111; padding:35px; border-radius:25px; width:90%; max-width:380px; text-align:center;">
-            <h3 style="color:var(--neon); margin-bottom:20px;">LOGIN KERNEL</h3>
-            <input type="email" id="email_login" placeholder="E-mail" style="width:100%; padding:15px; margin-bottom:12px; background:#000; color:#fff; border:1px solid #333; border-radius:12px;">
-            <input type="password" id="password_login" placeholder="Senha" style="width:100%; padding:15px; margin-bottom:12px; background:#000; color:#fff; border:1px solid #333; border-radius:12px;">
-            <button onclick="handleAuth()" style="width:100%; background:var(--neon); padding:18px; border-radius:12px; border:none; font-weight:900; width:100%; cursor:pointer;">ENTRAR</button>
-            <p onclick="resetPassword()" style="color:#444; font-size:0.8rem; margin-top:15px; cursor:pointer; text-decoration:underline;">Esqueceu a senha?</p>
-        </div>
-    </section>
-
-    <section id="app-interface">
-        <header>
-            <i class="fas fa-bars" onclick="toggleMenu()" style="font-size: 1.5rem; color: var(--neon); cursor:pointer;"></i>
-            <div id="active-mode" style="font-size: 0.7rem; font-weight:900; color: #444;">MODO: GERAL</div>
-            <div></div>
-        </header>
-        <div id="flow"><div class="ai msg"><b>KERNEL OPERACIONAL V6.</b><br>Selecione um módulo ou digite seu comando.</div></div>
-        <footer>
-            <div class="input-box">
-                <textarea id="cmd" placeholder="Comando..."></textarea>
-                <button onclick="destilar()" style="background:var(--neon); border:none; width:35px; height:35px; border-radius:10px; cursor:pointer;"><i class="fas fa-arrow-up"></i></button>
-            </div>
-        </footer>
-    </section>
-
     <script>
-        const _supabase = supabase.createClient('https://fddzojlntzmhmekckplm.supabase.co', 'sb_publishable_7_YgjAZyC2bhR0frG7B3bg_ACdUYUL5');
-        let chatHistory = [];
-        let currentMode = "Geral";
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const chat = document.getElementById('chat');
+            if (!input.value) return;
 
-        function showScreen(id) { document.querySelectorAll('section').forEach(s => s.style.display = 'none'); document.getElementById(id).style.display = 'flex'; }
-        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
-        function setMode(m) { 
-            currentMode = m; 
-            document.getElementById('active-mode').innerText = "MODO: " + m.toUpperCase(); 
-            addMsg('ai', `<b>Módulo ${m} ativado.</b> Como posso ajudar?`);
-            toggleMenu(); 
-        }
-
-        async function handleAuth() {
-            const { error } = await _supabase.auth.signInWithPassword({ email: email_login.value, password: password_login.value });
-            if (error) return alert("Erro: " + error.message);
-            showScreen('app-interface');
-            loadHistory();
-        }
-
-        async function resetPassword() {
-            const email = prompt("E-mail para recuperação:");
-            if (email) { await _supabase.auth.resetPasswordForEmail(email); alert("Link enviado para o seu e-mail!"); }
-        }
-
-        async function destilar() {
-            const text = cmd.value.trim(); if(!text) return;
-            addMsg('user', text); cmd.value = "";
-            chatHistory.push({role: "user", content: text});
-            saveToSidebar(text);
+            const userMsg = input.value;
+            chat.innerHTML += `<div class="msg user">${userMsg}</div>`;
+            input.value = '';
 
             try {
-                let response = await fetch("/api/chat", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ messages: [{role: "system", content: "Modo: " + currentMode}, ...chatHistory] })
+                // AQUI ESTÁ O SEGREDO: O caminho tem que ser /api/chat
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: [{ role: 'user', content: userMsg }] })
                 });
-
-                if (!response.ok) {
-                    response = await fetch("/API/chat", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ messages: chatHistory })
-                    });
-                }
 
                 const data = await response.json();
-                const aiMsg = data.choices[0].message.content;
-                chatHistory.push({role: "assistant", content: aiMsg});
-                addMsg('ai', aiMsg);
-                localStorage.setItem('kernel_v6_final', JSON.stringify(chatHistory));
-            } catch (e) { 
-                addMsg('ai', "ERRO DE CONEXÃO. Verifique se o arquivo chat.js está no GitHub."); 
+                if (data.choices) {
+                    chat.innerHTML += `<div class="msg bot">${data.choices[0].message.content}</div>`;
+                } else {
+                    chat.innerHTML += `<div class="msg bot">Erro no Kernel: ${data.error || 'Verifique o saldo'}</div>`;
+                }
+            } catch (e) {
+                chat.innerHTML += `<div class="msg bot">Erro de Conexão: ${e.message}</div>`;
             }
-        }
-
-        function addMsg(t, c) { const d = document.createElement('div'); d.className = `msg ${t}`; d.innerHTML = c; document.getElementById('flow').appendChild(d); flow.scrollTop = flow.scrollHeight; }
-        function saveToSidebar(text) {
-            const item = document.createElement('div');
-            item.className = 'sidebar-item';
-            item.style.fontSize = '0.7rem';
-            item.style.color = '#444';
-            item.innerText = text;
-            document.getElementById('chat-history-list').prepend(item);
-        }
-
-        function loadHistory() {
-            const saved = localStorage.getItem('kernel_v6_final');
-            if (saved) {
-                chatHistory = JSON.parse(saved);
-                chatHistory.forEach(m => {
-                    addMsg(m.role === 'user' ? 'user' : 'ai', m.content);
-                    if(m.role === 'user') saveToSidebar(m.content);
-                });
-            }
+            chat.scrollTop = chat.scrollHeight;
         }
     </script>
 </body>
