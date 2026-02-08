@@ -5,21 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Human OS - Kernel</title>
     <style>
-        body { font-family: sans-serif; background: #111; color: #fff; display: flex; flex-direction: column; height: 100vh; margin: 0; }
+        body { font-family: sans-serif; background: #000; color: #0f0; display: flex; flex-direction: column; height: 100vh; margin: 0; }
         #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
-        .msg { margin-bottom: 15px; padding: 10px; border-radius: 5px; max-width: 80%; }
-        .user { background: #007bff; align-self: flex-end; }
-        .bot { background: #333; align-self: flex-start; }
-        .input-area { padding: 20px; background: #222; display: flex; }
-        input { flex: 1; padding: 10px; border: none; border-radius: 5px; outline: none; }
-        button { padding: 10px 20px; margin-left: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .msg { margin-bottom: 15px; padding: 12px; border-radius: 8px; max-width: 85%; line-height: 1.4; }
+        .user { background: #0044cc; color: white; align-self: flex-end; }
+        .bot { background: #222; color: #0f0; border: 1px solid #0f0; align-self: flex-start; }
+        .input-area { padding: 20px; background: #111; display: flex; border-top: 1px solid #333; }
+        input { flex: 1; padding: 12px; background: #000; border: 1px solid #0f0; color: #0f0; border-radius: 5px; outline: none; }
+        button { padding: 12px 24px; margin-left: 10px; background: #0f0; color: black; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0a0; }
     </style>
 </head>
 <body>
     <div id="chat"></div>
     <div class="input-area">
-        <input type="text" id="userInput" placeholder="Digite sua mensagem...">
-        <button onclick="sendMessage()">Enviar</button>
+        <input type="text" id="userInput" placeholder="Digite sua mensagem para o Kernel...">
+        <button onclick="sendMessage()">ENVIAR</button>
     </div>
 
     <script>
@@ -31,23 +32,28 @@
             const userMsg = input.value;
             chat.innerHTML += `<div class="msg user">${userMsg}</div>`;
             input.value = '';
+            chat.scrollTop = chat.scrollHeight;
 
             try {
-                // AQUI ESTÁ O SEGREDO: O caminho tem que ser /api/chat
-                const response = await fetch('/api/chat', {
+                // Adicionei o .js aqui para a Vercel não se perder
+                const response = await fetch('/api/chat.js', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ messages: [{ role: 'user', content: userMsg }] })
                 });
 
                 const data = await response.json();
-                if (data.choices) {
+                
+                if (data.choices && data.choices[0].message) {
                     chat.innerHTML += `<div class="msg bot">${data.choices[0].message.content}</div>`;
+                } else if (data.error) {
+                    chat.innerHTML += `<div class="msg bot">Erro do Sistema: ${data.error}</div>`;
                 } else {
-                    chat.innerHTML += `<div class="msg bot">Erro no Kernel: ${data.error || 'Verifique o saldo'}</div>`;
+                    chat.innerHTML += `<div class="msg bot">Erro: Resposta inválida do servidor.</div>`;
                 }
             } catch (e) {
-                chat.innerHTML += `<div class="msg bot">Erro de Conexão: ${e.message}</div>`;
+                // Aqui é onde aparecia o erro do token '<'
+                chat.innerHTML += `<div class="msg bot">Erro de Conexão: Tente fazer o Redeploy sem Cache na Vercel.</div>`;
             }
             chat.scrollTop = chat.scrollHeight;
         }
